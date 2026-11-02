@@ -1,54 +1,546 @@
-/* FIDCOGEST — Bleu Prestige | design skin, business logic untouched */
+/* ==========================================================================
+   FIDCOGEST — THÈME BLEU PRESTIGE
+   Palette :
+   - Bleu nuit :    #142B45
+   - Bleu ardoise : #47647C
+   - Or discret :   #B79661 (surfaces dorées / accents)
+   - Blanc cassé :  #F7F8F6 (arrière-plan principal)
+   - Anthracite :   #26343E (texte principal)
+   - Surface card : #FFFFFF
+   - Bordure :      #E2E6E8
+   ========================================================================== */
+
 .fid-prestige {
-  --id-primary:#142B45; --id-primary-hover:#203C57; --id-accent:#B79661;
-  --id-accent-soft:#F6EEE1; --id-bg:#F7F8F6; --id-surface:#FFFFFF;
-  --id-text:#26343E; --id-muted:#607181; --id-border:#E2E6E8;
-  --id-sidebar:#142B45; --id-focus:#47647C; --id-radius:16px;
-  --indus-bg-dark:#F7F8F6; --indus-surface:#fff; --indus-surface-elevated:#EFF2F3;
-  --indus-surface-hover:#E8ECEF; --indus-border:#DCE2E6; --indus-border-accent:#C7D0D7;
-  --indus-amber-primary:#B79661; --indus-amber-hover:#9B7744;
-  --indus-amber-glow:rgba(183,150,97,.13);
-  --indus-steel-primary:#47647C;
-  color:#26343E; background:#F7F8F6; font-family: 'DM Sans', Inter, system-ui, sans-serif;
+  --id-primary: #142B45;
+  --id-primary-hover: #203C57;
+  --id-accent: #B79661;
+  --id-accent-soft: #F6EEE1;
+  --id-bg: #F7F8F6;
+  --id-surface: #FFFFFF;
+  --id-text: #26343E;
+  --id-muted: #607181;
+  --id-border: #E2E6E8;
+  --id-sidebar: #142B45;
+  --id-focus: #47647C;
+  --id-radius: 16px;
+
+  --indus-bg-dark: #F7F8F6;
+  --indus-surface: #FFFFFF;
+  --indus-surface-elevated: #EFF2F3;
+  --indus-surface-hover: #E8ECEF;
+  --indus-border: #DCE2E6;
+  --indus-border-accent: #C7D0D7;
+  --indus-amber-primary: #B79661;
+  --indus-amber-hover: #9B7744;
+  --indus-amber-glow: rgba(183, 150, 97, 0.15);
+  --indus-steel-primary: #47647C;
+
+  color: #26343E;
+  background-color: #F7F8F6;
+  font-family: 'DM Sans', Inter, system-ui, -apple-system, sans-serif;
 }
-.fid-prestige h1,.fid-prestige h2,.fid-prestige h3,.fid-prestige h4 { letter-spacing:-.035em; }
-.fid-prestige .indus-card {background:#fff;border-color:#E2E6E8;box-shadow:0 8px 32px rgba(20,43,69,.055)}
-.fid-prestige .indus-card-accent {background:linear-gradient(160deg,#fff,#F8F5EF);border-color:#D9C9B2}
-.fid-prestige .indus-btn-primary {background:#142B45;color:#fff;box-shadow:0 6px 18px rgba(20,43,69,.14)}
-.fid-prestige .indus-btn-primary:hover {background:#203C57}
-.fid-prestige .indus-btn-secondary {background:#fff;color:#142B45;border-color:#C9D3DA}
-.fid-prestige .indus-nav-active{color:#B79661!important}
-.fid-prestige .indus-nav-active::after{background:#B79661;box-shadow:none}
-.fid-prestige .id-brand::before {display:none}
-.fid-prestige .id-nav-item {color:#CBD6E0}
-.fid-prestige .id-nav-item:is(.is-active,[aria-current='page']){background:#B79661;color:#142B45}
-.fid-prestige .id-filter {background:#fff;color:#142B45;border-color:#DDE4E8}
-.fid-prestige .id-filter.is-selected{background:#B79661;color:#142B45;border-color:#B79661;box-shadow:none}
-.fid-navbar {background:#142B45!important;border-color:#29425C!important;box-shadow:0 4px 22px rgba(20,43,69,.16)}
-.fid-navbar .bg-slate-900\/80{background:#1B3650!important}
-.fid-navbar .bg-amber-500,.fid-navbar .from-amber-500{background:#B79661!important}
-.fid-navbar .text-amber-400,.fid-navbar .text-amber-300{color:#D9BD8E!important}
-.fid-navbar .id-brand{color:#fff}
-.fid-navbar .id-nav-item.is-active{color:#142B45!important;background:#D3B684!important}
-.fid-navbar .id-filter:not(.is-selected){background:transparent;color:#E0E8EF;border-color:transparent}
-.fid-navbar .id-filter.is-selected{background:#D3B684;color:#142B45}
-.fid-home {background:#F7F8F6}
-.fid-home .fid-hero {background:radial-gradient(ellipse at 90% 0%,#E8EDF0 0%,#F7F8F6 55%);border-bottom:1px solid #E5E9E9}
-.fid-home .fid-hero h1{color:#142B45!important;line-height:1.12;font-weight:750}
-.fid-home .fid-hero h1 span{background:none!important;color:#A07D4E!important;-webkit-text-fill-color:#A07D4E}
-.fid-home .fid-hero .text-slate-300{color:#536473}
-.fid-home .fid-hero .text-slate-400{color:#607181}
-.fid-home .fid-hero .bg-slate-900{background:#fff!important}
-.fid-home .fid-hero .bg-slate-950{background:#F6F7F7!important}
-.fid-home .fid-hero .border-slate-700\/80,.fid-home .fid-hero .border-slate-800{border-color:#DEE5E9!important}
-.fid-home .fid-hero .text-white{color:#142B45}
-.fid-home .fid-hero .bg-gradient-to-b{background:linear-gradient(160deg,#fff,#F7F8F6)!important;box-shadow:0 15px 45px rgba(20,43,69,.11)}
-.fid-home .fid-hero button.bg-gradient-to-r{background:#142B45!important;color:#fff!important;box-shadow:0 7px 22px rgba(20,43,69,.15)}
-.fid-home .fid-hero button.bg-gradient-to-r span{color:#fff}
-.fid-home .fid-hero button.bg-slate-900{background:#fff!important;border-color:#BECBD5;color:#142B45}
-.fid-home .fid-hero .font-mono{font-family:'DM Sans',system-ui,sans-serif}
-.fid-home .fid-hero .bg-amber-500{background:#B79661;color:#142B45}
-.fid-home section:not(.fid-hero) {color:#26343E}
-.fid-prestige input:not([type='checkbox']):not([type='radio']),.fid-prestige select,.fid-prestige textarea{border-radius:10px}
-.fid-prestige :is(button,a,input,select,textarea):focus-visible{outline:3px solid #B79661;outline-offset:3px}
-@media(max-width:640px){.fid-home .fid-hero{padding-top:2rem}.fid-prestige .id-brand{font-size:1.05rem}}
+
+/* --------------------------------------------------------------------------
+   Typographie générale
+   -------------------------------------------------------------------------- */
+.fid-prestige :is(h1, h2, h3, h4, .font-display) {
+  font-family: 'Plus Jakarta Sans', var(--font-display), sans-serif;
+  letter-spacing: -0.025em;
+  color: #142B45;
+}
+
+.fid-prestige a {
+  color: inherit;
+  transition: color 0.15s ease;
+}
+
+/* --------------------------------------------------------------------------
+   Cartes & Conteneurs (conversion des panneaux sombres en blanc prestige)
+   -------------------------------------------------------------------------- */
+.fid-prestige :is(
+  .indus-card,
+  .id-card,
+  section > div.bg-slate-900,
+  section div.bg-slate-900\/90,
+  section div.bg-slate-900\/80,
+  div.p-6.bg-slate-900\/80,
+  div.p-8.bg-slate-900\/80,
+  div.p-8.bg-slate-900\/90,
+  div.p-5.bg-slate-900\/80,
+  div.p-6.bg-slate-900,
+  div.p-8.bg-slate-900,
+  div.p-10.bg-slate-900\/90
+):not(footer *):not(.fid-navbar *) {
+  background-color: #FFFFFF !important;
+  border-color: #E2E6E8 !important;
+  color: #26343E !important;
+  box-shadow: 0 4px 20px rgba(20, 43, 69, 0.05) !important;
+}
+
+.fid-prestige :is(
+  .indus-card,
+  .id-card,
+  section div.bg-slate-900\/80
+):hover:not(footer *):not(.fid-navbar *) {
+  border-color: #B79661 !important;
+  box-shadow: 0 8px 30px rgba(20, 43, 69, 0.09) !important;
+}
+
+/* Boîtes intérieures & sous-panneaux clairs */
+.fid-prestige :is(
+  .bg-slate-950,
+  .bg-slate-950\/40,
+  .bg-slate-950\/60,
+  .bg-slate-950\/80,
+  .bg-slate-900\/40,
+  .bg-slate-900\/50
+):not(footer *):not(.fid-navbar *):not(.fixed.inset-0) {
+  background-color: #F8F9F8 !important;
+  border-color: #E2E6E8 !important;
+  color: #26343E !important;
+}
+
+/* --------------------------------------------------------------------------
+   Couleurs de texte & Contrastes
+   -------------------------------------------------------------------------- */
+.fid-prestige :is(
+  main,
+  .fid-home,
+  section,
+  form
+) :is(.text-white, .text-slate-100, .text-slate-200):not(button *):not(.fid-navbar *):not(footer *):not(.badge-dark *) {
+  color: #142B45 !important;
+}
+
+.fid-prestige :is(main, section, form) .text-slate-300:not(button *):not(.fid-navbar *):not(footer *) {
+  color: #3D4F5E !important;
+}
+
+.fid-prestige :is(main, section, form) :is(.text-slate-400, .text-slate-500):not(button *):not(.fid-navbar *):not(footer *) {
+  color: #607181 !important;
+}
+
+.fid-prestige :is(main, section, form) :is(
+  .border-slate-800,
+  .border-slate-700,
+  .border-slate-800\/80,
+  .border-slate-800\/60,
+  .border-slate-700\/80,
+  .border-slate-700\/90
+):not(footer *):not(.fid-navbar *):not(.fixed.inset-0) {
+  border-color: #E2E6E8 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Touches Dorées (Or discret #B79661) & Badges
+   -------------------------------------------------------------------------- */
+.fid-prestige :is(main, section, form) :is(.text-amber-400, .text-amber-500, .text-amber-300):not(footer *):not(.fid-navbar *) {
+  color: #9B7744 !important;
+}
+
+.fid-prestige :is(main, section, form) :is(
+  .border-amber-500\/20,
+  .border-amber-500\/30,
+  .border-amber-500\/40
+):not(footer *):not(.fid-navbar *) {
+  border-color: rgba(183, 150, 97, 0.4) !important;
+}
+
+.fid-prestige :is(main, section, form) :is(
+  .bg-amber-500\/10,
+  .bg-amber-500\/20
+):not(footer *):not(.fid-navbar *) {
+  background-color: rgba(183, 150, 97, 0.12) !important;
+  color: #8F6D38 !important;
+}
+
+/* Badges kpi & ITAA */
+.fid-prestige :is(main, section) .rounded-full.bg-slate-900.border-amber-500\/30 {
+  background-color: #FFFFFF !important;
+  border-color: rgba(183, 150, 97, 0.45) !important;
+  color: #8F6D38 !important;
+  box-shadow: 0 2px 8px rgba(183, 150, 97, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   Boutons & Actions
+   -------------------------------------------------------------------------- */
+/* Bouton primaire : Bleu Nuit Prestige avec hover doré/bleu */
+.fid-prestige button.bg-gradient-to-r,
+.fid-prestige a.bg-gradient-to-r,
+.fid-prestige .indus-btn-primary,
+.fid-prestige .id-button--accent {
+  background: linear-gradient(135deg, #142B45 0%, #1E3B5B 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid #142B45 !important;
+  box-shadow: 0 4px 14px rgba(20, 43, 69, 0.18) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.fid-prestige button.bg-gradient-to-r:hover,
+.fid-prestige a.bg-gradient-to-r:hover,
+.fid-prestige .indus-btn-primary:hover,
+.fid-prestige .id-button--accent:hover {
+  background: linear-gradient(135deg, #203C57 0%, #142B45 100%) !important;
+  border-color: #B79661 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(20, 43, 69, 0.22) !important;
+}
+
+.fid-prestige button.bg-gradient-to-r :is(span, svg),
+.fid-prestige a.bg-gradient-to-r :is(span, svg) {
+  color: #FFFFFF !important;
+}
+
+/* Bouton secondaire blanc prestige */
+.fid-prestige :is(
+  button.bg-slate-900,
+  button.bg-slate-800,
+  .indus-btn-secondary,
+  .id-button--secondary
+):not(.fid-navbar *):not(footer *) {
+  background-color: #FFFFFF !important;
+  color: #142B45 !important;
+  border: 1px solid #DCE2E6 !important;
+  box-shadow: 0 2px 8px rgba(20, 43, 69, 0.04) !important;
+  transition: all 0.18s ease;
+}
+
+.fid-prestige :is(
+  button.bg-slate-900,
+  button.bg-slate-800,
+  .indus-btn-secondary,
+  .id-button--secondary
+):hover:not(.fid-navbar *):not(footer *) {
+  background-color: #EFF2F3 !important;
+  border-color: #B79661 !important;
+  color: #142B45 !important;
+}
+
+.fid-prestige :is(
+  button.bg-slate-900,
+  button.bg-slate-800
+) span {
+  color: #142B45 !important;
+}
+
+/* Bouton WhatsApp direct */
+.fid-prestige a[href*="wa.me"] {
+  background-color: #0E5E3A !important;
+  color: #FFFFFF !important;
+  border-color: #0E5E3A !important;
+  box-shadow: 0 4px 12px rgba(14, 94, 58, 0.18);
+}
+.fid-prestige a[href*="wa.me"]:hover {
+  background-color: #0B4A2D !important;
+}
+.fid-prestige a[href*="wa.me"] span {
+  color: #FFFFFF !important;
+}
+
+/* Boutons d'onglet / sélection (ex: filtres et sélecteurs de pôle) */
+.fid-prestige :is(.id-filter, button.rounded-xl.p-3) {
+  transition: all 0.18s ease;
+}
+
+.fid-prestige button.bg-amber-500:not(.id-filter):not(.id-nav-item) {
+  background-color: #142B45 !important;
+  color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   Champs de saisie & Formulaires
+   -------------------------------------------------------------------------- */
+.fid-prestige :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+  background-color: #FFFFFF !important;
+  color: #26343E !important;
+  border: 1px solid #DCE2E6 !important;
+  border-radius: 10px !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fid-prestige :is(input, select, textarea):focus {
+  outline: 3px solid rgba(183, 150, 97, 0.3) !important;
+  outline-offset: 2px !important;
+  border-color: #B79661 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Navbar Supérieure (Bleu Nuit #142B45 + Or discret)
+   -------------------------------------------------------------------------- */
+.fid-navbar {
+  background-color: #142B45 !important;
+  border-color: #203C57 !important;
+  box-shadow: 0 4px 22px rgba(20, 43, 69, 0.18) !important;
+}
+
+/* Micro-barre d'annonce tout en haut */
+.fid-navbar .bg-slate-900\/80 {
+  background-color: #0E2034 !important;
+  border-color: #1E3752 !important;
+  color: #CBD6E0 !important;
+}
+
+.fid-navbar .text-amber-400,
+.fid-navbar .text-amber-300 {
+  color: #D9BD8E !important;
+}
+
+.fid-navbar .id-brand {
+  color: #FFFFFF !important;
+}
+
+.fid-navbar .id-nav-item {
+  color: #CBD6E0 !important;
+}
+
+.fid-navbar .id-nav-item:hover {
+  color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.fid-navbar .id-nav-item.is-active,
+.fid-navbar .id-nav-item[aria-current='page'] {
+  background-color: #B79661 !important;
+  color: #142B45 !important;
+  font-weight: 750 !important;
+}
+
+.fid-navbar .id-filter:not(.is-selected) {
+  background: transparent !important;
+  color: #CBD6E0 !important;
+  border-color: #29425C !important;
+}
+
+.fid-navbar .id-filter.is-selected {
+  background-color: #B79661 !important;
+  color: #142B45 !important;
+  border-color: #B79661 !important;
+  font-weight: 750 !important;
+}
+
+/* Boutons dans la barre de navigation */
+.fid-navbar .id-button--secondary {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: #294A6B !important;
+  color: #FFFFFF !important;
+}
+
+.fid-navbar .id-button--secondary:hover {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  border-color: #B79661 !important;
+  color: #FFFFFF !important;
+}
+
+.fid-navbar .id-button--accent {
+  background: #B79661 !important;
+  color: #142B45 !important;
+  font-weight: 750 !important;
+  border-color: #B79661 !important;
+}
+
+.fid-navbar .id-button--accent:hover {
+  background: #C4A572 !important;
+}
+
+/* Tiroir Mobile */
+.fid-navbar .lg\:hidden {
+  background-color: #142B45 !important;
+  border-color: #203C57 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Accueil & Hero Section
+   -------------------------------------------------------------------------- */
+.fid-home {
+  background-color: #F7F8F6;
+}
+
+.fid-home .fid-hero {
+  background: radial-gradient(ellipse at 85% 0%, #E8EDF0 0%, #F7F8F6 60%);
+  border-bottom: 1px solid #E2E6E8;
+}
+
+.fid-home .fid-hero h1 {
+  color: #142B45 !important;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.fid-home .fid-hero h1 span {
+  background: none !important;
+  color: #A07D4E !important;
+  -webkit-text-fill-color: #A07D4E !important;
+}
+
+.fid-home .fid-hero .text-slate-300 {
+  color: #3D4F5E !important;
+}
+
+.fid-home .fid-hero .text-slate-400 {
+  color: #607181 !important;
+}
+
+.fid-home .fid-hero div.bg-gradient-to-b {
+  background: linear-gradient(160deg, #FFFFFF 0%, #F8F9F8 100%) !important;
+  border-color: #E2E6E8 !important;
+  box-shadow: 0 15px 45px rgba(20, 43, 69, 0.08) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Modales & Boîtes de Dialogue (Prise de RDV, Coffre-fort, Mentions)
+   -------------------------------------------------------------------------- */
+.fid-prestige .fixed.inset-0.z-50 {
+  background-color: rgba(20, 43, 69, 0.65) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.fid-prestige .fixed.inset-0.z-50 > div {
+  background-color: #FFFFFF !important;
+  border-color: #DCE2E6 !important;
+  color: #26343E !important;
+  box-shadow: 0 25px 60px rgba(20, 43, 69, 0.25) !important;
+}
+
+/* En-tête des modales */
+.fid-prestige .fixed.inset-0.z-50 > div > div:first-child {
+  background-color: #142B45 !important;
+  border-color: #203C57 !important;
+  color: #FFFFFF !important;
+}
+
+.fid-prestige .fixed.inset-0.z-50 > div > div:first-child h3,
+.fid-prestige .fixed.inset-0.z-50 > div > div:first-child .text-white {
+  color: #FFFFFF !important;
+}
+
+.fid-prestige .fixed.inset-0.z-50 > div > div:first-child .text-slate-400 {
+  color: #CBD6E0 !important;
+}
+
+.fid-prestige .fixed.inset-0.z-50 > div > div:first-child button {
+  color: #CBD6E0 !important;
+}
+
+.fid-prestige .fixed.inset-0.z-50 > div > div:first-child button:hover {
+  color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Widget Assistant Fiscal IA (Gemini ITAA)
+   -------------------------------------------------------------------------- */
+/* Bouton lanceur flottant */
+.fid-prestige .fixed.bottom-5.left-5 button {
+  background-color: #142B45 !important;
+  border-color: #B79661 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 25px rgba(20, 43, 69, 0.25) !important;
+}
+
+.fid-prestige .fixed.bottom-5.left-5 button > div {
+  background: linear-gradient(135deg, #B79661 0%, #9B7744 100%) !important;
+  color: #142B45 !important;
+}
+
+/* Fenêtre de chat dépliée */
+.fid-prestige .fixed.bottom-5.left-5.z-50 {
+  background-color: #FFFFFF !important;
+  border-color: #DCE2E6 !important;
+  box-shadow: 0 20px 50px rgba(20, 43, 69, 0.25) !important;
+}
+
+.fid-prestige .fixed.bottom-5.left-5.z-50 > div:first-child {
+  background-color: #142B45 !important;
+  border-color: #203C57 !important;
+  color: #FFFFFF !important;
+}
+
+.fid-prestige .fixed.bottom-5.left-5.z-50 > div:first-child h4 {
+  color: #FFFFFF !important;
+}
+
+.fid-prestige .fixed.bottom-5.left-5.z-50 > div:first-child .text-slate-400 {
+  color: #CBD6E0 !important;
+}
+
+.fid-prestige .fixed.bottom-5.left-5.z-50 .bg-slate-950\/60 {
+  background-color: #F7F8F6 !important;
+}
+
+/* Bulles de conversation */
+.fid-prestige .fixed.bottom-5.left-5.z-50 .bg-amber-500 {
+  background-color: #142B45 !important;
+  color: #FFFFFF !important;
+}
+
+.fid-prestige .fixed.bottom-5.left-5.z-50 .bg-slate-900 {
+  background-color: #FFFFFF !important;
+  border-color: #E2E6E8 !important;
+  color: #26343E !important;
+}
+
+/* --------------------------------------------------------------------------
+   Bannière Cookie RGPD
+   -------------------------------------------------------------------------- */
+.fid-prestige .fixed.bottom-4.right-4 {
+  background-color: #FFFFFF !important;
+  border-color: #DCE2E6 !important;
+  color: #26343E !important;
+  box-shadow: 0 15px 40px rgba(20, 43, 69, 0.18) !important;
+}
+
+.fid-prestige .fixed.bottom-4.right-4 .text-slate-300 {
+  color: #3D4F5E !important;
+}
+
+.fid-prestige .fixed.bottom-4.right-4 .text-amber-400 {
+  color: #142B45 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Pied de Page (Bleu Nuit Prestige #142B45)
+   -------------------------------------------------------------------------- */
+.fid-prestige footer {
+  background-color: #142B45 !important;
+  border-color: #203C57 !important;
+  color: #A0B3C4 !important;
+}
+
+.fid-prestige footer :is(h4, .text-white) {
+  color: #FFFFFF !important;
+}
+
+.fid-prestige footer .text-slate-400 {
+  color: #A0B3C4 !important;
+}
+
+.fid-prestige footer .text-slate-300 {
+  color: #CBD6E0 !important;
+}
+
+.fid-prestige footer .text-amber-400 {
+  color: #D9BD8E !important;
+}
+
+.fid-prestige footer a:hover {
+  color: #B79661 !important;
+}
+
+.fid-prestige footer .bg-slate-900 {
+  background-color: #1C3650 !important;
+  border-color: #294A6B !important;
+}
+
+/* --------------------------------------------------------------------------
+   Adaptation Mobile & Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .fid-home .fid-hero {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+  .fid-prestige .id-brand {
+    font-size: 1.05rem;
+  }
+}
