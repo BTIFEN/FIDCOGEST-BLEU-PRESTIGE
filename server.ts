@@ -268,13 +268,7 @@ const isProduction =
   process.env.NODE_ENV === 'production' ||
   (!process.env.VITE_DEV && fs.existsSync(path.join(__dirname, 'dist', 'index.html')));
 
-if (isProduction) {
-  app.use(express.static(path.join(__dirname, 'dist')));
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-  });
-} else {
-  // Integrate Vite dev server middleware
+async function setupDevMiddleware() {
   const { createServer: createViteServer } = await import('vite');
   const vite = await createViteServer({
     server: { middlewareMode: true },
@@ -293,6 +287,17 @@ if (isProduction) {
       vite.ssrFixStacktrace(e);
       next(e);
     }
+  });
+}
+
+if (isProduction) {
+  app.use(express.static(path.join(__dirname, 'dist')));
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
+} else {
+  setupDevMiddleware().catch((err) => {
+    console.error('[Fidcogest] Erreur initialisation Vite dev middleware:', err);
   });
 }
 

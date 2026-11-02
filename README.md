@@ -60,6 +60,7 @@ GEMINI_API_KEY=
 ## Structure des Fichiers Clés
 
 - `server.ts` : Code source TypeScript du serveur Express (API fiscale, OCR et service statique).
-- `server.js` : Point d'entrée compilé en ES Modules pour Node.js 22 (généré par `npm run build`).
+- `server.js` : Point d'entrée CommonJS compatible avec LiteSpeed (`lsnode.js`) et `require()` sur Hostinger.
+- `server.mjs` : Serveur applicatif ESM Node.js 22 (généré par `npm run build`).
 - `dist/` : Fichiers statiques optimisés du frontend React/Vite (générés par `npm run build`).
 - `src/styles/fidcogest-prestige.css` : Thème Bleu Prestige (#142B45, #B79661, #F7F8F6, #26343E).
