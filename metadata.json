@@ -1,0 +1,6 @@
+{
+  "name": "Fidcogest – Expert-comptable & Conseiller fiscal certifié ITAA",
+  "description": "Cabinet d'expertise comptable, conseil fiscal et portail client sécurisé en Belgique (Bruxelles, Wallonie). Comptabilité générale, fiscalité IPP/ISOC, création d'entreprise et simulateurs belges.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

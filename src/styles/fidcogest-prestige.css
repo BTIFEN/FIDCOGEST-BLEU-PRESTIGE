@@ -1,0 +1,54 @@
+/* FIDCOGEST — Bleu Prestige | design skin, business logic untouched */
+.fid-prestige {
+  --id-primary:#142B45; --id-primary-hover:#203C57; --id-accent:#B79661;
+  --id-accent-soft:#F6EEE1; --id-bg:#F7F8F6; --id-surface:#FFFFFF;
+  --id-text:#26343E; --id-muted:#607181; --id-border:#E2E6E8;
+  --id-sidebar:#142B45; --id-focus:#47647C; --id-radius:16px;
+  --indus-bg-dark:#F7F8F6; --indus-surface:#fff; --indus-surface-elevated:#EFF2F3;
+  --indus-surface-hover:#E8ECEF; --indus-border:#DCE2E6; --indus-border-accent:#C7D0D7;
+  --indus-amber-primary:#B79661; --indus-amber-hover:#9B7744;
+  --indus-amber-glow:rgba(183,150,97,.13);
+  --indus-steel-primary:#47647C;
+  color:#26343E; background:#F7F8F6; font-family: 'DM Sans', Inter, system-ui, sans-serif;
+}
+.fid-prestige h1,.fid-prestige h2,.fid-prestige h3,.fid-prestige h4 { letter-spacing:-.035em; }
+.fid-prestige .indus-card {background:#fff;border-color:#E2E6E8;box-shadow:0 8px 32px rgba(20,43,69,.055)}
+.fid-prestige .indus-card-accent {background:linear-gradient(160deg,#fff,#F8F5EF);border-color:#D9C9B2}
+.fid-prestige .indus-btn-primary {background:#142B45;color:#fff;box-shadow:0 6px 18px rgba(20,43,69,.14)}
+.fid-prestige .indus-btn-primary:hover {background:#203C57}
+.fid-prestige .indus-btn-secondary {background:#fff;color:#142B45;border-color:#C9D3DA}
+.fid-prestige .indus-nav-active{color:#B79661!important}
+.fid-prestige .indus-nav-active::after{background:#B79661;box-shadow:none}
+.fid-prestige .id-brand::before {display:none}
+.fid-prestige .id-nav-item {color:#CBD6E0}
+.fid-prestige .id-nav-item:is(.is-active,[aria-current='page']){background:#B79661;color:#142B45}
+.fid-prestige .id-filter {background:#fff;color:#142B45;border-color:#DDE4E8}
+.fid-prestige .id-filter.is-selected{background:#B79661;color:#142B45;border-color:#B79661;box-shadow:none}
+.fid-navbar {background:#142B45!important;border-color:#29425C!important;box-shadow:0 4px 22px rgba(20,43,69,.16)}
+.fid-navbar .bg-slate-900\/80{background:#1B3650!important}
+.fid-navbar .bg-amber-500,.fid-navbar .from-amber-500{background:#B79661!important}
+.fid-navbar .text-amber-400,.fid-navbar .text-amber-300{color:#D9BD8E!important}
+.fid-navbar .id-brand{color:#fff}
+.fid-navbar .id-nav-item.is-active{color:#142B45!important;background:#D3B684!important}
+.fid-navbar .id-filter:not(.is-selected){background:transparent;color:#E0E8EF;border-color:transparent}
+.fid-navbar .id-filter.is-selected{background:#D3B684;color:#142B45}
+.fid-home {background:#F7F8F6}
+.fid-home .fid-hero {background:radial-gradient(ellipse at 90% 0%,#E8EDF0 0%,#F7F8F6 55%);border-bottom:1px solid #E5E9E9}
+.fid-home .fid-hero h1{color:#142B45!important;line-height:1.12;font-weight:750}
+.fid-home .fid-hero h1 span{background:none!important;color:#A07D4E!important;-webkit-text-fill-color:#A07D4E}
+.fid-home .fid-hero .text-slate-300{color:#536473}
+.fid-home .fid-hero .text-slate-400{color:#607181}
+.fid-home .fid-hero .bg-slate-900{background:#fff!important}
+.fid-home .fid-hero .bg-slate-950{background:#F6F7F7!important}
+.fid-home .fid-hero .border-slate-700\/80,.fid-home .fid-hero .border-slate-800{border-color:#DEE5E9!important}
+.fid-home .fid-hero .text-white{color:#142B45}
+.fid-home .fid-hero .bg-gradient-to-b{background:linear-gradient(160deg,#fff,#F7F8F6)!important;box-shadow:0 15px 45px rgba(20,43,69,.11)}
+.fid-home .fid-hero button.bg-gradient-to-r{background:#142B45!important;color:#fff!important;box-shadow:0 7px 22px rgba(20,43,69,.15)}
+.fid-home .fid-hero button.bg-gradient-to-r span{color:#fff}
+.fid-home .fid-hero button.bg-slate-900{background:#fff!important;border-color:#BECBD5;color:#142B45}
+.fid-home .fid-hero .font-mono{font-family:'DM Sans',system-ui,sans-serif}
+.fid-home .fid-hero .bg-amber-500{background:#B79661;color:#142B45}
+.fid-home section:not(.fid-hero) {color:#26343E}
+.fid-prestige input:not([type='checkbox']):not([type='radio']),.fid-prestige select,.fid-prestige textarea{border-radius:10px}
+.fid-prestige :is(button,a,input,select,textarea):focus-visible{outline:3px solid #B79661;outline-offset:3px}
+@media(max-width:640px){.fid-home .fid-hero{padding-top:2rem}.fid-prestige .id-brand{font-size:1.05rem}}

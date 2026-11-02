@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fidcogest – Expert-comptable & Conseiller fiscal certifié ITAA | Belgique</title>
+    <meta name="description" content="Cabinet d'expertise comptable et conseil fiscal agréé ITAA en Belgique. Accompagnement sur-mesure pour indépendants, PME, SRL et créateurs d'entreprise." />
+    
+    <!-- OpenGraph Social Cards -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Fidcogest – Expert-comptable & Conseiller fiscal certifié ITAA" />
+    <meta property="og:description" content="Comptabilité générale, conseil fiscal stratégique, simulateurs de rémunération et portail client sécurisé pour indépendants et PME en Belgique." />
+    <meta property="og:site_name" content="Fidcogest Cabinet Comptable" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fidcogest – Expert-comptable & Conseiller fiscal certifié ITAA" />
+    <meta name="twitter:description" content="Cabinet d'expertise comptable agréé ITAA en Belgique. Gestion comptable, fiscalité IPP/ISOC & portail client." />
+
+    <!-- Google Fonts: Plus Jakarta Sans, DM Sans, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "AccountingService",
+          "@id": "https://fidcogest.be/#organization",
+          "name": "Fidcogest Cabinet d'Expertise Comptable & Fiscale",
+          "alternateName": "Fidcogest ITAA",
+          "url": "https://fidcogest.be",
+          "logo": "https://fidcogest.be/logo.png",
+          "telephone": "+3225550188",
+          "email": "contact@fidcogest.be",
+          "priceRange": "€€",
+          "taxID": "BE 0842.109.812",
+          "vatID": "BE0842109812",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Avenue Louise 240",
+            "addressLocality": "Bruxelles",
+            "postalCode": "1050",
+            "addressCountry": "BE"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "50.8262",
+            "longitude": "4.3688"
+          },
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+              "opens": "08:30",
+              "closes": "18:00"
+            }
+          ],
+          "memberOf": {
+            "@type": "Organization",
+            "name": "ITAA - Institute for Tax Advisors and Accountants",
+            "url": "https://www.itaa.be"
+          }
+        },
+        {
+          "@type": "FinancialService",
+          "name": "Conseil Fiscal & Optimisation Rémunération Indépendant Belgique",
+          "provider": {
+            "@id": "https://fidcogest.be/#organization"
+          },
+          "areaServed": "Belgium",
+          "description": "Services de comptabilité générale, déclaration TVA, bilan annuel BNB, conseil fiscal IPP/ISOC et plan financier pour créateurs d'entreprise en Belgique."
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased font-sans selection:bg-amber-500 selection:text-slate-950">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
