@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { SERVICE_POLES } from '../data/mockData';
-import { Calculator, TrendingUp, Rocket, PieChart, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { useCabinet } from '../context/CabinetContext';
+import { Calculator, TrendingUp, Rocket, PieChart, CheckCircle2, ShieldCheck, ArrowRight, Lock, Building, Smartphone, FileText, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface ServicesPageProps {
   onOpenBooking: () => void;
@@ -11,212 +12,250 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
   onOpenBooking,
   onOpenVault
 }) => {
-  const [activePoleId, setActivePoleId] = useState('comptabilite');
+  const { config } = useCabinet();
+  const { services, cabinet } = config;
+  const [activePoleId, setActivePoleId] = useState(services[0]?.id || 'comptabilite');
 
-  const selectedPole = SERVICE_POLES.find((p) => p.id === activePoleId) || SERVICE_POLES[0];
+  const selectedPole = services.find((p) => p.id === activePoleId) || services[0];
+
+  const getPoleIcon = (id: string) => {
+    switch (id) {
+      case 'comptabilite': return <Calculator className="w-4 h-4" />;
+      case 'fiscalite': return <TrendingUp className="w-4 h-4" />;
+      case 'creation-entreprises': return <Rocket className="w-4 h-4" />;
+      case 'conseil-consultance': return <PieChart className="w-4 h-4" />;
+      case 'audit-restructuration': return <Building className="w-4 h-4" />;
+      case 'recherche-financement': return <ShieldCheck className="w-4 h-4" />;
+      case 'e-compta': return <Smartphone className="w-4 h-4" />;
+      default: return <FileText className="w-4 h-4" />;
+    }
+  };
 
   const pricingPackages = [
     {
-      name: 'Formule Indépendant',
-      subtitle: 'Personne physique (Starter / Consultant / Artisan)',
-      price: 'À partir de 120 € HTVA / mois',
+      name: 'Formule Indépendant & Starter',
+      subtitle: 'Personne physique, consultant, profession libérale',
+      price: 'Forfait sur-mesure dès 120 € HTVA / mois',
       features: [
-        'Tenue complète de la comptabilité simplifiée',
-        'Déclarations périodiques TVA & listing clients',
+        'Tenue de la comptabilité simplifiée ou complète',
+        'Déclarations périodiques TVA & listing clients annuel',
         'Déclaration Impôt des Personnes Physiques (IPP)',
-        'Accès illimité au portail de dépôt express & WhatsApp'
+        'Accès à l\'application Basecone pour l\'envoi direct des reçus',
+        'Accompagnement continu par téléphone et email'
       ],
-      recommendedFor: 'Consultants, freelances, commerçants et professions libérales.'
+      recommendedFor: 'Consultants, indépendants complémentaires, artisans et professions médicales.'
     },
     {
-      name: 'Formule SRL Starter',
-      subtitle: 'Création ou jeune société (1 à 3 associés)',
-      price: 'À partir de 250 € HTVA / mois',
+      name: 'Formule Société SRL Complète',
+      subtitle: 'Société à responsabilité limitée en activité ou création',
+      price: 'Forfait mensuel à partir de 250 € HTVA',
       isPopular: true,
       features: [
-        'Rédaction du Plan Financier Légal constitutif',
-        'Tenue comptable complète PCMN & déclarations TVA',
-        'Déclaration ISOC & calcul des Versements Anticipés (VA)',
-        'Optimisation Rémunération Dirigeant vs VVPR-bis 15%',
-        'Inclus : Connexion au réseau Peppol 2026'
+        'Plan financier légal et accompagnement notarié (création)',
+        'Tenue comptable complète PCMN et situations périodiques',
+        'Déclarations TVA, déclarations ISOC et versements anticipés (VA1-VA4)',
+        'Optimisation fiscale rémunération dirigeant vs dividendes VVPR-bis 15%',
+        'Connexion Basecone et conformité facturation Peppol 2026 incluse',
+        'Dépôt officiel du bilan et des comptes annuels à la BNB'
       ],
-      recommendedFor: 'Nouvelles SRL, passage en société et petites entreprises.'
+      recommendedFor: 'Dirigeants de SRL, PME bruxelloises et wallonnes, sociétés de management.'
     },
     {
-      name: 'Formule PME Croissance',
-      subtitle: 'Société établie & Conseil de gestion avancé',
-      price: 'Sur devis personnalisé',
+      name: 'Formule Conseil & Audit Avancé',
+      subtitle: 'PME en croissance, restructuration et transmission',
+      price: 'Sur devis & lettre de mission',
       features: [
-        'Gestion comptable globale & situations intermédiaires',
-        'Tableaux de bord de trésorerie trimestriels',
-        'Assistance lors des réunions de conseil d\'administration',
-        'Représentation & défense complète lors des contrôles fiscaux',
-        'Holding, intégration fiscale & gestion de groupe'
+        'Tableaux de bord trimestriels et analyse financière prévisionnelle',
+        'Audit comptable, contrôle interne et valorisation d\'entreprise',
+        'Assistance lors des fusions, acquisitions et liquidations',
+        'Défense et représentation complète lors des contrôles fiscaux',
+        'Dossiers d\'aides, subsides régionaux et crédits bancaires'
       ],
-      recommendedFor: 'PME en expansion, sociétés avec personnel et holdings.'
+      recommendedFor: 'PME établies, structures en réorganisation et holdings d\'investissement.'
     }
   ];
 
   return (
-    <div className="space-y-16 pb-12 font-sans">
+    <div className="space-y-16 pb-16 font-sans">
       
       {/* Header Banner */}
-      <section className="text-center max-w-3xl mx-auto space-y-4 pt-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-amber-500/30 text-xs font-mono text-amber-300">
-          <ShieldCheck className="w-4 h-4 text-amber-400" />
+      <section className="text-center max-w-3xl mx-auto space-y-4 pt-10 px-4">
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white border border-[#B79661]/40 text-xs font-semibold text-[#8C6A34] shadow-xs">
+          <ShieldCheck className="w-4 h-4 text-[#B79661]" />
           <span>Normes Comptables Belges &amp; Déontologie ITAA</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-white tracking-tight">
-          Services &amp; Solutions Spécialisées
+        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#142B45] tracking-tight">
+          Les 7 Pôles d'Expertise du Cabinet Fidcogest
         </h1>
-        <p className="text-base text-slate-300 leading-relaxed">
-          Une gamme complète de prestations modulables adaptées à la taille et aux ambitions de votre entreprise en Belgique.
+        <p className="text-base text-[#4B5563] leading-relaxed">
+          Une gamme structurée de prestations certifiées pour sécuriser, optimiser et propulser vos affaires en Belgique.
         </p>
       </section>
 
-      {/* Interactive Poles Tabs Navigation */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-1.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-mono">
-          {SERVICE_POLES.map((pole) => (
+      {/* Interactive 7 Poles Navigation */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-8 space-y-8">
+        <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-white border border-[#E8E6DF] shadow-xs">
+          {services.map((pole) => (
             <button
               key={pole.id}
               onClick={() => setActivePoleId(pole.id)}
-              className={`p-3 rounded-xl transition-all text-left flex items-center gap-2.5 ${
+              className={`py-3 px-4 rounded-xl transition-all text-left flex items-center gap-2 cursor-pointer text-xs font-semibold flex-1 min-w-[150px] justify-center ${
                 activePoleId === pole.id
-                  ? 'bg-amber-500 text-slate-950 font-bold shadow-md'
-                  : 'text-slate-300 hover:bg-slate-800/80'
+                  ? 'bg-[#142B45] text-white shadow-xs'
+                  : 'text-[#4B5563] hover:text-[#142B45] hover:bg-[#F7F6F2]'
               }`}
             >
-              {pole.id === 'comptabilite' && <Calculator className="w-4 h-4 shrink-0" />}
-              {pole.id === 'fiscalite' && <TrendingUp className="w-4 h-4 shrink-0" />}
-              {pole.id === 'starters' && <Rocket className="w-4 h-4 shrink-0" />}
-              {pole.id === 'pilotage' && <PieChart className="w-4 h-4 shrink-0" />}
-              <span className="truncate">{pole.title.split(' ')[0]} {pole.title.split(' ')[1] || ''}</span>
+              <span className={activePoleId === pole.id ? 'text-[#D9BD8E]' : 'text-[#6B7280]'}>
+                {getPoleIcon(pole.id)}
+              </span>
+              <span className="truncate">{pole.shortTitle || pole.title}</span>
             </button>
           ))}
         </div>
 
         {/* Selected Pole Active Deep Dive */}
-        <div className="p-8 sm:p-10 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-8 shadow-2xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-800 pb-6">
-            <div className="space-y-2">
-              <span className="text-xs font-mono text-amber-400 uppercase tracking-wider">
-                Focus Expertise
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
-                {selectedPole.title}
-              </h2>
-              <p className="text-sm text-slate-300">{selectedPole.subtitle}</p>
-            </div>
+        {selectedPole && (
+          <div className="p-8 sm:p-10 rounded-2xl bg-white border border-[#E8E6DF] space-y-8 shadow-[0_6px_30px_rgba(20,43,69,0.04)]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#F0EFEA] pb-6">
+              <div className="space-y-1.5">
+                <span className="text-xs font-semibold text-[#8C6A34] uppercase tracking-wider">
+                  Mission Spécialisée
+                </span>
+                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#142B45]">
+                  {selectedPole.title}
+                </h2>
+                {selectedPole.tagline && (
+                  <p className="text-sm text-[#6B7280]">{selectedPole.tagline}</p>
+                )}
+              </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={onOpenBooking}
-                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-colors"
-              >
-                Prendre RDV sur ce pôle
-              </button>
-              <button
-                onClick={onOpenVault}
-                className="px-4 py-2.5 bg-slate-950 border border-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
-              >
-                Déposer un dossier
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 text-xs font-sans">
-            <div className="space-y-4">
-              <h3 className="font-bold text-sm text-white uppercase tracking-wider font-mono">
-                Description de la mission :
-              </h3>
-              <p className="text-slate-300 leading-relaxed text-sm">
-                {selectedPole.description}
-              </p>
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 font-mono text-slate-400">
-                <div className="text-amber-400 font-bold">Public cible &amp; Formes juridiques :</div>
-                <div>{selectedPole.suitedFor}</div>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={onOpenBooking}
+                  className="px-5 py-2.5 bg-[#142B45] hover:bg-[#1D3B5C] text-white font-semibold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+                >
+                  Prendre RDV sur ce pôle
+                </button>
+                {selectedPole.id === 'creation-entreprises' && (
+                  <Link
+                    to="/creation-entreprise"
+                    className="cabinet-btn-secondary text-xs"
+                  >
+                    Guide Création SRL →
+                  </Link>
+                )}
+                {selectedPole.id === 'fiscalite' && (
+                  <Link
+                    to="/fiscalite"
+                    className="cabinet-btn-secondary text-xs"
+                  >
+                    Détails Fiscalité &amp; Contrôles →
+                  </Link>
+                )}
+                {selectedPole.id === 'e-compta' && (
+                  <Link
+                    to="/e-compta"
+                    className="cabinet-btn-secondary text-xs"
+                  >
+                    Découvrir Basecone →
+                  </Link>
+                )}
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="font-bold text-sm text-white uppercase tracking-wider font-mono">
-                Livrables &amp; Inclusions clés :
-              </h3>
-              <ul className="space-y-2.5">
-                {selectedPole.keyFeatures.map((feat, fIdx) => (
-                  <li key={fIdx} className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                    <span>{feat}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="space-y-6">
+              <p className="text-[#4B5563] leading-relaxed text-sm sm:text-base max-w-4xl">
+                {selectedPole.description}
+              </p>
+
+              {/* Subservices List */}
+              {selectedPole.subServices && selectedPole.subServices.length > 0 && (
+                <div className="space-y-4 pt-2">
+                  <h3 className="font-serif font-bold text-lg text-[#142B45]">
+                    Livrables et Missions Comprises dans ce Pôle :
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedPole.subServices.map((sub, sIdx) => (
+                      <div key={sIdx} className="p-4 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF] space-y-1.5">
+                        <div className="font-bold text-xs sm:text-sm text-[#142B45] flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-[#B79661] shrink-0" />
+                          <span>{sub.name}</span>
+                        </div>
+                        <p className="text-xs text-[#4B5563] leading-relaxed pl-6">
+                          {sub.details}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
       </section>
 
       {/* Transparency Pricing Formules Section */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8 pt-6">
+      <section className="mx-auto max-w-7xl px-4 sm:px-8 space-y-8 pt-4">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <h2 className="text-xs font-mono uppercase text-amber-400 tracking-widest">
-            Transparence Honoraires
-          </h2>
-          <h3 className="text-2xl sm:text-3xl font-display font-bold text-white">
+          <span className="text-xs font-semibold text-[#8C6A34] uppercase tracking-widest">
+            Transparence des Honoraires
+          </span>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#142B45]">
             Formules d'accompagnement forfaitaires
-          </h3>
-          <p className="text-xs text-slate-400">
-            Forfaits mensuels prévisibles adaptés au stade de développement de votre entreprise.
+          </h2>
+          <p className="text-xs sm:text-sm text-[#6B7280]">
+            Forfaits annuels mensualisés, transparents et sans surprise, fixés dès la lettre de mission.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
           {pricingPackages.map((pkg, idx) => (
             <div
               key={idx}
-              className={`p-6 sm:p-8 rounded-2xl bg-slate-900 border flex flex-col justify-between space-y-6 relative ${
+              className={`p-7 sm:p-8 rounded-2xl bg-white border flex flex-col justify-between space-y-6 relative transition-all shadow-xs ${
                 pkg.isPopular
-                  ? 'border-amber-500/80 shadow-2xl shadow-amber-950/30'
-                  : 'border-slate-800'
+                  ? 'border-[#B79661] ring-2 ring-[#B79661]/25 shadow-lg'
+                  : 'border-[#E8E6DF] hover:border-[#B79661]'
               }`}
             >
               {pkg.isPopular && (
-                <span className="absolute -top-3 right-6 px-3 py-1 text-[10px] font-mono font-bold text-slate-950 bg-amber-400 rounded-full shadow-md">
+                <span className="absolute -top-3 right-6 px-3 py-1 text-[11px] font-bold text-white bg-[#B79661] rounded-full shadow-xs">
                   Recommandé SRL
                 </span>
               )}
 
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-display font-bold text-xl text-white">{pkg.name}</h4>
-                  <p className="text-xs font-mono text-amber-400 mt-1">{pkg.subtitle}</p>
+                  <h3 className="font-serif font-bold text-xl text-[#142B45]">{pkg.name}</h3>
+                  <p className="text-xs text-[#8C6A34] font-medium mt-1">{pkg.subtitle}</p>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono font-bold text-lg text-emerald-400">
+                <div className="p-3.5 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF] font-serif font-bold text-base text-[#142B45]">
                   {pkg.price}
                 </div>
 
-                <ul className="space-y-2 text-xs text-slate-300">
+                <ul className="space-y-2.5 text-xs text-[#4B5563]">
                   {pkg.features.map((f, fIdx) => (
-                    <li key={fIdx} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <li key={fIdx} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-[#B79661] shrink-0 mt-0.5" />
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 space-y-3">
-                <p className="text-[11px] font-mono text-slate-400">
+              <div className="pt-4 border-t border-[#F0EFEA] space-y-3">
+                <p className="text-xs text-[#6B7280]">
                   {pkg.recommendedFor}
                 </p>
 
                 <button
                   onClick={onOpenBooking}
-                  className={`w-full py-3 text-xs font-bold rounded-xl transition-all shadow-md ${
+                  className={`w-full py-3 text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer ${
                     pkg.isPopular
-                      ? 'bg-amber-500 hover:bg-amber-400 text-slate-950'
-                      : 'bg-slate-800 hover:bg-slate-700 text-white'
+                      ? 'bg-[#142B45] hover:bg-[#1D3B5C] text-white'
+                      : 'bg-[#F7F6F2] hover:bg-[#FAF9F6] border border-[#D1D5DB] text-[#142B45]'
                   }`}
                 >
                   Demander une proposition d'honoraires

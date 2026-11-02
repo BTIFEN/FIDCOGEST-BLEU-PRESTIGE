@@ -12,8 +12,9 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
   const [activeTab, setActiveTab] = useState<'upload' | 'gateway' | 'portal'>('upload');
 
   const [isUploading, setIsUploading] = useState(false);
-  const [fileText, setFileText] = useState('');
   const [filename, setFilename] = useState('');
+  const [gatewayMessage, setGatewayMessage] = useState<string | null>(null);
+
   const [analyzedDocs, setAnalyzedDocs] = useState<UploadedDocResult[]>([
     {
       id: 'doc-1',
@@ -78,6 +79,11 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
     }
   };
 
+  const handleGatewayConnect = (name: string) => {
+    setGatewayMessage(`Session sécurisée SSO vers ${name} initialisée avec succès.`);
+    setTimeout(() => setGatewayMessage(null), 4000);
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (clientKey.trim()) {
@@ -86,138 +92,143 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-3xl rounded-2xl bg-slate-900 border border-slate-700/80 shadow-2xl overflow-hidden text-slate-100 my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#142B45]/60 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] my-8 animate-in fade-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
-        <div className="p-5 border-b border-slate-800 bg-slate-950/90 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold">
+        <div className="p-6 border-b border-[#E8E6DF] bg-[#F7F6F2] flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-[#142B45] text-[#B79661] flex items-center justify-center font-serif text-lg font-bold shadow-xs">
               <Lock className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-display font-bold text-base text-white">
-                Portail Client Sécurisé & Dépôt Express SSL
+              <h3 className="font-serif font-bold text-lg text-[#142B45]">
+                Portail Client Sécurisé &amp; Dépôt Express
               </h3>
-              <p className="text-xs text-slate-400 flex items-center gap-1 font-mono">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                Chiffrement TLS 256-bit • Secret Professionnel Comptable
+              <p className="text-xs text-[#6B7280] flex items-center gap-1.5 font-sans mt-0.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#B79661]" />
+                Chiffrement TLS 256-bit • Secret Professionnel Comptable (ITAA)
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#142B45] hover:bg-white transition-colors"
+            aria-label="Fermer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-800 bg-slate-950/40 px-4 pt-2 text-xs font-medium">
+        <div className="flex border-b border-[#E8E6DF] bg-white px-6 pt-3 text-xs font-sans">
           <button
             onClick={() => setActiveTab('upload')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all ${
               activeTab === 'upload'
-                ? 'border-emerald-400 text-emerald-400 font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-[#142B45] text-[#142B45]'
+                : 'border-transparent text-[#6B7280] hover:text-[#142B45]'
             }`}
           >
-            <UploadCloud className="w-4 h-4" />
-            Dépôt Express SSL & OCR
+            <UploadCloud className="w-4 h-4 text-[#B79661]" />
+            Dépôt Express &amp; OCR IA
           </button>
 
           <button
             onClick={() => setActiveTab('gateway')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all ${
               activeTab === 'gateway'
-                ? 'border-emerald-400 text-emerald-400 font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-[#142B45] text-[#142B45]'
+                : 'border-transparent text-[#6B7280] hover:text-[#142B45]'
             }`}
           >
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-4 h-4 text-[#B79661]" />
             Passerelle Logiciels Métiers
           </button>
 
           <button
             onClick={() => setActiveTab('portal')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors ${
+            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all ${
               activeTab === 'portal'
-                ? 'border-emerald-400 text-emerald-400 font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-[#142B45] text-[#142B45]'
+                : 'border-transparent text-[#6B7280] hover:text-[#142B45]'
             }`}
           >
-            <Lock className="w-4 h-4" />
+            <Lock className="w-4 h-4 text-[#B79661]" />
             Espace Client Log-In
           </button>
         </div>
 
         {/* Modal Content */}
-        <div className="p-6">
+        <div className="p-6 sm:p-8">
           {/* TAB 1: Dépôt Express */}
           {activeTab === 'upload' && (
             <div className="space-y-6">
               {/* Drop Area */}
-              <div className="border-2 border-dashed border-slate-700/80 hover:border-emerald-500 rounded-2xl p-6 text-center bg-slate-950/50 hover:bg-slate-950 transition-all group relative cursor-pointer">
+              <div className="border-2 border-dashed border-[#B79661]/40 hover:border-[#142B45] rounded-2xl p-7 text-center bg-[#F7F6F2] hover:bg-white transition-all group relative cursor-pointer">
                 <input
                   type="file"
                   accept=".pdf,.png,.jpg,.jpeg,.zip"
                   onChange={handleSimulatedFileUpload}
                   className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                 />
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-full bg-white border border-[#E8E6DF] text-[#B79661] flex items-center justify-center mx-auto mb-3 shadow-xs group-hover:scale-110 transition-transform">
                   <UploadCloud className="w-6 h-6" />
                 </div>
-                <h4 className="font-bold text-sm text-slate-200">
-                  Déposez vos pièces comptables (Factures, Relevés, Cartes d'identité)
+                <h4 className="font-serif font-bold text-base text-[#142B45]">
+                  Déposez vos pièces comptables (Factures, Justificatifs, Relevés)
                 </h4>
-                <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-                  Glissez-déposez vos fichiers PDF ou images. Analyse automatique OCR et transmission chiffrée vers votre gestionnaire de dossier.
+                <p className="text-xs text-[#4B5563] mt-1 max-w-md mx-auto leading-relaxed">
+                  Glissez-déposez vos fichiers PDF ou images scannées. Le moteur de reconnaissance OCR extrait instantanément montants, taux de TVA et dates.
                 </p>
-                <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-800/80 text-emerald-300 text-xs font-mono">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Lecture automatique OCR IA instantanée
+                <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#B79661]/40 text-[#142B45] text-xs font-serif shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-[#B79661]" />
+                  <span>Démonstration Reconnaissance OCR Fidcogest</span>
+                </div>
+                <div className="mt-2 text-[10px] text-[#6B7280]">
+                  ℹ️ Démonstration technologique. Pour les clients sous contrat, la synchronisation sécurisée s'effectue via l'application certifiée <strong>Basecone</strong>.
                 </div>
               </div>
 
               {isUploading && (
-                <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/30 flex items-center gap-3 text-xs text-emerald-300">
-                  <RefreshCw className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />
+                <div className="p-4 rounded-xl bg-[#F7F6F2] border border-[#B79661]/40 flex items-center gap-3 text-xs text-[#142B45]">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#B79661] shrink-0" />
                   <span>Analyse intelligente du document <strong>{filename}</strong> par le moteur OCR de Fidcogest...</span>
                 </div>
               )}
 
               {/* Analyzed Docs List */}
               <div>
-                <h5 className="text-xs font-mono uppercase text-slate-400 mb-2 flex items-center justify-between">
-                  <span>Détail des pièces comptables numérisées :</span>
-                  <span>{analyzedDocs.length} document(s)</span>
-                </h5>
-                <div className="space-y-2 max-h-[220px] overflow-y-auto">
+                <div className="flex items-center justify-between text-xs font-semibold text-[#142B45] uppercase tracking-wider mb-3">
+                  <span>Pièces comptables enregistrées :</span>
+                  <span className="text-[#6B7280] font-mono">{analyzedDocs.length} document(s)</span>
+                </div>
+
+                <div className="space-y-2.5 max-h-[220px] overflow-y-auto">
                   {analyzedDocs.map((doc) => (
                     <div
                       key={doc.id}
-                      className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3 text-xs"
+                      className="p-3.5 rounded-xl bg-white border border-[#E8E6DF] flex items-center justify-between gap-3 text-xs shadow-xs"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center text-amber-400 shrink-0">
+                        <div className="w-9 h-9 rounded-lg bg-[#F7F6F2] border border-[#E8E6DF] flex items-center justify-center text-[#B79661] shrink-0">
                           <FileText className="w-4 h-4" />
                         </div>
                         <div className="min-w-0">
-                          <div className="font-bold text-slate-200 truncate">{doc.filename}</div>
-                          <div className="text-[11px] text-slate-400 flex items-center gap-2 font-mono">
+                          <div className="font-semibold text-[#142B45] truncate">{doc.filename}</div>
+                          <div className="text-[11px] text-[#6B7280] flex items-center gap-2">
                             <span>{doc.vendorName}</span>
                             <span>•</span>
-                            <span>Catégorie: {doc.recommendedCategory}</span>
+                            <span>{doc.recommendedCategory}</span>
                           </div>
                         </div>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <div className="font-mono font-bold text-emerald-400">
+                        <div className="font-mono font-bold text-[#142B45]">
                           {doc.totalAmountEur.toFixed(2)} € TTC
                         </div>
-                        <div className="text-[10px] text-slate-400 font-mono">
+                        <div className="text-[11px] text-[#6B7280] font-mono">
                           TVA ({doc.vatRatePercent}%): {doc.vatAmountEur.toFixed(2)} €
                         </div>
                       </div>
@@ -231,31 +242,38 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
           {/* TAB 2: Software Gateways */}
           {activeTab === 'gateway' && (
             <div className="space-y-4">
-              <p className="text-xs text-slate-300">
-                Accédez directement aux logiciels comptables et fiscaux de l'écosystème numérique du cabinet Fidcogest :
+              <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
+                Connectez-vous directement à votre environnement comptable synchronisé avec le cabinet Fidcogest :
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {gatewayMessage && (
+                <div className="p-3.5 rounded-xl bg-[#F7F6F2] border border-[#B79661] text-xs text-[#142B45] flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#B79661]" />
+                  <span>{gatewayMessage}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {SOFTWARE_GATEWAYS.map((sw) => (
                   <div
                     key={sw.id}
-                    className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-emerald-500/40 transition-all flex flex-col justify-between space-y-3"
+                    className="cabinet-card p-5 flex flex-col justify-between space-y-4"
                   >
                     <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <h5 className="font-bold text-sm text-white">{sw.name}</h5>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <h5 className="font-serif font-bold text-base text-[#142B45]">{sw.name}</h5>
+                        <span className="cabinet-badge-itaa">
                           {sw.badge}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-400">{sw.description}</p>
+                      <p className="text-xs text-[#4B5563] leading-relaxed">{sw.description}</p>
                     </div>
 
                     <button
-                      onClick={() => alert(`Lien de connexion SSO vers ${sw.name} initié en toute sécurité.`)}
-                      className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
+                      onClick={() => handleGatewayConnect(sw.name)}
+                      className="cabinet-btn-secondary w-full text-xs justify-center"
                     >
-                      <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
+                      <ExternalLink className="w-3.5 h-3.5 text-[#B79661]" />
                       Se connecter à {sw.name}
                     </button>
                   </div>
@@ -268,40 +286,44 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
           {activeTab === 'portal' && (
             <div className="space-y-4">
               {isLoggedIn ? (
-                <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/40 space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></div>
-                      <span className="text-xs font-bold text-white">Espace Client Connecté • SRL Demo Company</span>
+                <div className="cabinet-card p-6 space-y-5">
+                  <div className="flex items-center justify-between border-b border-[#E8E6DF] pb-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                      <span className="font-serif font-bold text-sm text-[#142B45]">Espace Client Actif • SRL Demo Company</span>
                     </div>
                     <button
                       onClick={() => setIsLoggedIn(false)}
-                      className="text-xs text-slate-400 hover:text-white"
+                      className="text-xs font-semibold text-[#6B7280] hover:text-[#142B45] underline"
                     >
                       Déconnexion
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
-                    <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                      <div className="text-slate-400">Statut TVA Q1 2026 :</div>
-                      <div className="text-emerald-400 font-bold mt-1">Déclaration Envoyée</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                    <div className="p-4 rounded-xl bg-[#F7F6F2] border border-[#E8E6DF]">
+                      <div className="text-[#6B7280]">Déclaration TVA Q1 2026</div>
+                      <div className="font-bold text-[#142B45] text-sm mt-1">Transmise &amp; Validée</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                      <div className="text-slate-400">Prochain VA ISOC :</div>
-                      <div className="text-amber-400 font-bold mt-1">10 Avril 2026 (VA1)</div>
+                    <div className="p-4 rounded-xl bg-[#F7F6F2] border border-[#E8E6DF]">
+                      <div className="text-[#6B7280]">Prochain VA ISOC</div>
+                      <div className="font-bold text-[#B79661] text-sm mt-1">10 Avril 2026 (VA1)</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-slate-900 border border-slate-800">
-                      <div className="text-slate-400">Pièces à valider :</div>
-                      <div className="text-slate-200 font-bold mt-1">0 document en attente</div>
+                    <div className="p-4 rounded-xl bg-[#F7F6F2] border border-[#E8E6DF]">
+                      <div className="text-[#6B7280]">Pièces à traiter</div>
+                      <div className="font-bold text-[#142B45] text-sm mt-1">0 justificatif en attente</div>
                     </div>
                   </div>
                 </div>
               ) : (
                 <form onSubmit={handleLogin} className="max-w-md mx-auto space-y-4 py-4">
-                  <div className="text-center space-y-1">
-                    <h4 className="font-bold text-sm text-white">Identifiant ou Clé d'Accès Client</h4>
-                    <p className="text-xs text-slate-400">Entrez votre code client délivré par le cabinet Fidcogest</p>
+                  <div className="text-center space-y-1.5">
+                    <h4 className="font-serif font-bold text-lg text-[#142B45]">
+                      Identifiant ou Clé d'Accès Client
+                    </h4>
+                    <p className="text-xs text-[#4B5563]">
+                      Saisissez le code d'accès délivré lors de l'ouverture de votre dossier au cabinet
+                    </p>
                   </div>
 
                   <div>
@@ -310,14 +332,14 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
                       required
                       value={clientKey}
                       onChange={(e) => setClientKey(e.target.value)}
-                      placeholder="Saisissez votre code (ex. CLIENT-8429)"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white text-center font-mono focus:border-emerald-500 focus:outline-none"
+                      placeholder="ex. FID-8429-SRL"
+                      className="cabinet-input text-center font-mono text-sm"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-colors shadow-lg shadow-emerald-950/40"
+                    className="cabinet-btn-primary w-full text-xs justify-center"
                   >
                     Accéder à mon Espace Sécurisé →
                   </button>

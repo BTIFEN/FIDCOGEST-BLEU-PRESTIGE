@@ -25,32 +25,36 @@ export const CookieBanner: React.FC = () => {
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 z-50 max-w-lg bg-slate-900/95 border border-slate-700 rounded-2xl p-4 shadow-2xl backdrop-blur-lg text-xs space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 z-50 max-w-lg bg-white border border-[#E8E6DF] rounded-2xl p-5 shadow-2xl backdrop-blur-md text-xs space-y-3.5 animate-in fade-in slide-in-from-bottom-4 duration-300 text-[#1F2937]">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2 text-amber-400 font-display font-bold text-sm">
-          <Cookie className="w-4 h-4 text-amber-400" />
-          <span>Gestion des Cookies & Confidentialité (RGPD)</span>
+        <div className="flex items-center gap-2.5 text-[#142B45] font-serif font-bold text-sm">
+          <Cookie className="w-4 h-4 text-[#B79661]" />
+          <span>Gestion des Cookies &amp; Confidentialité (RGPD)</span>
         </div>
-        <button onClick={handleAcceptEssential} className="text-slate-400 hover:text-white">
+        <button
+          onClick={handleAcceptEssential}
+          className="text-[#6B7280] hover:text-[#142B45] transition-colors p-1"
+          aria-label="Fermer"
+        >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      <p className="text-slate-300 leading-relaxed font-sans">
-        Le cabinet Fidcogest utilise des cookies stricts nécessaires au fonctionnement sécurisé du portail client et à la mesure d'audience anonyme conformément au Règlement Général sur la Protection des Données (RGPD).
+      <p className="text-[#4B5563] leading-relaxed font-sans text-xs">
+        Le cabinet Fidcogest utilise exclusivement des traceurs techniques indispensables au bon fonctionnement du portail client et à l'analyse d'audience anonymisée, conformément au Règlement Général sur la Protection des Données (RGPD).
       </p>
 
-      <div className="flex items-center gap-2 pt-1">
+      <div className="flex flex-wrap items-center gap-2.5 pt-1">
         <button
           onClick={handleAcceptAll}
-          className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg transition-colors flex items-center gap-1.5"
+          className="cabinet-btn-primary text-xs py-2 px-4"
         >
           <Check className="w-3.5 h-3.5" />
           Tout Accepter
         </button>
         <button
           onClick={handleAcceptEssential}
-          className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-lg transition-colors"
+          className="cabinet-btn-secondary text-xs py-2 px-3.5"
         >
           Uniquement Essentiels
         </button>

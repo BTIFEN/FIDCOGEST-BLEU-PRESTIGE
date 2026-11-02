@@ -1,4 +1,16 @@
-export type PageTab = 'home' | 'about' | 'services' | 'tools' | 'news' | 'contact';
+export type PageTab =
+  | 'home'
+  | 'about'
+  | 'team'
+  | 'services'
+  | 'creation'
+  | 'fiscalite'
+  | 'ecompta'
+  | 'tools'
+  | 'news'
+  | 'contact'
+  | 'mentions'
+  | 'admin';
 
 export type Language = 'fr' | 'nl' | 'en';
 
@@ -12,21 +24,31 @@ export interface TaxDeadline {
   isUrgent?: boolean;
 }
 
+export interface SubService {
+  name: string;
+  details: string;
+}
+
 export interface ServicePole {
   id: string;
   title: string;
-  subtitle: string;
-  iconName: string;
+  shortTitle?: string;
+  subtitle?: string;
+  tagline?: string;
+  iconName?: string;
   description: string;
-  keyFeatures: string[];
-  suitedFor: string;
+  keyFeatures?: string[];
+  subServices?: SubService[];
+  suitedFor?: string;
 }
 
 export interface TeamMember {
   id: string;
   name: string;
   role: string;
-  itaaNumber: string;
+  title?: string;
+  itaaNumber?: string;
+  accreditation?: string;
   bio: string;
   specialties: string[];
   email: string;
@@ -57,7 +79,7 @@ export interface Testimonial {
 
 export interface BookingData {
   motif: 'Premier contact / Création' | 'Bilan annuel & Clôture' | 'Conseil fiscal ponctuel' | 'Remise de documents / TVA';
-  modality: 'En cabinet (Bruxelles)' | 'En cabinet (Mons)' | 'Visioconférence (Meet/Teams)' | 'Téléphonique';
+  modality: 'En cabinet (Ganshoren)' | 'Visioconférence (Meet/Teams)' | 'Téléphonique';
   expertId?: string;
   date: string;
   timeSlot: string;
@@ -80,4 +102,53 @@ export interface UploadedDocResult {
   recommendedCategory: string;
   deductibilityRate: string;
   status: 'Analysé' | 'En attente validation' | 'Comptabilisé';
+}
+
+export interface DivergenceItem {
+  field: string;
+  sourceHistorique: string;
+  valeurPrototype: string;
+  statut: 'VALIDÉ_OFFICIEL' | 'CORRIGÉ_VERS_HISTORIQUE' | 'VALIDÉ_HISTORIQUE' | 'ENRICHI_AVEC_BASECONE';
+  notes: string;
+}
+
+export interface CabinetHeadquarters {
+  address: string;
+  postalCode: string;
+  city: string;
+  country: string;
+  googleMapsUrl: string;
+}
+
+export interface CabinetIdentity {
+  name: string;
+  legalForm: string;
+  foundingYear: number;
+  foundingDate: string;
+  bceNumber: string;
+  vatNumber: string;
+  peppolIdentifier: string;
+  headquarters: CabinetHeadquarters;
+  phone: string;
+  mobile: string;
+  email: string;
+  secondaryEmail: string;
+  openingHours: string;
+  officialAccreditation: string;
+  accreditationStatus: string;
+  primaryTool: string;
+  verificationNotice: string;
+}
+
+export interface CabinetConfig {
+  cabinet: CabinetIdentity;
+  divergenceAudit: DivergenceItem[];
+  team: TeamMember[];
+  services: ServicePole[];
+  presentationCabinet: {
+    title: string;
+    subtitle: string;
+    experienceYears: number;
+    piliers: { titre: string; texte: string }[];
+  };
 }

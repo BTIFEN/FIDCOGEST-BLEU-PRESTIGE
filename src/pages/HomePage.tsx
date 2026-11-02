@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { TAX_DEADLINES_2026, SERVICE_POLES, TESTIMONIALS } from '../data/mockData';
-import { Calendar, ShieldCheck, ArrowRight, Lock, CheckCircle2, TrendingUp, Calculator, Rocket, PieChart, Star, AlertTriangle, MessageSquare } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { TAX_DEADLINES_2026, TESTIMONIALS } from '../data/mockData';
+import { useCabinet } from '../context/CabinetContext';
+import { Calendar, ShieldCheck, ArrowRight, Lock, CheckCircle2, TrendingUp, Calculator, Rocket, PieChart, Star, MessageSquare, FileCheck, MapPin, Building, Smartphone } from 'lucide-react';
 
 interface HomePageProps {
   onOpenBooking: () => void;
@@ -13,6 +14,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenVault
 }) => {
   const navigate = useNavigate();
+  const { config } = useCabinet();
+  const { cabinet, services } = config;
   const [filterCategory, setFilterCategory] = useState<string>('all');
 
   const filteredDeadlines = TAX_DEADLINES_2026.filter((d) => {
@@ -21,139 +24,141 @@ export const HomePage: React.FC<HomePageProps> = ({
   });
 
   return (
-    <div className="fid-home space-y-16 pb-12 font-sans">
+    <div className="space-y-20 pb-16 font-sans">
       
-      {/* SECTION 1: HERO SECTION */}
-      <section className="fid-hero relative pt-8 pb-12 lg:pt-16 lg:pb-20 overflow-hidden">
-        {/* Subtle background grid and radial gradient */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
-
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      {/* SECTION 1: HERO VITRINE ÉDITORIALE PREMIUM */}
+      <section className="relative pt-10 pb-14 lg:pt-16 lg:pb-24 border-b border-[#E8E6DF] bg-gradient-to-b from-[#FAF9F6] via-[#F7F6F2] to-[#F3F1EC]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
             
-            {/* Left Column: Headline & Value Prop */}
+            {/* Colonne Gauche : Positionnement & Titre Majeur */}
             <div className="lg:col-span-7 space-y-6 text-left">
               
-              {/* ITAA Accreditation Kicker */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-amber-500/30 text-xs font-mono text-amber-300 shadow-sm">
-                <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>Cabinet d'Expertise Comptable &amp; Fiscale Certifié ITAA n° 10.842.109</span>
+              {/* Badge d'accréditation légale ITAA */}
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white border border-[#B79661]/40 text-xs font-semibold text-[#8C6A34] shadow-[0_2px_8px_rgba(183,150,97,0.08)]">
+                <ShieldCheck className="w-4 h-4 text-[#B79661] shrink-0" />
+                <span>{cabinet.name} • Cabinet d'Expertise Comptable &amp; Fiscale Certifié ITAA</span>
               </div>
 
-              {/* Main Headline with balanced wrap */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-white tracking-tight leading-[1.15] text-balance">
-                L'expertise comptable &amp; fiscale de <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">confiance</span> pour dirigeants et indépendants en Belgique.
+              {/* Titre Principal Noble & Institutionnel */}
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#142B45] tracking-tight leading-[1.18] text-balance">
+                L'expertise comptable &amp; fiscale de référence pour <span className="text-[#8C6A34] italic font-serif">dirigeants</span> et indépendants en Belgique.
               </h1>
 
-              {/* Subtitle */}
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-sans max-w-2xl">
-                TVA, bilan annuel BNB, Impôt des Sociétés (ISOC), Impôt des Personnes Physiques (IPP) et plan financier de création. Alliance de la réactivité numérique et du contact humain de proximité à Bruxelles et en Wallonie.
+              {/* Sous-titre rassurant et complet */}
+              <p className="text-base sm:text-lg text-[#4B5563] leading-relaxed max-w-2xl font-sans">
+                Déclarations TVA, bilan annuel BNB, Impôt des Sociétés (ISOC), Impôt des Personnes Physiques (IPP), création de société et plan financier notarié. L'alliance d'une rigueur déontologique absolue, du conseil fiscal proactif et de la proximité humaine à Bruxelles.
               </p>
 
-              {/* Action Buttons CTAs */}
-              <div className="pt-2 flex flex-wrap items-center gap-3">
+              {/* Appels à l'action principaux */}
+              <div className="pt-2 flex flex-wrap items-center gap-3.5">
                 <button
                   onClick={onOpenBooking}
-                  className="px-6 py-3.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-display font-extrabold text-sm rounded-xl transition-all shadow-xl shadow-amber-500/20 flex items-center gap-2 group"
+                  className="px-6 py-3.5 bg-[#142B45] hover:bg-[#1D3B5C] text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-[#142B45]/15 flex items-center gap-2.5 group cursor-pointer"
                 >
-                  <Calendar className="w-4 h-4" />
+                  <Calendar className="w-4 h-4 text-[#D9BD8E]" />
                   <span>Prendre rendez-vous</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 text-[#D9BD8E] group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 <button
                   onClick={onOpenVault}
-                  className="px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/90 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-md"
+                  className="px-5 py-3.5 bg-white hover:bg-[#FAF9F6] text-[#142B45] border border-[#D1D5DB] hover:border-[#B79661] rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-xs cursor-pointer"
                 >
-                  <Lock className="w-4 h-4 text-amber-400" />
-                  <span>Déposer vos documents (Express)</span>
+                  <Lock className="w-4 h-4 text-[#B79661]" />
+                  <span>Espace Basecone &amp; Dépôt Express</span>
                 </button>
 
                 <a
-                  href="https://wa.me/3225550188?text=Bonjour%20Fidcogest%2C%20je%20souhaite%20un%20renseignement%20sur%20vos%20services%20comptables."
+                  href={`https://wa.me/${cabinet.mobile.replace(/[^0-9]/g, '')}?text=Bonjour%20Fidcogest%2C%20je%20souhaite%20un%20renseignement%20sur%20vos%20services%20comptables.`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-3.5 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-700/80 rounded-xl text-xs font-mono transition-all flex items-center gap-2"
+                  className="px-4 py-3.5 bg-[#0E5E3A] hover:bg-[#0B4A2D] text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-2 shadow-xs"
                 >
-                  <MessageSquare className="w-4 h-4 text-emerald-400" />
+                  <MessageSquare className="w-4 h-4 text-emerald-200" />
                   <span>WhatsApp direct</span>
                 </a>
               </div>
 
-              {/* Key Trust Badges inline */}
-              <div className="pt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-400 font-mono">
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" /> Honoraires forfaitaires clairs
+              {/* Piliers de confiance & garanties */}
+              <div className="pt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#6B7280]">
+                <span className="flex items-center gap-1.5 font-medium text-[#374151]">
+                  <CheckCircle2 className="w-4 h-4 text-[#B79661]" /> Honoraires forfaitaires transparents
                 </span>
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" /> Facturation Peppol 2026 prête
+                <span className="flex items-center gap-1.5 font-medium text-[#374151]">
+                  <CheckCircle2 className="w-4 h-4 text-[#B79661]" /> Solution Basecone &amp; Peppol B2B
                 </span>
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" /> Réponse garantie &lt; 24h
+                <span className="flex items-center gap-1.5 font-medium text-[#374151]">
+                  <CheckCircle2 className="w-4 h-4 text-[#B79661]" /> Réponse garantie sous 24h ouvrées
                 </span>
               </div>
 
             </div>
 
-            {/* Right Column: Key Interactive Quick Card & ITAA Seal Container */}
+            {/* Colonne Droite : Dossier Institutionnel */}
             <div className="lg:col-span-5">
-              <div className="relative rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-950 border border-slate-700/80 p-6 sm:p-8 shadow-2xl space-y-6">
+              <div className="relative rounded-2xl bg-white border border-[#E8E6DF] p-6 sm:p-8 shadow-[0_12px_40px_rgba(20,43,69,0.06)] space-y-6">
                 
-                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                {/* En-tête du Sceau & Identification */}
+                <div className="flex items-center justify-between border-b border-[#E8E6DF] pb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-display font-black text-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <div className="w-12 h-12 rounded-xl bg-[#142B45] text-[#D9BD8E] font-serif font-bold text-2xl flex items-center justify-center shadow-md shadow-[#142B45]/15">
                       F
                     </div>
                     <div>
-                      <h3 className="font-display font-bold text-sm text-white">Cabinet Fidcogest ITAA</h3>
-                      <p className="text-xs text-slate-400 font-mono">Bruxelles Louise • Mons Wallonie</p>
+                      <h3 className="font-serif font-bold text-base text-[#142B45]">Fidcogest SRL</h3>
+                      <p className="text-xs text-[#6B7280]">{cabinet.headquarters.address}, {cabinet.headquarters.city}</p>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 text-[11px] font-mono text-emerald-300 bg-emerald-950/80 border border-emerald-800 rounded-full">
-                    Actif en Belgique
+                  <span className="px-2.5 py-1 text-[11px] font-semibold text-[#8C6A34] bg-[#B79661]/12 border border-[#B79661]/30 rounded-full">
+                    Agréé ITAA
                   </span>
                 </div>
 
-                {/* Quick Fiscal Deadlines Teaser Box */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-amber-400 font-semibold flex items-center gap-1.5">
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      Prochaine Échéance Fiscale Belge
-                    </span>
-                    <span className="text-slate-400">Consultez le calendrier</span>
+                {/* 4 Engagements Déontologiques & Qualité */}
+                <div className="space-y-3.5 text-xs">
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF]">
+                    <ShieldCheck className="w-5 h-5 text-[#B79661] shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-bold text-[#142B45]">Secret Professionnel Légal</div>
+                      <div className="text-[#6B7280] leading-snug mt-0.5">
+                        Soumis à l'article 458 du Code pénal belge et aux normes strictes de déontologie ITAA.
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-slate-950 border border-amber-500/30 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-bold text-xs text-white">Déclaration TVA &amp; 1er Versement Anticipé ISOC (VA1)</h4>
-                      <span className="px-2 py-0.5 text-[10px] font-mono bg-amber-500 text-slate-950 font-bold rounded">
-                        À vérifier
-                      </span>
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF]">
+                    <TrendingUp className="w-5 h-5 text-[#B79661] shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-bold text-[#142B45]">Conseil Fiscal Stratégique &amp; Anticipation</div>
+                      <div className="text-[#6B7280] leading-snug mt-0.5">
+                        Arbitrage Rémunération Dirigeant, dividendes VVPR-bis à 15% et taux réduit ISOC 20%.
+                      </div>
                     </div>
-                    <p className="text-[11px] text-slate-300 leading-snug font-sans">
-                      Dépôt TVA T1 et paiement du versement anticipé ISOC VA1 pour bénéficier de la bonification fiscale d'impôt.
-                    </p>
-                    <div className="text-[10px] font-mono text-slate-400 pt-1 flex justify-between border-t border-slate-800/80">
-                      <span>Date limite : 20 Consultez le calendrier</span>
-                      <button onClick={() => navigate('/outils-simulateurs')} className="text-amber-400 hover:underline">
-                        Voir le calendrier complet →
-                      </button>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF]">
+                    <FileCheck className="w-5 h-5 text-[#B79661] shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-bold text-[#142B45]">Conformité Rigoureuse BNB &amp; SPF Finances</div>
+                      <div className="text-[#6B7280] leading-snug mt-0.5">
+                        Dépôts dans les délais prescrits, déclarations TVA sans erreur et absence de majoration.
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Quick Link to Tax Calculator */}
+                {/* Accès rapide aux simulateurs */}
                 <div className="pt-2">
                   <button
                     onClick={() => navigate('/outils-simulateurs')}
-                    className="w-full py-3 px-4 rounded-xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 text-xs font-semibold text-slate-200 flex items-center justify-between transition-colors group"
+                    className="w-full py-3 px-4 rounded-xl bg-[#F7F6F2] hover:bg-[#EFECE5] border border-[#E8E6DF] text-xs font-semibold text-[#142B45] flex items-center justify-between transition-colors group cursor-pointer"
                   >
                     <span className="flex items-center gap-2">
-                      <Calculator className="w-4 h-4 text-amber-400" />
-                      <span>Simulateur Rémunération Dirigeant &amp; SRL vs Indépendant</span>
+                      <Calculator className="w-4 h-4 text-[#B79661]" />
+                      <span>Simulateur Fiscal : Rémunération Dirigeant &amp; SRL vs Indépendant</span>
                     </span>
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-amber-400 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="w-4 h-4 text-[#6B7280] group-hover:text-[#142B45] group-hover:translate-x-1 transition-all" />
                   </button>
                 </div>
 
@@ -164,212 +169,213 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* SECTION 2: QUANTITATIVE PROOF BANNER */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 sm:p-8 rounded-2xl bg-slate-900/90 border border-slate-800 text-center font-mono">
-          <div className="space-y-1">
-            <div className="text-2xl sm:text-3xl font-extrabold text-amber-400 font-display">18+ Ans</div>
-            <div className="text-xs text-slate-400">D'expertise comptable &amp; conseil fiscal ITAA</div>
+      {/* SECTION 2: CHIFFRES CLÉS & IDENTITÉ */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-8 rounded-2xl bg-white border border-[#E8E6DF] shadow-[0_4px_20px_rgba(20,43,69,0.04)] text-center">
+          <div className="space-y-1.5">
+            <div className="font-serif text-3xl sm:text-4xl font-bold text-[#142B45]">Depuis 2008</div>
+            <div className="text-xs text-[#6B7280] font-medium leading-snug">Création et activité ininterrompue en Belgique</div>
           </div>
-          <div className="space-y-1 border-l border-slate-800 pl-4">
-            <div className="text-2xl sm:text-3xl font-extrabold text-white font-display">450+</div>
-            <div className="text-xs text-slate-400">Sociétés (SRL/SA) &amp; Indépendants accompagnés</div>
+          <div className="space-y-1.5 border-l border-[#E8E6DF] pl-6">
+            <div className="font-serif text-3xl sm:text-4xl font-bold text-[#142B45]">20+ Ans</div>
+            <div className="text-xs text-[#6B7280] font-medium leading-snug">D'expertise de Paul Holl Mpeck (ITAA)</div>
           </div>
-          <div className="space-y-1 border-l border-slate-800 pl-4">
-            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-display">99.4%</div>
-            <div className="text-xs text-slate-400">Conformité fiscale &amp; validations TVA sans pénalité</div>
+          <div className="space-y-1.5 border-l border-[#E8E6DF] pl-6">
+            <div className="font-serif text-3xl sm:text-4xl font-bold text-[#8C6A34]">7 Pôles</div>
+            <div className="text-xs text-[#6B7280] font-medium leading-snug">Comptabilité, Fiscalité, Création, Audit, Financement</div>
           </div>
-          <div className="space-y-1 border-l border-slate-800 pl-4">
-            <div className="text-2xl sm:text-3xl font-extrabold text-amber-300 font-display">&lt; 24h</div>
-            <div className="text-xs text-slate-400">Délai moyen de réponse de votre conseiller dédié</div>
+          <div className="space-y-1.5 border-l border-[#E8E6DF] pl-6">
+            <div className="font-serif text-3xl sm:text-4xl font-bold text-[#142B45]">100% Cloud</div>
+            <div className="text-xs text-[#6B7280] font-medium leading-snug">Dématérialisation Basecone &amp; Peppol 2026</div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 3: LES 4 PÔLES D'EXPERTISE (BENTO GRID) */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <h2 className="text-xs font-mono uppercase text-amber-400 tracking-widest">
-            01. Pôles de Services Spécialisés
+      {/* SECTION 3: LES 7 PÔLES D'EXPERTISE HISTORIQUES */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-8 space-y-10">
+        <div className="text-center max-w-2xl mx-auto space-y-2.5">
+          <span className="text-xs font-semibold text-[#8C6A34] tracking-widest uppercase">
+            Nos Domaines d'Intervention
+          </span>
+          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#142B45]">
+            Les 7 Pôles de Services du Cabinet Fidcogest
           </h2>
-          <h3 className="text-2xl sm:text-3xl font-display font-bold text-white">
-            Un accompagnement comptable et fiscal à 360° en Belgique
-          </h3>
-          <p className="text-sm text-slate-400">
-            De la tenue quotidienne de vos comptes à l'optimisation légale de vos revenus de dirigeant.
+          <p className="text-sm text-[#6B7280] leading-relaxed">
+            Une gamme complète de prestations comptables, fiscales et financières adaptées à chaque phase de la vie de votre entreprise.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {SERVICE_POLES.map((pole, idx) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {services.map((pole, idx) => (
             <div
               key={pole.id}
-              className="p-6 sm:p-8 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-6 group"
+              className="p-7 rounded-2xl bg-white border border-[#E8E6DF] hover:border-[#B79661] transition-all flex flex-col justify-between space-y-5 shadow-xs hover:shadow-md group"
             >
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold text-xl">
-                    {idx === 0 && <Calculator className="w-6 h-6" />}
-                    {idx === 1 && <TrendingUp className="w-6 h-6" />}
-                    {idx === 2 && <Rocket className="w-6 h-6" />}
-                    {idx === 3 && <PieChart className="w-6 h-6" />}
+                  <div className="w-10 h-10 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF] text-[#142B45] group-hover:text-[#8C6A34] flex items-center justify-center font-bold text-lg transition-colors">
+                    {idx === 0 && <Calculator className="w-5 h-5" />}
+                    {idx === 1 && <TrendingUp className="w-5 h-5" />}
+                    {idx === 2 && <Rocket className="w-5 h-5" />}
+                    {idx === 3 && <PieChart className="w-5 h-5" />}
+                    {idx === 4 && <Building className="w-5 h-5" />}
+                    {idx === 5 && <CheckCircle2 className="w-5 h-5" />}
+                    {idx === 6 && <Smartphone className="w-5 h-5" />}
                   </div>
-                  <span className="text-xs font-mono text-slate-500 group-hover:text-amber-400 transition-colors">
-                    0{idx + 1} / POLE
+                  <span className="text-[11px] font-mono font-semibold text-[#9CA3AF] group-hover:text-[#8C6A34] transition-colors">
+                    0{idx + 1}
                   </span>
                 </div>
 
                 <div>
-                  <h4 className="text-xl font-display font-bold text-white group-hover:text-amber-300 transition-colors">
+                  <h3 className="font-serif text-lg font-bold text-[#142B45] group-hover:text-[#8C6A34] transition-colors">
                     {pole.title}
-                  </h4>
-                  <p className="text-xs text-amber-400 font-mono mt-0.5">{pole.subtitle}</p>
+                  </h3>
+                  {pole.tagline && (
+                    <p className="text-xs text-[#8C6A34] font-medium mt-0.5 line-clamp-1">{pole.tagline}</p>
+                  )}
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                <p className="text-xs text-[#4B5563] leading-relaxed font-sans line-clamp-3">
                   {pole.description}
                 </p>
 
-                <ul className="space-y-2 pt-2 border-t border-slate-800 text-xs text-slate-300">
-                  {pole.keyFeatures.map((feat, fIdx) => (
-                    <li key={fIdx} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                      <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
+                {pole.subServices && pole.subServices.length > 0 && (
+                  <ul className="space-y-1.5 pt-2 border-t border-[#F0EFEA] text-[11px] text-[#4B5563]">
+                    {pole.subServices.slice(0, 3).map((sub, sIdx) => (
+                      <li key={sIdx} className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#B79661] shrink-0"></span>
+                        <span className="truncate">{sub.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
-              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                <span className="text-slate-400 font-mono">Public : {pole.suitedFor}</span>
-                <button
-                  onClick={() => navigate('/services')}
-                  className="font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 group-hover:translate-x-1 transition-all"
+              <div className="pt-3 border-t border-[#F0EFEA] flex items-center justify-between text-xs">
+                <Link
+                  to={
+                    pole.id === 'creation-entreprises' ? '/creation-entreprise' :
+                    pole.id === 'fiscalite' ? '/fiscalite' :
+                    pole.id === 'e-compta' ? '/e-compta' :
+                    '/services'
+                  }
+                  className="font-semibold text-[#142B45] hover:text-[#8C6A34] flex items-center gap-1 group-hover:translate-x-1 transition-all"
                 >
-                  Détail de l'offre →
-                </button>
+                  Découvrir ce pôle →
+                </Link>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* SECTION 4: FLUX DES ÉCHÉANCES FISCALES BELGES (CALENDRIER INTERACTIF) */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-4">
-          <div>
-            <h2 className="text-xs font-mono uppercase text-amber-400 tracking-widest">
-              02. Échéances Fiscables &amp; Légales
-            </h2>
-            <h3 className="text-2xl font-display font-bold text-white">
+      {/* SECTION 4: ÉCHÉANCIER FISCAL OFFICIEL 2026 */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-8 space-y-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E8E6DF] pb-5">
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-[#8C6A34] tracking-widest uppercase">
+              Veille &amp; Calendrier
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#142B45]">
               Calendrier fiscal officiel de la Belgique 2026
-            </h3>
-            <p className="text-xs text-slate-400 mt-1">
-              Ne manquez plus aucune échéance TVA, ISOC, IPP ou envoi de fiches 281.
+            </h2>
+            <p className="text-xs sm:text-sm text-[#6B7280]">
+              Anticipez vos échéances TVA, ISOC, IPP et dépôts BNB sans aucune pénalité.
             </p>
           </div>
 
-          {/* Filter Categories */}
-          <div className="flex flex-wrap gap-1.5 p-1 bg-slate-900 rounded-xl border border-slate-800 text-xs font-mono">
+          {/* Filtres par catégorie */}
+          <div className="flex flex-wrap gap-1.5 p-1 bg-white rounded-xl border border-[#E8E6DF] text-xs shadow-xs">
             {['all', 'TVA', 'ISOC', 'IPP', 'Fiches 281'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilterCategory(cat)}
-                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                className={`px-3.5 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
                   filterCategory === cat
-                    ? 'bg-amber-500 text-slate-950 font-bold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#142B45] text-white shadow-xs'
+                    : 'text-[#6B7280] hover:text-[#142B45] hover:bg-[#F7F6F2]'
                 }`}
               >
-                {cat === 'all' ? 'Toutes' : cat}
+                {cat === 'all' ? 'Toutes les échéances' : cat}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Deadlines List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Grille des échéances */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredDeadlines.slice(0, 6).map((dl) => (
             <div
               key={dl.id}
-              className={`p-4 rounded-xl bg-slate-900 border transition-all flex flex-col justify-between space-y-3 ${
+              className={`p-5 rounded-2xl bg-white border transition-all flex flex-col justify-between space-y-4 shadow-xs ${
                 dl.isUrgent
-                  ? 'border-amber-500/50 bg-amber-950/10'
-                  : 'border-slate-800'
+                  ? 'border-[#B79661] ring-1 ring-[#B79661]/30'
+                  : 'border-[#E8E6DF]'
               }`}
             >
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-amber-400 font-bold border border-slate-700">
+                  <span className="px-2.5 py-0.5 text-[11px] font-semibold rounded-md bg-[#FAF9F6] text-[#8C6A34] border border-[#E8E6DF]">
                     {dl.category}
                   </span>
-                  <span className="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" /> {dl.dueDate}
+                  <span className="text-xs font-semibold text-[#142B45] flex items-center gap-1.5 bg-[#F7F6F2] px-2 py-0.5 rounded-md">
+                    <Calendar className="w-3.5 h-3.5 text-[#B79661]" /> {dl.dueDate}
                   </span>
                 </div>
 
-                <h4 className="font-bold text-sm text-white">{dl.title}</h4>
-                <p className="text-xs text-slate-400 leading-snug">{dl.description}</p>
+                <h4 className="font-serif font-bold text-sm text-[#142B45]">{dl.title}</h4>
+                <p className="text-xs text-[#6B7280] leading-relaxed">{dl.description}</p>
               </div>
 
-              <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                <span>Périodicité: {dl.period}</span>
+              <div className="pt-3 border-t border-[#F0EFEA] flex items-center justify-between text-xs text-[#6B7280]">
+                <span>Périodicité : <strong className="text-[#374151]">{dl.period}</strong></span>
                 <button
                   onClick={onOpenBooking}
-                  className="text-amber-400 hover:underline font-medium"
+                  className="text-[#142B45] hover:text-[#8C6A34] font-semibold hover:underline cursor-pointer"
                 >
-                  Rappel expert →
+                  Confier ce dépôt →
                 </button>
               </div>
             </div>
           ))}
         </div>
-
-        <div className="text-center pt-2">
-          <button
-            onClick={() => navigate('/outils-simulateurs')}
-            className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200 transition-colors inline-flex items-center gap-2"
-          >
-            <span>Consulter le calendrier fiscal interactif complet</span>
-            <ArrowRight className="w-4 h-4 text-amber-400" />
-          </button>
-        </div>
       </section>
 
-      {/* SECTION 5: TÉMOIGNAGES CLIENTS ATTRUBUABLES */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8 pt-6">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <h2 className="text-xs font-mono uppercase text-amber-400 tracking-widest">
-            03. Témoignages &amp; Confiance
+      {/* SECTION 5: TÉMOIGNAGES CLIENTS */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-8 space-y-8 pt-4">
+        <div className="text-center max-w-2xl mx-auto space-y-2.5">
+          <span className="text-xs font-semibold text-[#8C6A34] tracking-widest uppercase">
+            Confiance &amp; Proximité
+          </span>
+          <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#142B45]">
+            La voix de nos dirigeants et indépendants partenaires
           </h2>
-          <h3 className="text-2xl sm:text-3xl font-display font-bold text-white">
-            Ce que disent nos dirigeants de sociétés et indépendants
-          </h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t) => (
             <div
               key={t.id}
-              className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between space-y-4 text-xs font-sans"
+              className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E8E6DF] flex flex-col justify-between space-y-5 text-xs shadow-xs"
             >
-              <div className="space-y-3">
-                <div className="flex items-center gap-1 text-amber-400">
+              <div className="space-y-3.5">
+                <div className="flex items-center gap-1 text-[#B79661]">
                   {[...Array(t.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400" />
+                    <Star key={i} className="w-4 h-4 fill-[#B79661]" />
                   ))}
                 </div>
-                <p className="text-slate-300 italic leading-relaxed font-sans">
-                  "{t.quote}"
+                <p className="text-[#4B5563] italic leading-relaxed text-[13px] font-serif">
+                  « {t.quote} »
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-4 border-t border-[#F0EFEA] flex items-center justify-between">
                 <div>
-                  <div className="font-bold text-white">{t.clientName}</div>
-                  <div className="text-[11px] text-slate-400">{t.roleCompany}</div>
+                  <div className="font-bold text-sm text-[#142B45]">{t.clientName}</div>
+                  <div className="text-xs text-[#6B7280]">{t.roleCompany}</div>
                 </div>
-                <span className="px-2 py-0.5 text-[10px] font-mono bg-slate-800 text-amber-400 rounded">
+                <span className="px-2.5 py-1 text-[11px] font-semibold bg-[#FAF9F6] text-[#8C6A34] rounded-md border border-[#E8E6DF]">
                   {t.companyType}
                 </span>
               </div>
@@ -378,36 +384,36 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* SECTION 6: CALL TO ACTION BANNER */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-amber-950/80 via-slate-900 to-slate-900 border border-amber-500/40 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
-          <div className="space-y-3 max-w-2xl text-left">
-            <span className="px-3 py-1 text-xs font-mono text-amber-300 bg-amber-950 border border-amber-800 rounded-full inline-block">
-              Premier rendez-vous d'analyse offert
+      {/* SECTION 6: BANNIÈRE PRE-FOOTER */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-[#142B45] text-white border border-[#1D3B5C] shadow-xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div className="space-y-3.5 max-w-2xl text-left">
+            <span className="px-3.5 py-1 text-xs font-semibold text-[#D9BD8E] bg-[#1D3B5C] border border-[#B79661]/40 rounded-full inline-block">
+              Premier entretien d'orientation offert
             </span>
-            <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-white">
+            <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-snug">
               Prêt à optimiser la gestion fiscale de votre entreprise en Belgique ?
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-              Planifiez une consultation de 30 minutes avec l'un de nos experts-comptables certifiés ITAA. Analyse personnalisée de votre structure et proposition forfaitaire sans engagement.
+            <p className="text-xs sm:text-sm text-[#CBD5E1] leading-relaxed">
+              Planifiez une consultation avec Paul Holl Mpeck ou un conseiller fiscal certifié ITAA du cabinet Fidcogest à Ganshoren.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3.5 shrink-0 w-full lg:w-auto">
             <button
               onClick={onOpenBooking}
-              className="px-6 py-3.5 bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-display font-extrabold text-xs rounded-xl transition-all shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2"
+              className="px-6 py-3.5 bg-white hover:bg-[#F7F6F2] text-[#142B45] font-semibold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Calendar className="w-4 h-4" />
-              Prendre RDV maintenant
+              <Calendar className="w-4 h-4 text-[#B79661]" />
+              <span>Prendre rendez-vous</span>
             </button>
 
             <button
               onClick={onOpenVault}
-              className="px-5 py-3.5 bg-slate-950 hover:bg-slate-900 text-slate-200 border border-slate-700 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2"
+              className="px-5 py-3.5 bg-[#1D3B5C] hover:bg-[#254A73] text-white border border-[#3A5B80] rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Lock className="w-4 h-4 text-amber-400" />
-              Transmettre mes pièces
+              <Lock className="w-4 h-4 text-[#D9BD8E]" />
+              <span>Espace Client Basecone</span>
             </button>
           </div>
         </div>

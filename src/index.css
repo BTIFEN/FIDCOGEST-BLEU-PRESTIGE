@@ -30,8 +30,8 @@
 
   body {
     font-family: var(--font-sans);
-    background-color: var(--indus-bg-dark);
-    color: #F8FAFC;
+    background-color: #F7F6F2;
+    color: #1F2937;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }

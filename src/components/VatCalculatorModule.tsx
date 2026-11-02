@@ -33,60 +33,57 @@ export const VatCalculatorModule: React.FC = () => {
   const nonDeductibleVatShare = computedVatAmount - deductibleVatShare;
 
   // Calculations Mode 3 (Periodic Balance)
-  const collectedVatSales = salesHtva * (salesSalesVatRate(salesVatRate) / 100);
-  function salesSalesVatRate(r: number) { return r; }
-
+  const collectedVatSales = salesHtva * (salesVatRate / 100);
   const grossPurchasesVat = purchasesHtva * (purchasesVatRate / 100);
   const deductiblePurchasesVat = grossPurchasesVat * (purchasesDeductibility / 100);
-
   const netVatBalance = collectedVatSales - deductiblePurchasesVat;
 
   return (
-    <div className="p-6 sm:p-8 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
+    <div className="p-7 sm:p-9 rounded-2xl bg-white border border-[#E8E6DF] space-y-8 shadow-[0_4px_24px_rgba(20,43,69,0.03)] font-sans">
       
       {/* Module Title Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 border-b border-[#F0EFEA] pb-6">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-amber-950/80 border border-amber-800/80 text-amber-300 font-mono text-[11px] mb-1">
-            <Calculator className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF9F6] border border-[#B79661]/40 text-[#8C6A34] text-xs font-semibold mb-2">
+            <Calculator className="w-3.5 h-3.5 text-[#B79661]" />
             <span>Calculateur Officiel TVA Belge (Code TVA 1969)</span>
           </div>
-          <h3 className="font-display font-bold text-lg text-white">
-            Calcul Rapide de la TVA (Déduction &amp; Majoration)
+          <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#142B45]">
+            Calcul Rapide de la TVA &amp; Déductibilité Professionnelle
           </h3>
-          <p className="text-xs text-slate-400">
-            Estimez la TVA de vos factures et anticipez le solde de votre déclaration périodique TVA.
+          <p className="text-xs sm:text-sm text-[#6B7280]">
+            Estimez la TVA de vos factures et anticipez le solde de votre déclaration périodique TVA en Belgique.
           </p>
         </div>
 
         {/* Mode Selector Buttons */}
-        <div className="flex p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono shrink-0">
+        <div className="flex p-1 bg-[#F7F6F2] rounded-xl border border-[#E8E6DF] text-xs shrink-0">
           <button
             onClick={() => setVatMode('htva_to_ttc')}
-            className={`px-3 py-1.5 rounded-lg transition-colors ${
+            className={`px-3 py-2 rounded-lg font-semibold transition-all cursor-pointer ${
               vatMode === 'htva_to_ttc'
-                ? 'bg-amber-500 text-slate-950 font-bold'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#142B45] text-white shadow-xs'
+                : 'text-[#4B5563] hover:text-[#142B45]'
             }`}
           >
             HTVA → TTC (+TVA)
           </button>
           <button
             onClick={() => setVatMode('ttc_to_htva')}
-            className={`px-3 py-1.5 rounded-lg transition-colors ${
+            className={`px-3 py-2 rounded-lg font-semibold transition-all cursor-pointer ${
               vatMode === 'ttc_to_htva'
-                ? 'bg-amber-500 text-slate-950 font-bold'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#142B45] text-white shadow-xs'
+                : 'text-[#4B5563] hover:text-[#142B45]'
             }`}
           >
             TTC → HTVA (-TVA)
           </button>
           <button
             onClick={() => setVatMode('periodic_balance')}
-            className={`px-3 py-1.5 rounded-lg transition-colors ${
+            className={`px-3 py-2 rounded-lg font-semibold transition-all cursor-pointer ${
               vatMode === 'periodic_balance'
-                ? 'bg-amber-500 text-slate-950 font-bold'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#142B45] text-white shadow-xs'
+                : 'text-[#4B5563] hover:text-[#142B45]'
             }`}
           >
             Solde Déclaration TVA
@@ -101,7 +98,7 @@ export const VatCalculatorModule: React.FC = () => {
           {/* Form Inputs */}
           <div className="lg:col-span-6 space-y-5">
             <div>
-              <label className="block text-slate-300 font-medium mb-1.5">
+              <label className="block text-[#142B45] font-semibold text-xs mb-1.5">
                 {vatMode === 'htva_to_ttc' ? 'Montant Hors TVA (HTVA) en €' : 'Montant Toutes Taxes Comprises (TTC) en €'}
               </label>
               <div className="relative">
@@ -111,243 +108,193 @@ export const VatCalculatorModule: React.FC = () => {
                   step={10}
                   value={inputAmount}
                   onChange={(e) => setInputAmount(Number(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-base font-mono font-bold text-amber-400 focus:border-amber-500 focus:outline-none"
+                  className="w-full bg-[#FAF9F6] border border-[#D1D5DB] focus:border-[#B79661] rounded-xl px-4 py-3 text-base font-bold text-[#142B45] focus:outline-none transition-colors"
                 />
-                <span className="absolute right-4 top-3 text-slate-500 font-mono">EUR €</span>
+                <span className="absolute right-4 top-3 text-[#6B7280] font-semibold text-sm">EUR €</span>
               </div>
             </div>
 
             {/* Select Belgian VAT Rate */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1.5">
+              <label className="block text-[#142B45] font-semibold text-xs mb-1.5">
                 Taux de TVA Belgique applicable :
               </label>
-              <div className="grid grid-cols-4 gap-2 font-mono">
+              <div className="grid grid-cols-4 gap-2">
                 {[
                   { rate: 21, label: '21% Standard' },
-                  { rate: 12, label: '12% Resto/Log.' },
-                  { rate: 6, label: '6% Rénov/Essentiel' },
+                  { rate: 12, label: '12% Resto' },
+                  { rate: 6, label: '6% Rénov.' },
                   { rate: 0, label: '0% Exonéré' }
                 ].map((r) => (
                   <button
                     key={r.rate}
                     type="button"
                     onClick={() => setVatRate(r.rate)}
-                    className={`py-2 px-2 rounded-xl border text-center transition-all ${
+                    className={`py-2 px-2 rounded-xl border text-center transition-all cursor-pointer ${
                       vatRate === r.rate
-                        ? 'bg-amber-500 text-slate-950 font-bold border-amber-400'
-                        : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'bg-[#142B45] text-white font-bold border-[#142B45]'
+                        : 'bg-[#FAF9F6] border-[#E8E6DF] text-[#4B5563] hover:border-[#B79661]'
                     }`}
                   >
-                    <div className="font-bold text-sm">{r.rate}%</div>
-                    <div className="text-[9px] opacity-80">{r.label.split(' ')[1] || ''}</div>
+                    {r.label}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Professional Deductibility Slider */}
+            {/* Professional Deductibility % */}
             <div>
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="text-slate-300 font-medium">Taux de déductibilité professionnelle de la TVA :</label>
-                <span className="font-mono font-bold text-emerald-400">{deductibilityPercent}%</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={25}
-                  value={deductibilityPercent}
-                  onChange={(e) => setDeductibilityPercent(Number(e.target.value))}
-                  className="w-full accent-emerald-500 cursor-pointer"
-                />
-              </div>
-              <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
-                <span>0% Privé</span>
-                <span>50% Télecom/GSM</span>
-                <span>75% Voiture/Voiture mixte</span>
-                <span>100% Pro Stricte</span>
+              <label className="block text-[#142B45] font-semibold text-xs mb-1.5">
+                Taux de déductibilité professionnelle :
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { val: 100, label: '100% (Frais pur)' },
+                  { val: 75, label: '75% (Mixte partiel)' },
+                  { val: 50, label: '50% (Auto standard)' }
+                ].map((d) => (
+                  <button
+                    key={d.val}
+                    type="button"
+                    onClick={() => setDeductibilityPercent(d.val)}
+                    className={`py-2 px-2 rounded-xl border text-center transition-all cursor-pointer ${
+                      deductibilityPercent === d.val
+                        ? 'bg-[#142B45] text-white font-bold border-[#142B45]'
+                        : 'bg-[#FAF9F6] border-[#E8E6DF] text-[#4B5563] hover:border-[#B79661]'
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Results Summary Box */}
-          <div className="lg:col-span-6 p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-4 font-mono">
-            <h4 className="font-bold text-sm text-white border-b border-slate-800 pb-2 flex items-center justify-between">
-              <span>Détail de la Facture :</span>
-              <span className="text-amber-400 text-xs">Taux {vatRate}%</span>
+          {/* Result Column */}
+          <div className="lg:col-span-6 p-6 sm:p-7 rounded-2xl bg-[#FAF9F6] border border-[#E8E6DF] space-y-5">
+            <h4 className="font-serif font-bold text-base text-[#142B45] border-b border-[#E8E6DF] pb-3">
+              Ventilation Comptable &amp; Fiscale
             </h4>
 
             <div className="space-y-3">
-              <div className="flex justify-between items-center py-1">
-                <span className="text-slate-400">Montant HTVA :</span>
-                <span className="text-white font-bold text-sm">{computedTotalHtva.toFixed(2)} €</span>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-[#6B7280]">Montant Net Hors TVA (HTVA) :</span>
+                <span className="font-bold text-sm text-[#142B45]">{computedTotalHtva.toFixed(2)} €</span>
               </div>
-
-              <div className="flex justify-between items-center py-1 border-t border-slate-800/80">
-                <span className="text-slate-400">Montant de la TVA ({vatRate}%) :</span>
-                <span className="text-amber-300 font-bold text-sm">+{computedVatAmount.toFixed(2)} €</span>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-[#6B7280]">Montant TVA ({vatRate}%) :</span>
+                <span className="font-bold text-sm text-[#8C6A34]">{computedVatAmount.toFixed(2)} €</span>
               </div>
-
-              <div className="flex justify-between items-center py-2 border-t border-b border-slate-800 bg-slate-900/60 px-3 rounded-xl">
-                <span className="text-slate-200 font-bold">Total TTC (Toutes Taxes Comprises) :</span>
-                <span className="text-emerald-400 font-extrabold text-base">{computedTotalTtc.toFixed(2)} €</span>
-              </div>
-
-              <div className="pt-2 space-y-1 text-xs text-slate-300 font-sans">
-                <div className="flex justify-between font-mono text-emerald-400">
-                  <span>Part TVA Récupérable / Déductible ({deductibilityPercent}%) :</span>
-                  <span>{deductibleVatShare.toFixed(2)} €</span>
-                </div>
-                {deductibilityPercent < 100 && (
-                  <div className="flex justify-between font-mono text-slate-400 text-[11px]">
-                    <span>Part TVA Non-déductible (Frais rejetés) :</span>
-                    <span>{nonDeductibleVatShare.toFixed(2)} €</span>
-                  </div>
-                )}
+              <div className="flex justify-between items-center text-xs pt-2 border-t border-[#E8E6DF]">
+                <span className="font-semibold text-[#142B45]">Total TTC (Facture Client / Fournisseur) :</span>
+                <span className="font-serif font-bold text-lg text-[#142B45]">{computedTotalTtc.toFixed(2)} €</span>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-900 border border-amber-500/20 text-[11px] font-sans text-slate-300 flex items-start gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <span>
-                <strong>Note Expert Fidcogest :</strong> La TVA récupérée sur vos achats professionnels vient directement diminuer la TVA que vous devez reverser à l'État lors de votre déclaration trimestrielle.
-              </span>
+            <div className="p-4 rounded-xl bg-white border border-[#E8E6DF] space-y-2">
+              <div className="text-[11px] font-semibold text-[#8C6A34] uppercase tracking-wider">
+                Impact sur Déclaration TVA (Grille 59) :
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-[#6B7280]">TVA Récupérable déductible ({deductibilityPercent}%) :</span>
+                <span className="font-bold text-[#0E5E3A]">{deductibleVatShare.toFixed(2)} €</span>
+              </div>
+              {deductibilityPercent < 100 && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#6B7280]">TVA Non-déductible (rejet fiscal) :</span>
+                  <span className="font-bold text-[#DC2626]">{nonDeductibleVatShare.toFixed(2)} €</span>
+                </div>
+              )}
             </div>
           </div>
 
         </div>
       )}
 
-      {/* MODE 3: PERIODIC VAT RETURN BALANCE */}
+      {/* MODE 3: PERIODIC RETURN BALANCE */}
       {vatMode === 'periodic_balance' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-xs font-sans">
           
-          {/* Left Inputs */}
           <div className="lg:col-span-6 space-y-5">
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-              <h4 className="font-bold text-xs text-amber-400 uppercase font-mono flex items-center gap-1.5">
-                <TrendingUp className="w-4 h-4 text-amber-400" />
-                1. Chiffre d'Affaires Ventes (TVA Collectée)
-              </h4>
+            <h4 className="font-serif font-bold text-base text-[#142B45]">
+              Ventes &amp; Achats du Trimestre
+            </h4>
 
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Total Ventes HTVA du trimestre (€)</label>
-                <input
-                  type="number"
-                  step={500}
-                  value={salesHtva}
-                  onChange={(e) => setSalesHtva(Number(e.target.value) || 0)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Taux moyen de TVA appliqué aux ventes</label>
-                <select
-                  value={salesVatRate}
-                  onChange={(e) => setSalesVatRate(Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:border-amber-500 focus:outline-none"
-                >
-                  <option value={21}>21% Taux Normal (Prestations / Ventes B2B)</option>
-                  <option value={12}>12% Restauration</option>
-                  <option value={6}>6% Taux Réduit</option>
-                  <option value={0}>0% Exonéré / Intracommunautaire</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-[#142B45] font-semibold text-xs mb-1.5">
+                Ventes / Prestations HTVA réalisées (€) :
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={salesHtva}
+                onChange={(e) => setSalesHtva(Number(e.target.value) || 0)}
+                className="w-full bg-[#FAF9F6] border border-[#D1D5DB] focus:border-[#B79661] rounded-xl px-4 py-2.5 text-sm font-bold text-[#142B45] focus:outline-none"
+              />
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-              <h4 className="font-bold text-xs text-emerald-400 uppercase font-mono flex items-center gap-1.5">
-                <TrendingDown className="w-4 h-4 text-emerald-400" />
-                2. Achats &amp; Charges Professionnelles (TVA Déductible)
-              </h4>
+            <div>
+              <label className="block text-[#142B45] font-semibold text-xs mb-1.5">
+                Achats &amp; Frais généraux HTVA engagés (€) :
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={purchasesHtva}
+                onChange={(e) => setPurchasesHtva(Number(e.target.value) || 0)}
+                className="w-full bg-[#FAF9F6] border border-[#D1D5DB] focus:border-[#B79661] rounded-xl px-4 py-2.5 text-sm font-bold text-[#142B45] focus:outline-none"
+              />
+            </div>
 
-              <div>
-                <label className="block text-slate-300 text-[11px] mb-1">Total Achats &amp; Frais HTVA du trimestre (€)</label>
-                <input
-                  type="number"
-                  step={500}
-                  value={purchasesHtva}
-                  onChange={(e) => setPurchasesHtva(Number(e.target.value) || 0)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:border-amber-500 focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Taux TVA Achats</label>
-                  <select
-                    value={purchasesVatRate}
-                    onChange={(e) => setPurchasesVatRate(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-mono"
+            <div>
+              <label className="block text-[#142B45] font-semibold text-xs mb-1.5">
+                Déductibilité moyenne des achats (%) :
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[100, 85, 75].map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPurchasesDeductibility(p)}
+                    className={`py-2 rounded-xl border text-center transition-all cursor-pointer ${
+                      purchasesDeductibility === p
+                        ? 'bg-[#142B45] text-white font-bold border-[#142B45]'
+                        : 'bg-[#FAF9F6] border-[#E8E6DF] text-[#4B5563]'
+                    }`}
                   >
-                    <option value={21}>21% Standard</option>
-                    <option value={12}>12%</option>
-                    <option value={6}>6%</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-slate-300 text-[11px] mb-1">Déductibilité Pro</label>
-                  <select
-                    value={purchasesDeductibility}
-                    onChange={(e) => setPurchasesDeductibility(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-mono"
-                  >
-                    <option value={100}>100% Pro</option>
-                    <option value={75}>75% Véhicule</option>
-                    <option value={50}>50% Telecom</option>
-                  </select>
-                </div>
+                    {p}% déductible
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Right Results Balance */}
-          <div className="lg:col-span-6 p-6 rounded-2xl bg-slate-950 border border-slate-800 space-y-5 font-mono">
-            <h4 className="font-bold text-sm text-white border-b border-slate-800 pb-2">
-              Estimation du Solde de Déclaration TVA :
+          <div className="lg:col-span-6 p-6 sm:p-7 rounded-2xl bg-[#FAF9F6] border border-[#E8E6DF] space-y-5">
+            <h4 className="font-serif font-bold text-base text-[#142B45] border-b border-[#E8E6DF] pb-3">
+              Solde de Déclaration Périodique (Grille 71 / 72)
             </h4>
 
-            <div className="space-y-3">
-              <div className="flex justify-between items-center py-1">
-                <span className="text-slate-400">TVA Collectée sur Ventes (À reverser) :</span>
-                <span className="text-amber-400 font-bold text-sm">+{collectedVatSales.toFixed(2)} €</span>
+            <div className="space-y-3 text-xs">
+              <div className="flex justify-between">
+                <span className="text-[#6B7280]">TVA Collectée sur ventes (Grille 54) :</span>
+                <span className="font-bold text-[#142B45]">{collectedVatSales.toFixed(2)} €</span>
               </div>
-
-              <div className="flex justify-between items-center py-1 border-t border-slate-800/80">
-                <span className="text-slate-400">TVA Déductible sur Achats (À récupérer) :</span>
-                <span className="text-emerald-400 font-bold text-sm">-{deductiblePurchasesVat.toFixed(2)} €</span>
+              <div className="flex justify-between">
+                <span className="text-[#6B7280]">TVA Déductible sur achats (Grille 59) :</span>
+                <span className="font-bold text-[#0E5E3A]">- {deductiblePurchasesVat.toFixed(2)} €</span>
               </div>
-
-              <div className={`p-4 rounded-xl border font-bold flex flex-col gap-1 ${
-                netVatBalance >= 0
-                  ? 'bg-amber-950/20 border-amber-500/40 text-amber-300'
-                  : 'bg-emerald-950/20 border-emerald-500/40 text-emerald-300'
-              }`}>
-                <div className="text-[11px] text-slate-400 uppercase">
-                  {netVatBalance >= 0 ? 'Solde à Payer au SPF Finances :' : 'Crédit de TVA en votre Faveur :'}
-                </div>
-                <div className="text-xl font-extrabold font-mono">
+              <div className="pt-3 border-t border-[#E8E6DF] flex justify-between items-center">
+                <span className="font-semibold text-sm text-[#142B45]">
+                  {netVatBalance >= 0 ? 'TVA à verser à l\'État (Grille 71) :' : 'Crédit TVA en votre faveur (Grille 72) :'}
+                </span>
+                <span className={`font-serif font-bold text-xl ${netVatBalance >= 0 ? 'text-[#8C6A34]' : 'text-[#0E5E3A]'}`}>
                   {Math.abs(netVatBalance).toFixed(2)} €
-                </div>
-                <div className="text-[10px] font-sans text-slate-300 pt-1 border-t border-slate-800/60">
-                  {netVatBalance >= 0
-                    ? 'Montant net à verser au SPF Finances avant le 20 du mois suivant le trimestre.'
-                    : 'Montant à vous faire rembourser ou à reporter sur le trimestre suivant.'}
-                </div>
+                </span>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-sans text-slate-300 space-y-1">
-              <div className="font-bold text-amber-400 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" /> Validation Expert Fidcogest
-              </div>
-              <p>
-                Nos experts-comptables certifiés ITAA établissent et vérifient l'intégralité de vos grille-TVA officielles avant envoi sécurisé via Intervat.
-              </p>
+            <div className="p-4 rounded-xl bg-white border border-[#E8E6DF] text-xs text-[#6B7280] leading-relaxed">
+              💡 <strong>Rappel Fidcogest :</strong> Le solde TVA doit être versé au SPF Finances au plus tard le 20 du mois qui suit le trimestre (ou mois). Le cabinet se charge de la validation et du dépôt de vos déclarations.
             </div>
           </div>
 

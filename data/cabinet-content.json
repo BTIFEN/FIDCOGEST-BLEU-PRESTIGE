@@ -1,0 +1,361 @@
+{
+  "cabinet": {
+    "name": "FIDCOGEST SRL",
+    "legalForm": "SRL (Société à Responsabilité Limitée)",
+    "foundingYear": 2008,
+    "foundingDate": "17 juillet 2008",
+    "bceNumber": "0899.441.309",
+    "vatNumber": "BE 0899.441.309",
+    "peppolIdentifier": "0208:0899441309",
+    "headquarters": {
+      "address": "Place de la Reine Paola n°3",
+      "postalCode": "1083",
+      "city": "Ganshoren (Bruxelles)",
+      "country": "Belgique",
+      "googleMapsUrl": "https://maps.google.com/?q=Place+de+la+Reine+Paola+3+1083+Ganshoren"
+    },
+    "phone": "+32 2 425 18 58",
+    "mobile": "+32 476 62 66 21",
+    "email": "management@fidcogest.be",
+    "secondaryEmail": "contact@fidcogest.be",
+    "openingHours": "Lundi au Vendredi : 08h30 - 18h00 (sur rendez-vous)",
+    "officialAccreditation": "ITAA (Institute for Tax Advisors and Accountants)",
+    "accreditationStatus": "Cabinet agréé et certifié ITAA",
+    "primaryTool": "Basecone (Wolters Kluwer)",
+    "verificationNotice": "Informations vérifiées conformément à la Banque-Carrefour des Entreprises (BCE) et aux publications officielles de FIDCOGEST SRL."
+  },
+  "divergenceAudit": [
+    {
+      "field": "Dénomination sociale",
+      "sourceHistorique": "FIDCOGEST SRL (active depuis le 17/07/2008)",
+      "valeurPrototype": "Fidcogest SRL (conforme)",
+      "statut": "VALIDÉ_OFFICIEL",
+      "notes": "Confirmé BCE 0899.441.309"
+    },
+    {
+      "field": "Siège social",
+      "sourceHistorique": "Place de la Reine Paola n°3, 1083 Ganshoren, Bruxelles",
+      "valeurPrototype": "Avenue Louise 240, 1050 Bruxelles (fictif) et Mons Dolez (fictif)",
+      "statut": "CORRIGÉ_VERS_HISTORIQUE",
+      "notes": "Rétablissement de l'adresse authentique de Ganshoren. Le siège Louise/Mons était un placeholder de démonstration."
+    },
+    {
+      "field": "Numéro BCE / TVA",
+      "sourceHistorique": "BE 0899.441.309",
+      "valeurPrototype": "BE 0842.109.812 (fictif)",
+      "statut": "CORRIGÉ_VERS_HISTORIQUE",
+      "notes": "Rétablissement du numéro BCE légal réel 0899.441.309"
+    },
+    {
+      "field": "Gérant & Dirigeant agréé",
+      "sourceHistorique": "Paul Holl Mpeck (Expert-comptable certifié et Conseil fiscal certifié ITAA)",
+      "valeurPrototype": "Marc Van den Berghe / Sophie Laurent (noms de substitution)",
+      "statut": "CORRIGÉ_VERS_HISTORIQUE",
+      "notes": "Paul Holl Mpeck est le fondateur et gérant légal enregistré à la BCE et sur le site historique."
+    },
+    {
+      "field": "Téléphones officiels",
+      "sourceHistorique": "Tél : +32 2 425 18 58 | GSM : +32 476 62 66 21",
+      "valeurPrototype": "+32 2 555 01 88 (numéro fictif)",
+      "statut": "CORRIGÉ_VERS_HISTORIQUE",
+      "notes": "Rétablissement des lignes téléphoniques réelles du cabinet."
+    },
+    {
+      "field": "Courriel officiel",
+      "sourceHistorique": "management@fidcogest.be",
+      "valeurPrototype": "contact@fidcogest.be",
+      "statut": "VALIDÉ_HISTORIQUE",
+      "notes": "Utilisation de management@fidcogest.be pour la direction et contact@fidcogest.be pour le secrétariat."
+    },
+    {
+      "field": "Solution digitale principale",
+      "sourceHistorique": "Basecone (numérisation, archivage légal 10 ans, validation continue)",
+      "valeurPrototype": "Simulateur OCR générique",
+      "statut": "ENRICHI_AVEC_BASECONE",
+      "notes": "Présentation honnête de Basecone comme solution collaborative privilégiée du cabinet."
+    }
+  ],
+  "team": [
+    {
+      "id": "paul-holl-mpeck",
+      "name": "Paul Holl Mpeck",
+      "role": "Gérant Fondateur • Expert-comptable certifié & Conseil fiscal certifié ITAA",
+      "title": "Expert-Comptable & Conseil Fiscal Certifié",
+      "bio": "Fondateur et gérant de FIDCOGEST SRL depuis 2008. Plus de 20 ans d'expertise dans le conseil aux entreprises, l'accompagnement des indépendants, la fiscalité stratégique nationale et internationale ainsi que l'assistance lors des contrôles fiscaux.",
+      "specialties": [
+        "Comptabilité générale et analytique",
+        "Fiscalité des entreprises & des personnes physiques",
+        "Assistance aux contrôles & litiges fiscaux",
+        "Création de sociétés & Plans financiers",
+        "Audit comptable et diagnostic financier"
+      ],
+      "accreditation": "Membre certifié de l'ITAA (Institute for Tax Advisors and Accountants)",
+      "email": "management@fidcogest.be",
+      "location": "Ganshoren (Bruxelles)"
+    },
+    {
+      "id": "pole-fiscalite-compta",
+      "name": "Pôle Gestion Comptable & Fiscale",
+      "role": "Collaborateurs Comptables & Fiscaux Qualifiés",
+      "title": "Équipe Comptable & Déclarations Fiscales",
+      "bio": "Équipe pluridisciplinaire assurant la tenue des dossiers, l'encodage via Basecone, les déclarations TVA périodiques, l'IPP, l'ISOC et la préparation des bilans BNB sous la supervision directe du gérant certifié.",
+      "specialties": [
+        "Tenue et révision comptable",
+        "Déclarations périodiques TVA & Listing annuel",
+        "Déclarations IPP & ISOC",
+        "Établissement des comptes annuels BNB"
+      ],
+      "accreditation": "Supervision par Expert-Comptable certifié ITAA",
+      "email": "contact@fidcogest.be",
+      "location": "Ganshoren (Bruxelles)"
+    },
+    {
+      "id": "pole-digital-ecompta",
+      "name": "Pôle E-Compta & Solutions Numériques",
+      "role": "Support Digital & Gestion Électronique des Documents",
+      "title": "Accompagnement Outils Digitaux & Basecone",
+      "bio": "Accompagnement technique des clients pour l'utilisation de l'application Basecone, la transmission dématérialisée des pièces comptables et la transition vers la facturation électronique structurée Peppol 2026.",
+      "specialties": [
+        "Application mobile et portail Basecone",
+        "Numérisation et archivage légal 10 ans",
+        "Conformité facturation Peppol 2026",
+        "Échanges et flux documentaires sécurisés"
+      ],
+      "accreditation": "Partenaire digital certifié",
+      "email": "contact@fidcogest.be",
+      "location": "Ganshoren (Bruxelles)"
+    }
+  ],
+  "services": [
+    {
+      "id": "comptabilite",
+      "title": "Comptabilité",
+      "shortTitle": "Comptabilité",
+      "tagline": "Rigueur, conformité PCMN et suivi en temps réel de votre activité",
+      "description": "Fidcogest prend en charge l'ensemble de vos obligations comptables, de la tenue quotidienne à la publication des bilans officiels BNB. Notre organisation rigoureuse garantit une visibilité permanente sur la santé financière de votre structure.",
+      "subServices": [
+        {
+          "name": "Comptabilité générale",
+          "details": "Tenue intégrale des journaux légaux d'achats, ventes, financiers et opérations diverses selon le Plan Comptable Minimum Normalisé belge."
+        },
+        {
+          "name": "Comptabilité analytique",
+          "details": "Ventilation fine des charges et des produits par centre de coûts, projet ou département pour analyser la rentabilité réelle."
+        },
+        {
+          "name": "Organisation et tenue comptable",
+          "details": "Structuration des circuits de pièces, classement numérique et processus de validation optimisés pour les dirigeants."
+        },
+        {
+          "name": "Comptes annuels & Bilan BNB",
+          "details": "Établissement du bilan, du compte de résultats, des annexes légales et dépôt officiel auprès de la Banque Nationale de Belgique."
+        },
+        {
+          "name": "Déclarations périodiques TVA",
+          "details": "Calcul, vérification et télétransmission des déclarations TVA mensuelles ou trimestrielles, relevés intracommunautaires et listing clients annuel."
+        },
+        {
+          "name": "Rattrapage comptable",
+          "details": "Prise en charge urgente et régularisation complète de dossiers comptables en retard ou incomplets avec rétablissement de la conformité légale."
+        },
+        {
+          "name": "Gestion et coordination de la paie",
+          "details": "Liaison étroite avec votre secrétariat social, encodage des écritures de salaires, fiches 281.10 et optimisation des avantages de toute nature (ATN)."
+        }
+      ]
+    },
+    {
+      "id": "fiscalite",
+      "title": "Fiscalité",
+      "shortTitle": "Fiscalité",
+      "tagline": "Optimisation légale, défense de vos intérêts et conformité fiscale absolue",
+      "description": "Conseil fiscal proactif et stratégique pour les indépendants, dirigeants de sociétés et professions libérales. Fidcogest veille à la réduction de la charge fiscale dans le respect strict du Code des Impôts sur les Revenus (CIR 92).",
+      "subServices": [
+        {
+          "name": "Impôt des Personnes Physiques (IPP)",
+          "details": "Déclaration fiscale annuelle des indépendants, mandataires et conjoints aidants, déduction des frais réels et optimisation des tranches progressives."
+        },
+        {
+          "name": "Fiscalité des Entreprises (ISOC)",
+          "details": "Déclaration annuelle à l'Impôt des Sociétés, application du taux réduit à 20% (tranche de 0 à 100.000 €) et gestion des réserves de liquidation."
+        },
+        {
+          "name": "Déclarations fiscales complètes",
+          "details": "Établissement et envoi des déclarations IPP, ISOC, IPM (personnes morales), précompte mobilier et précompte professionnel via Biztax et MyMinfin."
+        },
+        {
+          "name": "Assistance lors des contrôles fiscaux",
+          "details": "Représentation et défense rigoureuse de vos intérêts face à l'administration fiscale lors de vérifications sur pièces ou sur place."
+        },
+        {
+          "name": "Réclamations fiscales et contentieux",
+          "details": "Rédaction motivée de réclamations administratives, demandes de dégrèvement d'office et négociation d'accords auprès du SPF Finances."
+        },
+        {
+          "name": "Conseil fiscal national et international",
+          "details": "Analyse des conventions préventives de double imposition, structuration de flux transfrontaliers et conseil adapté aux groupes multinationaux."
+        }
+      ]
+    },
+    {
+      "id": "creation-entreprises",
+      "title": "Création d'entreprises",
+      "shortTitle": "Création",
+      "tagline": "De l'idée au lancement réussi : votre partenaire de confiance à Bruxelles & Wallonie",
+      "description": "Lancer une activité indépendante ou constituer une société exige rigueur juridique et solidité financière. Fidcogest guide chaque porteur de projet à toutes les étapes décisives de son immatriculation.",
+      "subServices": [
+        {
+          "name": "Constitution de sociétés (SRL, SA, SC)",
+          "details": "Conseil sur la forme sociétaire la plus adaptée selon le Code des Sociétés et des Associations (CSA) et coordination avec les notaires partenaires."
+        },
+        {
+          "name": "Choix du statut juridique",
+          "details": "Étude comparative approfondie entre statut d'indépendant en personne physique et société à responsabilité limitée (SRL) selon votre profil de risque."
+        },
+        {
+          "name": "Plan financier légal obligatoire",
+          "details": "Rédaction du plan financier pluriannuel certifié par un expert-comptable pour sécuriser la responsabilité des fondateurs (art. 5:4 CSA)."
+        },
+        {
+          "name": "Accompagnement administratif & Guichet d'entreprise",
+          "details": "Inscription à la Banque-Carrefour des Entreprises (BCE), demande du numéro d'entreprise, activation TVA et affiliation caisse d'assurances sociales."
+        },
+        {
+          "name": "Statuts et actes constitutifs",
+          "details": "Aide à la définition de l'objet social, des apports, de la répartition des parts et des clauses d'agrément dans les statuts."
+        }
+      ]
+    },
+    {
+      "id": "conseil-consultance",
+      "title": "Conseil et consultance",
+      "shortTitle": "Conseil & Pilotage",
+      "tagline": "Des données comptables transformées en outils de décision stratégique",
+      "description": "Le cabinet ne se contente pas d'enregistrer le passé : il vous donne les clés pour anticiper l'avenir grâce à un accompagnement managérial et financier sur-mesure.",
+      "subServices": [
+        {
+          "name": "Tableaux de bord périodiques",
+          "details": "Indicateurs clés de performance (KPI), suivi du chiffre d'affaires, marges brutes et prévisions de trésorerie en temps utile."
+        },
+        {
+          "name": "Analyse financière approfondie",
+          "details": "Évaluation du besoin en fonds de roulement (BFR), solvabilité, liquidité et rentabilité des capitaux investis."
+        },
+        {
+          "name": "Diagnostic financier",
+          "details": "Audit de la situation patrimoniale de votre entreprise, identification des faiblesses structurelles et recommandations concrètes d'assainissement."
+        },
+        {
+          "name": "Accompagnement stratégique des dirigeants",
+          "details": "Arbitrage rémunération dirigeant / dividendes (VVPR-bis à 15%), constitution de réserves de liquidation et planification de la retraite."
+        }
+      ]
+    },
+    {
+      "id": "audit-restructuration",
+      "title": "Audit et restructuration",
+      "shortTitle": "Audit & Restructuration",
+      "tagline": "Sécurisation des opérations complexes, réorganisations et fusions",
+      "description": "Fidcogest vous assiste lors des tournants majeurs de la vie de votre entreprise : acquisitions, réorganisations capitalistiques, audits contractuels ou transmissions.",
+      "subServices": [
+        {
+          "name": "Audit comptable et financier",
+          "details": "Examen critique des procédures, vérification de la sincérité des écritures et fiabilisation des comptes avant investissement ou cession."
+        },
+        {
+          "name": "Contrôle interne",
+          "details": "Évaluation des processus de contrôle, prévention des risques financiers et mise en place de sécurités opérationnelles."
+        },
+        {
+          "name": "Fusions et acquisitions (M&A)",
+          "details": "Assistance lors des démarches de due diligence financière, évaluation d'entreprises et accompagnement des négociations."
+        },
+        {
+          "name": "Liquidations amiables",
+          "details": "Accompagnement juridique et comptable des procédures de dissolution et liquidation volontaire de sociétés."
+        },
+        {
+          "name": "Restructurations sociétaires",
+          "details": "Apports de branches d'activité, scissions, création de sociétés holding et réorganisation patrimoniale optimisée."
+        }
+      ]
+    },
+    {
+      "id": "recherche-financement",
+      "title": "Recherche de financement",
+      "shortTitle": "Financement & Subsides",
+      "tagline": "Soutien actif pour mobiliser les ressources nécessaires à vos projets",
+      "description": "Trouver les financements adéquats est capital pour réussir vos investissements. Fidcogest prépare des dossiers bancaires solides et identifie les aides publiques disponibles.",
+      "subServices": [
+        {
+          "name": "Accompagnement de projets d'investissement",
+          "details": "Modélisation financière des investissements (machines, immobilier professionnel, R&D) et calcul de rentabilité prévisionnelle."
+        },
+        {
+          "name": "Dossiers de crédit bancaire",
+          "details": "Élaboration de business plans argumentés et présentation professionnelle auprès des partenaires bancaires belges."
+        },
+        {
+          "name": "Aides et subsides régionaux",
+          "details": "Identification des primes à l'investissement et à l'embauche en Région Bruxelles-Capitale, Wallonie et Flandre, et montage des dossiers d'octroi."
+        },
+        {
+          "name": "Solutions de financement alternatives",
+          "details": "Exploration des prêts subordonnés, fonds de garantie régionaux (Finance.brussels, Sowalfin) et investisseurs privés."
+        }
+      ]
+    },
+    {
+      "id": "e-compta",
+      "title": "E-compta et services digitaux",
+      "shortTitle": "E-Compta & Basecone",
+      "tagline": "Une collaboration 100% numérique, fluide et sécurisée avec votre expert",
+      "description": "Fidcogest privilégie les technologies de pointe pour simplifier la vie des entrepreneurs. Fini le dépôt physique de fardes papier : transmettez vos documents en quelques clics via notre solution Basecone.",
+      "subServices": [
+        {
+          "name": "Transmission numérique de documents",
+          "details": "Scannez ou prenez en photo vos factures d'achat et justificatifs depuis votre smartphone ou ordinateur pour un transfert instantané."
+        },
+        {
+          "name": "Présentation de Basecone (Wolters Kluwer)",
+          "details": "Outil officiel adopté par Fidcogest pour la reconnaissance optique (OCR) automatique des factures, le traitement sans papier et la fluidité des échanges."
+        },
+        {
+          "name": "Archivage sécurisé certifié 10 ans",
+          "details": "Conservation numérique pérenne de vos pièces comptables répondant aux exigences strictes de l'administration fiscale belge."
+        },
+        {
+          "name": "Suivi des dossiers en temps réel",
+          "details": "Accédez en tout temps au statut de traitement de vos documents comptables et préparez sereinement vos échéances de TVA."
+        },
+        {
+          "name": "Transition Peppol 2026",
+          "details": "Accompagnement personnalisé pour adopter la facturation électronique structurée obligatoire pour toutes les entreprises belges."
+        }
+      ]
+    }
+  ],
+  "presentationCabinet": {
+    "title": "Fidcogest — Expert-Comptable et Conseil Fiscal Certifié ITAA",
+    "subtitle": "Au service des entrepreneurs, PME et indépendants depuis 2008",
+    "experienceYears": 18,
+    "piliers": [
+      {
+        "titre": "Proximité & Disponibilité",
+        "texte": "Un interlocuteur unique et dédié qui connaît votre dossier et reste joignable par téléphone, email ou au cabinet."
+      },
+      {
+        "titre": "Compétence & Rigueur ITAA",
+        "texte": "Des conseils certifiés fondés sur le strict respect de la déontologie professionnelle et du secret professionnel (art. 458 CP)."
+      },
+      {
+        "titre": "Innovation Digitale (Basecone)",
+        "texte": "Zéro papier superflu : numérisation simplifiée de vos pièces et visibilité instantanée sur vos finances."
+      },
+      {
+        "titre": "Vision Stratégique & Économies d'Impôt",
+        "texte": "Une optimisation proactive de vos revenus nets et de la charge fiscale de votre entreprise tout au long de l'année."
+      }
+    ]
+  }
+}

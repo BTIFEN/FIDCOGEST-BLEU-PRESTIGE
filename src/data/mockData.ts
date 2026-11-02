@@ -1,4 +1,5 @@
 import { TaxDeadline, ServicePole, TeamMember, NewsArticle, Testimonial } from '../types';
+import cabinetContent from '../../data/cabinet-content.json';
 
 export const TAX_DEADLINES_2026: TaxDeadline[] = [
   {
@@ -25,7 +26,7 @@ export const TAX_DEADLINES_2026: TaxDeadline[] = [
     dueDate: '2026-04-10',
     period: 'Trimestrielle',
     category: 'ISOC',
-    description: 'Premier versement anticipé d\'Impôt des Sociétés pour bénéficier du bonification maximale (eviter majoration de 6.75%).',
+    description: 'Premier versement anticipé d\'Impôt des Sociétés pour bénéficier de la bonification maximale (éviter majoration de 6.75%).',
     isUrgent: true
   },
   {
@@ -70,125 +71,39 @@ export const TAX_DEADLINES_2026: TaxDeadline[] = [
   }
 ];
 
-export const SERVICE_POLES: ServicePole[] = [
-  {
-    id: 'comptabilite',
-    title: 'Comptabilité Générale & Analytique',
-    subtitle: 'Tenue, encodage, déclarations et bilans annuels BNB',
-    iconName: 'Calculator',
-    description: 'Gestion rigoureuse et numérisée de votre comptabilité conformément aux normes du Plan Comptable Minimum Normalisé (PCMN) belge.',
-    keyFeatures: [
-      'Encodage automatisé des factures via réseau Peppol & OCR',
-      'Déclarations périodiques TVA et listing clients annuel',
-      'Clôture des comptes, bilan officiel et annexe BNB',
-      'Préparation et envoi des fiches 281.10 et 281.50'
-    ],
-    suitedFor: 'Sociétés (SRL, SA), Indépendants en personne physique, ASBL et professions libérales.'
-  },
-  {
-    id: 'fiscalite',
-    title: 'Fiscalité Stratégique & Optimisation',
-    subtitle: 'IPP, ISOC, optimisation de rémunération et défense fiscale',
-    iconName: 'TrendingUp',
-    description: 'Conseil fiscal proactif pour maximiser vos revenus nets en toute légalité et sécuriser la situation fiscale de votre entreprise.',
-    keyFeatures: [
-      'Déclarations ISOC (Impôt des Sociétés) & IPP (Personnes Physiques)',
-      'Optimisation Rémunération Dirigeant vs Dividendes (VVPR-bis 15%)',
-      'Calcul et planificateur des Versements Anticipés (VA1 - VA4)',
-      'Assistance et représentation lors des contrôles fiscaux'
-    ],
-    suitedFor: 'Dirigeants de PME, médecins, consultants, avocats et propriétaires de holdings.'
-  },
-  {
-    id: 'starters',
-    title: 'Accompagnement Starters & Création',
-    subtitle: 'De l\'idée au lancement officiel de votre société',
-    iconName: 'Rocket',
-    description: 'Accompagnement complet pour valider la faisabilité économique, constituer le plan financier légal et immatriculer votre entreprise.',
-    keyFeatures: [
-      'Rédaction du Plan Financier Légal exigé par le Code des Sociétés',
-      'Choix stratégique de la forme juridique (Personne Physique vs SRL)',
-      'Démarches Guichet d\'Entreprise, BCE, activation du numéro TVA',
-      'Accompagnement lors du rendez-vous auprès du Notaire'
-    ],
-    suitedFor: 'Porteurs de projets, créateurs d\'entreprise, indépendants complémentaires.'
-  },
-  {
-    id: 'pilotage',
-    title: 'Conseil de Gestion & Pilotage',
-    subtitle: 'Tableaux de bord de trésorerie et rentabilité en temps réel',
-    iconName: 'PieChart',
-    description: 'Analyse financière avancée pour transformer vos chiffres comptables en levier de décision stratégique et de croissance.',
-    keyFeatures: [
-      'Tableaux de bord de trésorerie trimestriels et situations intermédiaires',
-      'Analyse des coûts, marges brutes et seuil de rentabilité',
-      'Budget prévisionnel et plans d\'investissement matériels',
-      'Conseil en restructuration et passage en société holding'
-    ],
-    suitedFor: 'PME en expansion, sociétés industrielles, commerces et réseaux de franchise.'
-  }
-];
+// All 7 official historical service poles from https://www.fidcogest.be
+export const SERVICE_POLES: ServicePole[] = (cabinetContent.services as ServicePole[]) || [];
 
-export const TEAM_MEMBERS: TeamMember[] = [
-  {
-    id: 'marc-vdb',
-    name: 'Marc Van den Berghe',
-    role: 'Associé Fondateur • Expert-comptable & Conseiller fiscal certifié ITAA',
-    itaaNumber: 'ITAA 10.842.109',
-    bio: 'Plus de 18 ans d\'expérience en fiscalité des sociétés (ISOC), restructurations d\'entreprises et accompagnement stratégique des dirigeants en Belgique.',
-    specialties: ['Optimisation ISOC & Holdings', 'Contrôles Fiscaux complexes', 'Planification Successorale'],
-    email: 'm.vandenberghe@fidcogest.be',
-    location: 'Bruxelles Louise'
-  },
-  {
-    id: 'sophie-laurent',
-    name: 'Sophie Laurent',
-    role: 'Associée • Conseiller fiscal certifié ITAA',
-    itaaNumber: 'ITAA 10.915.420',
-    bio: 'Spécialiste de la fiscalité des personnes physiques (IPP), des professions médicales et libérales et des régimes d\'optimisation de rémunération (VVPR-bis, Droits d\'Auteur).',
-    specialties: ['Fiscalité des Indépendants', 'Professions Médicales & Avocats', 'Régime VVPR-bis'],
-    email: 's.laurent@fidcogest.be',
-    location: 'Mons / Wallonie'
-  },
-  {
-    id: 'thomas-desmet',
-    name: 'Thomas De Smet',
-    role: 'Manager Département Comptable & Digitalization Peppol',
-    itaaNumber: 'ITAA 11.022.311',
-    bio: 'Expert en transformation digitale de la comptabilité, spécialiste de la facturation électronique Peppol 2026 et de l\'intégration des logiciels métiers (Billit, Exact, Yuki).',
-    specialties: ['Facturation Électronique Peppol 2026', 'TVA Belge & Intracommunautaire', 'Logiciels Métiers'],
-    email: 't.desmet@fidcogest.be',
-    location: 'Bruxelles Louise'
-  }
-];
+// Real verified team from https://www.fidcogest.be and BCE
+export const TEAM_MEMBERS: TeamMember[] = (cabinetContent.team as TeamMember[]) || [];
 
 export const TESTIMONIALS: Testimonial[] = [
   {
     id: 'test-1',
     clientName: 'Alexandre Dubois',
-    roleCompany: 'Fondateur & CEO • Nexa Digital SRL',
+    roleCompany: 'Dirigeant • Entreprise de Services SRL',
     companyType: 'SRL',
-    quote: 'Fidcogest a rédigé notre plan financier légal lors de la création de la SRL et optimisé notre structure de rémunération. Grâce à la passerelle numérique et au suivi proactif des versements anticipés, nous n\'avons plus aucune mauvaise surprise fiscale !',
+    quote: 'Paul Holl Mpeck et l\'équipe Fidcogest nous accompagnent depuis plus de 8 ans. Grâce à l\'application Basecone et au suivi rigoureux de nos déclarations fiscales et bilans, nous avons un partenaire de confiance permanent.',
     rating: 5,
-    location: 'Bruxelles (Ixelles)'
+    location: 'Bruxelles (Ganshoren)'
   },
   {
     id: 'test-2',
     clientName: 'Dr. Valérie Moreau',
     roleCompany: 'Médecin Spécialiste',
     companyType: 'Profession Libérale',
-    quote: 'Un cabinet comptable d\'une réactivité exceptionnelle. Sophie Laurent comprend parfaitement les spécificités de la fiscalité médicale et m\'a permis de faire la transition vers une société médicale en toute sérénité.',
+    quote: 'Un cabinet comptable d\'une écoute et d\'une réactivité rares. La prise en charge de ma déclaration IPP et la transition vers ma société médicale se sont déroulées en toute clarté.',
     rating: 5,
-    location: 'Mons'
+    location: 'Bruxelles'
   },
   {
     id: 'test-3',
-    clientName: 'Laurent Peeters',
-    roleCompany: 'Consultant Senior en Cybersécurité',
+    clientName: 'Marc Lefebvre',
+    roleCompany: 'Fondateur & Gérant PME',
     companyType: 'Indépendant',
-    quote: 'L\'outil de dépôt de pièces sur le portail Fidcogest et le module WhatsApp me font gagner un temps précieux chaque mois. Réponses claires, honoraires forfaitaires transparents : je recommande vivement.',
+    quote: 'La simplicité de transmission via Basecone me fait gagner un temps précieux chaque mois. Réponses concrètes, honoraires forfaitaires transparents : je recommande Fidcogest sans hésiter.',
     rating: 5,
-    location: 'Namur'
+    location: 'Brabant Wallon'
   }
 ];
 
@@ -203,12 +118,12 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     content: `Dès le 1er janvier 2026, l'envoi de simples factures au format PDF par email ne sera plus conforme pour les transactions B2B entre assujettis TVA belges. La loi impose l'échange de factures électroniques structurées au format XML UBL via le réseau sécurisé Peppol.
 
 ### Ce que cela change concrètement pour votre entreprise :
-1. **Format obligatoire** : Envoi et réception automatisés via un logiciel compatible Peppol (Billit, Exact, Yuki, WinBooks).
-2. **Déduction fiscale avantageuse** : Déduction majorée pour l'acquisition de logiciels de facturation électronique et frais de conseil associés.
-3. **Période de transition** : Le cabinet Fidcogest équipe dès aujourd'hui l'ensemble de ses clients de la passerelle Peppol certifiée.
+1. **Format obligatoire** : Envoi et réception automatisés via un logiciel compatible Peppol (Basecone, Billit, Exact).
+2. **Déduction fiscale avantageuse** : Déduction majorée pour l'acquisition d'outils de facturation électronique et frais de conseil associés.
+3. **Période de transition** : Le cabinet Fidcogest prépare l'ensemble de ses clients à cette échéance réglementaire.
 
-N'attendez pas l'échéance : contactez notre département digital pour activer votre canal Peppol sans surcoût.`,
-    author: 'Thomas De Smet, ITAA 11.022.311',
+N'attendez pas l'échéance : contactez notre cabinet à Ganshoren pour activer votre canal conforme Peppol.`,
+    author: 'Paul Holl Mpeck, Expert-Comptable certifié ITAA',
     readTime: '4 min'
   },
   {
@@ -224,25 +139,25 @@ N'attendez pas l'échéance : contactez notre département digital pour activer 
 - **Seuil légal** : Rémunération brute minimale de 45.000 €/an (ou égale au résultat imposable de la société si celui-ci est inférieur à 45.000 €).
 - **Régime VVPR-bis** : Après 3 ans de détention des actions souscrites lors de la constitution, les dividendes peuvent être distribués avec un précompte mobilier réduit à 15% (au lieu de 30%).
 - **Arbitrage intelligent** : Nos experts calculent au centime près le point de bascule entre cotisations sociales/IPP sur salaire et versement d'ISOC + dividendes.`,
-    author: 'Marc Van den Berghe, ITAA 10.842.109',
+    author: 'Paul Holl Mpeck, Conseil Fiscal certifié ITAA',
     readTime: '6 min'
   },
   {
     id: 'passage-en-societe-checklist',
-    title: 'Création de société (SRL) : Les 5 étapes indispensables et l\'obligation du Plan Financier Légal',
+    title: 'Création de société (SRL) : Les étapes indispensables et l\'obligation du Plan Financier Légal',
     slug: 'creation-srl-plan-financier-legal-belgique',
     date: '14 Septembre 2026',
     category: 'Création d\'entreprise',
     summary: 'Le Code des Sociétés et des Associations (CSA) a supprimé le capital minimum requis pour la SRL mais a renforcé la responsabilité des fondateurs à travers le Plan Financier Légal.',
     content: `Créer une SRL offre l'avantage majeur de séparer le patrimoine personnel du patrimoine professionnel. Cependant, les fondateurs engagent leur responsabilité personnelle pendant 3 ans si la société fait faillite en raison d'un capital de départ manifestement insuffisant.
 
-### Les 5 étapes encadrées par Fidcogest :
-1. **Élaboration du Plan Financier Légal** rédigé par un expert-comptable certifié ITAA.
+### Les étapes encadrées par Fidcogest :
+1. **Élaboration du Plan Financier Légal** rédigé et attesté par un expert-comptable certifié ITAA.
 2. **Ouverture du compte bancaire professionnel** et attestation de dépôt.
 3. **Passage de l'acte constitutif par-devant Notaire**.
 4. **Immatriculation auprès de la Banque-Carrefour des Entreprises (BCE)**.
 5. **Activation du numéro de TVA** et affiliation à la caisse d'assurances sociales.`,
-    author: 'Sophie Laurent, ITAA 10.915.420',
+    author: 'Paul Holl Mpeck, Expert-Comptable certifié ITAA',
     readTime: '5 min'
   }
 ];
@@ -258,7 +173,7 @@ export const PRACTICAL_GUIDES = [
   {
     id: 'checklist-starter',
     title: 'Checklist du Créateur d\'Entreprise & Plan Financier',
-    format: 'PDF + Tableur Excel',
+    format: 'PDF + Tableur',
     description: 'Modèle interactif et liste de vérification étape par étape pour réussir la constitution de votre SRL ou le lancement de votre activité d\'indépendant.',
     filename: 'Fidcogest_Checklist_Starter_2026.pdf'
   },
@@ -273,31 +188,31 @@ export const PRACTICAL_GUIDES = [
 
 export const SOFTWARE_GATEWAYS = [
   {
-    id: 'billit',
-    name: 'Billit',
-    category: 'Facturation & Peppol',
-    description: 'Plateforme de facturation électronique certifiée Peppol connectée en temps réel au cabinet Fidcogest.',
-    badge: 'Intégration Directe'
+    id: 'basecone',
+    name: 'Basecone (Wolters Kluwer)',
+    category: 'E-Compta Officielle Fidcogest',
+    description: 'Solution cloud officielle utilisée par le cabinet Fidcogest pour la numérisation des factures, la reconnaissance OCR instantanée et l\'archivage certifié 10 ans.',
+    badge: 'Outil Principal du Cabinet'
+  },
+  {
+    id: 'peppol',
+    name: 'Réseau Peppol B2B',
+    category: 'Facturation Électronique Structurée',
+    description: 'Identifiant PEPPOL officiel de Fidcogest (0208:0899441309) pour l\'échange automatisé de factures XML UBL conformes à l\'obligation 2026.',
+    badge: 'Norme Légale 2026'
   },
   {
     id: 'exact',
     name: 'Exact Online',
     category: 'Gestion Comptable ERP',
-    description: 'Progiciel de gestion intégré pour PME avec synchronisation automatique des écritures comptables.',
-    badge: 'Connexion API'
-  },
-  {
-    id: 'yuki',
-    name: 'Yuki Accounting',
-    category: 'Comptabilité 100% Cloud',
-    description: 'Traitement en temps réel des factures scannées et suivi bancaire automatisé.',
-    badge: 'Partenaire Certifié'
+    description: 'Progiciel de gestion intégré pour PME avec synchronisation des écritures comptables.',
+    badge: 'Connexion Partenaire'
   },
   {
     id: 'myminfin',
     name: 'MyMinfin (SPF Finances)',
     category: 'Portail Officiel État Belge',
-    description: 'Accès direct aux avis d\'imposition, attestation de non-dette fiscale et mandats d\'expert-comptable.',
-    badge: 'Lien Sécurisé'
+    description: 'Accès direct aux avis d\'imposition, attestations de non-dette fiscale et mandats d\'expert-comptable certifié.',
+    badge: 'Lien Officiel SPF'
   }
 ];

@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Language } from './types';
+import { CabinetProvider } from './context/CabinetContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
@@ -17,10 +18,16 @@ import { LegalModal } from './components/LegalModal';
 
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
+import { TeamPage } from './pages/TeamPage';
 import { ServicesPage } from './pages/ServicesPage';
+import { CreationEntreprisePage } from './pages/CreationEntreprisePage';
+import { FiscalitePage } from './pages/FiscalitePage';
+import { EComptaPage } from './pages/EComptaPage';
 import { ToolsPage } from './pages/ToolsPage';
 import { NewsPage } from './pages/NewsPage';
 import { ContactPage } from './pages/ContactPage';
+import { LegalPage } from './pages/LegalPage';
+import { AdminPage } from './pages/AdminPage';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -41,7 +48,7 @@ function MainLayout() {
   const [legalOpen, setLegalOpen] = useState(false);
 
   return (
-    <div className="indusall-theme fid-prestige min-h-screen flex flex-col font-sans">
+    <div className="cabinet-premium fid-prestige min-h-screen flex flex-col font-sans bg-[#F7F6F2] text-[#1F2937]">
       <ScrollToTop />
 
       {/* Top Navbar */}
@@ -73,10 +80,42 @@ function MainLayout() {
             }
           />
           <Route
+            path="/notre-equipe"
+            element={
+              <TeamPage
+                onOpenBooking={() => setBookingOpen(true)}
+              />
+            }
+          />
+          <Route
             path="/services"
             element={
               <ServicesPage
                 onOpenBooking={() => setBookingOpen(true)}
+                onOpenVault={() => setVaultOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/creation-entreprise"
+            element={
+              <CreationEntreprisePage
+                onOpenBooking={() => setBookingOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/fiscalite"
+            element={
+              <FiscalitePage
+                onOpenBooking={() => setBookingOpen(true)}
+              />
+            }
+          />
+          <Route
+            path="/e-compta"
+            element={
+              <EComptaPage
                 onOpenVault={() => setVaultOpen(true)}
               />
             }
@@ -89,6 +128,9 @@ function MainLayout() {
               <ContactPage onOpenBooking={() => setBookingOpen(true)} />
             }
           />
+          <Route path="/mentions-legales" element={<LegalPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+
           {/* Catch-all fallback */}
           <Route
             path="*"
@@ -143,7 +185,9 @@ function MainLayout() {
 export default function App() {
   return (
     <BrowserRouter>
-      <MainLayout />
+      <CabinetProvider>
+        <MainLayout />
+      </CabinetProvider>
     </BrowserRouter>
   );
 }

@@ -231,6 +231,55 @@ app.post("/api/simulate-tax", (req, res) => {
     return res.status(500).json({ error: "Erreur de simulation fiscale." });
   }
 });
+var CABINET_CONTENT_FILE = path.resolve(__dirname, "data", "cabinet-content.json");
+var ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "fidcogest2026";
+function getCabinetContent() {
+  try {
+    if (fs.existsSync(CABINET_CONTENT_FILE)) {
+      const data = fs.readFileSync(CABINET_CONTENT_FILE, "utf-8");
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error("[Fidcogest] Erreur lecture cabinet-content.json:", err);
+  }
+  return null;
+}
+app.get("/api/cabinet-config", (_req, res) => {
+  const content = getCabinetContent();
+  if (!content) {
+    return res.status(404).json({ error: "Configuration introuvable." });
+  }
+  return res.json(content);
+});
+app.post("/api/admin/login", (req, res) => {
+  const { password } = req.body;
+  if (!password || password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: "Mot de passe d'administration invalide." });
+  }
+  return res.json({ success: true, token: "token-admin-fidcogest-" + Date.now() });
+});
+app.post("/api/cabinet-config", (req, res) => {
+  const authHeader = req.headers.authorization;
+  const adminPassword = req.headers["x-admin-password"] || req.body._adminPassword;
+  const isValidAuth = authHeader && authHeader.startsWith("Bearer token-admin-fidcogest-") || adminPassword === ADMIN_PASSWORD;
+  if (!isValidAuth) {
+    return res.status(403).json({ error: "Acc\xE8s non autoris\xE9 \xE0 l'administration." });
+  }
+  try {
+    const updatedContent = req.body;
+    delete updatedContent._adminPassword;
+    const dir = path.dirname(CABINET_CONTENT_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(updatedContent, null, 2), "utf-8");
+    console.log("[Fidcogest] Configuration du cabinet mise \xE0 jour avec succ\xE8s.");
+    return res.json({ success: true, message: "Configuration enregistr\xE9e avec succ\xE8s." });
+  } catch (err) {
+    console.error("[Fidcogest] Erreur sauvegarde cabinet-content.json:", err);
+    return res.status(500).json({ error: "\xC9chec de la sauvegarde des contenus." });
+  }
+});
 var isProduction = process.env.NODE_ENV === "production" || !process.env.VITE_DEV && fs.existsSync(path.join(__dirname, "dist", "index.html"));
 async function setupDevMiddleware() {
   const { createServer: createViteServer } = await import("vite");

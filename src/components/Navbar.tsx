@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Language } from '../types';
-import { Phone, Calendar, Lock, Menu, X, ShieldCheck } from 'lucide-react';
+import { useCabinet } from '../context/CabinetContext';
+import { Phone, Calendar, Lock, Menu, X, ShieldCheck, Clock, ChevronDown, Sparkles, Smartphone, Building, Users } from 'lucide-react';
 
 interface NavbarProps {
   lang: Language;
@@ -17,101 +18,184 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenVault
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const location = useLocation();
+  const { config } = useCabinet();
+  const { cabinet } = config;
 
   const navItems = [
     { path: '/', label: { fr: 'Accueil', nl: 'Home', en: 'Home' } },
     { path: '/a-propos', label: { fr: 'Le Cabinet', nl: 'Kantoor', en: 'About Us' } },
-    { path: '/services', label: { fr: 'Services & Offres', nl: 'Diensten', en: 'Services' } },
+    { path: '/notre-equipe', label: { fr: 'Notre Équipe', nl: 'Ons Team', en: 'Our Team' } },
+    {
+      path: '/services',
+      label: { fr: 'Services & Offres', nl: 'Diensten', en: 'Services' },
+      hasSubmenu: true
+    },
     { path: '/outils-simulateurs', label: { fr: 'Outils & Simulateurs', nl: 'Tools & Simulaties', en: 'Tools & Simulators' } },
-    { path: '/actualites', label: { fr: 'Actualités Fiscales', nl: 'Fiscaal Nieuws', en: 'Tax News' } },
-    { path: '/contact', label: { fr: 'Contact & Accès', nl: 'Contact', en: 'Contact' } }
+    { path: '/e-compta', label: { fr: 'E-Compta & Basecone', nl: 'E-Boekhouding', en: 'E-Accounting' } },
+    { path: '/actualites', label: { fr: 'Actualités', nl: 'Nieuws', en: 'Tax News' } },
+    { path: '/contact', label: { fr: 'Contact', nl: 'Contact', en: 'Contact' } }
   ];
 
   return (
-    <header className="fid-navbar sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/95 backdrop-blur-md">
-      {/* Top micro announcement bar */}
-      <div className="hidden md:flex items-center justify-between px-6 py-1.5 text-xs text-slate-400 border-b border-slate-800/60 bg-slate-900/80 font-mono">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-amber-400 font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-            Agrément Officiel ITAA n° 10.842.109 • Belgique
-          </span>
-          <span className="text-slate-600">|</span>
-          <span>BCE BE 0842.109.812</span>
-        </div>
-        <div className="flex items-center gap-5">
-          <a href="tel:+3225550188" className="hover:text-amber-400 transition-colors flex items-center gap-1">
-            <Phone className="w-3 h-3 text-slate-400" /> +32 2 555 01 88
-          </a>
-          <span className="text-slate-600">|</span>
-          <span className="text-emerald-400 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
-            Permanence Fiscale Ouverte (8h30 - 18h00)
-          </span>
+    <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E8E6DF] shadow-[0_2px_12px_rgba(20,43,69,0.03)] font-sans">
+      
+      {/* Top Institutional Accreditation Microbar */}
+      <div className="bg-[#142B45] text-[#CBD6E0] text-[11px] sm:text-xs py-2 px-4 sm:px-8 border-b border-[#1D3B5C]">
+        <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-y-1 gap-x-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+            <span className="flex items-center gap-1.5 text-[#D9BD8E] font-medium tracking-wide">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#B79661] shrink-0" />
+              <span>{cabinet.name} • {cabinet.accreditationStatus}</span>
+            </span>
+            <span className="text-[#3A536E] hidden md:inline">|</span>
+            <span className="text-[#A2B4C5] hidden md:inline font-mono">TVA {cabinet.vatNumber}</span>
+            <span className="text-[#3A536E] hidden lg:inline">|</span>
+            <span className="text-[#A2B4C5] hidden lg:inline">{cabinet.headquarters.address}, {cabinet.headquarters.postalCode} {cabinet.headquarters.city}</span>
+          </div>
+
+          <div className="flex items-center gap-4 text-[#A2B4C5]">
+            <span className="hidden xl:flex items-center gap-1.5">
+              <Clock className="w-3 h-3 text-[#B79661]" />
+              {cabinet.openingHours}
+            </span>
+            <span className="text-[#3A536E] hidden xl:inline">|</span>
+            <a 
+              href={`tel:${cabinet.phone.replace(/[^0-9+]/g, '')}`} 
+              className="text-white hover:text-[#D9BD8E] transition-colors flex items-center gap-1.5 font-medium font-mono"
+            >
+              <Phone className="w-3 h-3 text-[#B79661]" />
+              <span>{cabinet.phone}</span>
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* Main 3-Zone Top Navigation */}
-      <div className="mx-auto max-w-7xl flex items-center justify-between gap-8 px-4 sm:px-6 py-3">
+      {/* Main Navigation Bar */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-8 py-3.5 flex items-center justify-between gap-6">
         
-        {/* Zone 1: Single Brand Wordmark */}
+        {/* Brand Logo & ITAA Seal */}
         <Link 
           to="/" 
-          className="flex items-center gap-3 text-left focus:outline-none group shrink-0"
+          className="flex items-center gap-3.5 group focus:outline-none shrink-0"
         >
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 flex items-center justify-center text-slate-950 font-display font-extrabold text-xl shadow-lg shadow-amber-500/10 group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-xl bg-[#142B45] border border-[#B79661]/40 flex items-center justify-center text-[#D9BD8E] font-serif text-2xl font-bold shadow-md shadow-[#142B45]/10 group-hover:border-[#B79661] transition-all">
             F
           </div>
-          <div>
+          <div className="flex flex-col text-left">
             <div className="flex items-center gap-2">
-              <span className="id-brand text-xl font-display font-bold tracking-tight text-white whitespace-nowrap">
+              <span className="font-cinzel text-xl font-bold tracking-wider text-[#142B45]">
                 FIDCOGEST
               </span>
-              <span className="id-badge id-badge-amber">
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider bg-[#B79661]/15 text-[#8C6A34] border border-[#B79661]/30">
                 ITAA
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 tracking-wide font-sans hidden sm:block">
-              Expertise Comptable &amp; Conseils Fiscaux
-            </p>
+            <span className="text-[10px] uppercase tracking-widest text-[#6B7280] font-medium hidden sm:block">
+              Expertise Comptable &amp; Conseil Fiscal
+            </span>
           </div>
         </Link>
 
-        {/* Zone 2: Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-2 text-sm font-medium">
+        {/* Desktop Navigation Links */}
+        <nav className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+
+            if (item.hasSubmenu) {
+              return (
+                <div
+                  key={item.path}
+                  className="relative"
+                  onMouseEnter={() => setServicesDropdownOpen(true)}
+                  onMouseLeave={() => setServicesDropdownOpen(false)}
+                >
+                  <NavLink
+                    to={item.path}
+                    className={`px-3 py-2 rounded-lg text-xs tracking-wide transition-all flex items-center gap-1 ${
+                      isActive
+                        ? 'text-[#142B45] font-bold bg-[#142B45]/5 shadow-[inset_0_-2px_0_#B79661]'
+                        : 'text-[#4B5563] font-medium hover:text-[#142B45] hover:bg-[#142B45]/5'
+                    }`}
+                  >
+                    <span>{item.label[lang] || item.label.fr}</span>
+                    <ChevronDown className="w-3 h-3 text-[#B79661]" />
+                  </NavLink>
+
+                  {/* Dropdown Menu */}
+                  {servicesDropdownOpen && (
+                    <div className="absolute top-full left-0 w-64 pt-1 z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="bg-white rounded-xl border border-[#E8E6DF] shadow-xl p-2 space-y-1">
+                        <Link
+                          to="/services"
+                          onClick={() => setServicesDropdownOpen(false)}
+                          className="p-2.5 rounded-lg hover:bg-[#F7F6F2] transition-colors flex items-center gap-2.5 text-xs text-[#142B45] font-semibold"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#B79661]"></span>
+                          <span>Vue d'ensemble des 7 Pôles</span>
+                        </Link>
+                        <Link
+                          to="/creation-entreprise"
+                          onClick={() => setServicesDropdownOpen(false)}
+                          className="p-2.5 rounded-lg hover:bg-[#F7F6F2] transition-colors flex items-center gap-2.5 text-xs text-[#4B5563] hover:text-[#142B45]"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#142B45]"></span>
+                          <span>Création d'Entreprise &amp; SRL</span>
+                        </Link>
+                        <Link
+                          to="/fiscalite"
+                          onClick={() => setServicesDropdownOpen(false)}
+                          className="p-2.5 rounded-lg hover:bg-[#F7F6F2] transition-colors flex items-center gap-2.5 text-xs text-[#4B5563] hover:text-[#142B45]"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#142B45]"></span>
+                          <span>Fiscalité ISOC, IPP &amp; Contrôles</span>
+                        </Link>
+                        <Link
+                          to="/e-compta"
+                          onClick={() => setServicesDropdownOpen(false)}
+                          className="p-2.5 rounded-lg hover:bg-[#F7F6F2] transition-colors flex items-center gap-2.5 text-xs text-[#4B5563] hover:text-[#142B45]"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#142B45]"></span>
+                          <span>E-Compta, E-Documents &amp; Basecone</span>
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
                 aria-current={isActive ? 'page' : undefined}
-                className={`id-nav-item py-2 px-3.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-3 py-2 rounded-lg text-xs tracking-wide transition-all ${
                   isActive
-                    ? 'is-active bg-amber-500 text-slate-950 shadow-md font-bold'
-                    : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                    ? 'text-[#142B45] font-bold bg-[#142B45]/5 shadow-[inset_0_-2px_0_#B79661]'
+                    : 'text-[#4B5563] font-medium hover:text-[#142B45] hover:bg-[#142B45]/5'
                 }`}
               >
-                {item.label[lang]}
+                {item.label[lang] || item.label.fr}
               </NavLink>
             );
           })}
         </nav>
 
-        {/* Zone 3: Actions & Language Selector */}
-        <div className="hidden sm:flex items-center gap-3 shrink-0">
-          {/* Language Switcher */}
-          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5 text-xs font-mono">
+        {/* Right CTA Actions & Language Selector */}
+        <div className="hidden md:flex items-center gap-3">
+          
+          {/* Language Selector */}
+          <div className="flex items-center rounded-lg border border-[#E8E6DF] p-0.5 bg-[#F7F6F2] text-[11px] font-semibold text-[#6B7280]">
             {(['fr', 'nl', 'en'] as Language[]).map((l) => (
               <button
                 key={l}
                 onClick={() => setLang(l)}
-                aria-pressed={lang === l}
-                className={`id-filter px-2 py-1 rounded text-[11px] uppercase transition-colors ${
+                className={`px-2 py-1 rounded transition-all uppercase ${
                   lang === l
-                    ? 'is-selected bg-amber-500 text-slate-950 font-bold shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-white text-[#142B45] shadow-xs font-bold'
+                    : 'hover:text-[#142B45]'
                 }`}
               >
                 {l}
@@ -119,102 +203,131 @@ export const Navbar: React.FC<NavbarProps> = ({
             ))}
           </div>
 
-          {/* Dépôt Express Client Portal CTA */}
+          {/* Client Portal Button (Basecone / Vault) */}
           <button
             onClick={onOpenVault}
-            className="id-button id-button--secondary text-xs"
+            className="cabinet-btn-secondary text-xs py-2 px-3.5"
+            title="Espace Client & Basecone"
           >
-            <Lock className="w-3.5 h-3.5 text-amber-400" />
-            <span className="hidden md:inline">Portail &amp;</span> Dépôt Express
+            <Lock className="w-3.5 h-3.5 text-[#B79661]" />
+            <span>Espace Client</span>
           </button>
 
-          {/* RDV Booking CTA */}
+          {/* Booking CTA Button */}
           <button
             onClick={onOpenBooking}
-            className="id-button id-button--accent text-xs"
+            className="cabinet-btn-primary text-xs py-2 px-4"
           >
             <Calendar className="w-3.5 h-3.5" />
-            Prendre RDV
+            <span>Prendre RDV</span>
           </button>
         </div>
 
-        {/* Mobile menu toggle */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 rounded-lg bg-slate-900 text-slate-300 border border-slate-800 hover:text-white"
-          aria-label="Toggle Navigation"
-        >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        {/* Mobile Hamburger Button */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-lg text-[#142B45] hover:bg-[#F7F6F2] focus:outline-none"
+            aria-label="Menu"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-slate-800 bg-slate-950 px-4 pt-3 pb-6 space-y-4">
-          <nav className="flex flex-col space-y-1.5">
+        <div className="lg:hidden border-t border-[#E8E6DF] bg-white px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top-2 duration-200">
+          <nav className="flex flex-col space-y-1">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  aria-current={isActive ? 'page' : undefined}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`id-nav-item text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'is-active bg-amber-500 text-slate-950 font-bold'
-                      : 'text-slate-300 hover:bg-slate-900'
+                      ? 'bg-[#142B45] text-white font-bold'
+                      : 'text-[#4B5563] hover:bg-[#F7F6F2] hover:text-[#142B45]'
                   }`}
                 >
-                  {item.label[lang]}
+                  {item.label[lang] || item.label.fr}
                 </NavLink>
               );
             })}
           </nav>
 
-          <div className="pt-3 border-t border-slate-800 flex flex-col gap-2.5">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
-              <span>Langue / Taal / Language:</span>
-              <div className="flex gap-1">
-                {(['fr', 'nl', 'en'] as Language[]).map((l) => (
-                  <button
-                    key={l}
-                    onClick={() => setLang(l)}
-                    aria-pressed={lang === l}
-                    className={`id-filter px-2 py-0.5 rounded text-xs uppercase ${
-                      lang === l ? 'is-selected bg-amber-500 text-slate-950 font-bold' : 'bg-slate-900 text-slate-400'
-                    }`}
-                  >
-                    {l}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {/* Mobile Direct Links to Specialist Pages */}
+          <div className="pt-2 border-t border-[#E8E6DF] space-y-1">
+            <span className="text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider px-3 block">
+              Accès directs spécialisés :
+            </span>
+            <Link
+              to="/creation-entreprise"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-lg text-xs text-[#142B45] hover:bg-[#F7F6F2] block font-medium"
+            >
+              → Création d'Entreprise &amp; SRL
+            </Link>
+            <Link
+              to="/fiscalite"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-lg text-xs text-[#142B45] hover:bg-[#F7F6F2] block font-medium"
+            >
+              → Fiscalité ISOC, IPP &amp; Contrôles
+            </Link>
+            <Link
+              to="/e-compta"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-lg text-xs text-[#142B45] hover:bg-[#F7F6F2] block font-medium"
+            >
+              → E-Compta &amp; Basecone
+            </Link>
+            <Link
+              to="/mentions-legales"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-lg text-xs text-[#6B7280] hover:bg-[#F7F6F2] block"
+            >
+              → Mentions Légales &amp; RGPD
+            </Link>
+            <Link
+              to="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-lg text-xs text-[#B79661] hover:bg-[#F7F6F2] block font-semibold"
+            >
+              🔒 Espace Administration
+            </Link>
+          </div>
 
+          {/* Mobile Actions */}
+          <div className="pt-3 border-t border-[#E8E6DF] flex flex-col gap-2.5">
             <button
               onClick={() => {
-                onOpenVault();
                 setMobileMenuOpen(false);
+                onOpenBooking();
               }}
-              className="id-button id-button--secondary w-full"
+              className="cabinet-btn-primary w-full justify-center text-xs py-2.5"
             >
-              <Lock className="w-4 h-4 text-amber-400" />
-              Espace Client &amp; Dépôt Sécurisé
+              <Calendar className="w-4 h-4" />
+              Prendre Rendez-vous
             </button>
 
             <button
               onClick={() => {
-                onOpenBooking();
                 setMobileMenuOpen(false);
+                onOpenVault();
               }}
-              className="id-button id-button--accent w-full"
+              className="cabinet-btn-secondary w-full justify-center text-xs py-2.5"
             >
-              <Calendar className="w-4 h-4" />
-              Prendre un Rendez-vous en Ligne
+              <Lock className="w-4 h-4 text-[#B79661]" />
+              Espace Client / Dépôt Express
             </button>
           </div>
         </div>
       )}
+
     </header>
   );
 };

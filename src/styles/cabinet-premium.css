@@ -1,0 +1,401 @@
+/* ==========================================================================
+   FIDCOGEST — THÈME CABINET PREMIUM
+   Identité Institutionnelle & Élégante pour Cabinet d'Expertise Comptable ITAA
+   
+   Palette Officielle :
+   - Bleu nuit :            #142B45
+   - Bleu profond :         #1D3B5C
+   - Or discret :           #B79661 (accents, dorures discrètes, sceau ITAA)
+   - Blanc cassé / ivoire : #F7F6F2 (fond de page apaisant, lumineux)
+   - Blanc pur :            #FFFFFF (surfaces des cartes & conteneurs)
+   - Gris texte :           #4B5563 (corps de texte & paragraphes)
+   - Anthracite doux :      #1F2937 (titres & contrastes majeurs)
+   - Bordures subtiles :    #E8E6DF (finesse des délimitations)
+   ========================================================================== */
+
+:root {
+  --prem-midnight: #142B45;
+  --prem-deep-blue: #1D3B5C;
+  --prem-gold: #B79661;
+  --prem-gold-hover: #9E7D49;
+  --prem-gold-soft: rgba(183, 150, 97, 0.1);
+  --prem-gold-subtle: rgba(183, 150, 97, 0.05);
+  --prem-ivory: #F7F6F2;
+  --prem-white: #FFFFFF;
+  --prem-text-gray: #4B5563;
+  --prem-anthracite: #1F2937;
+  --prem-border: #E8E6DF;
+  --prem-border-focus: #B79661;
+  
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-cinzel: 'Cinzel', serif;
+}
+
+/* --------------------------------------------------------------------------
+   Structure globale & fond de page
+   -------------------------------------------------------------------------- */
+body {
+  background-color: #F7F6F2 !important;
+  color: #1F2937 !important;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.cabinet-premium,
+.fid-prestige {
+  background-color: #F7F6F2;
+  color: #1F2937;
+  font-family: var(--font-sans);
+}
+
+/* Supprimer absolument tout quadrillage ou effet dashboard résiduel */
+.cabinet-premium [class*="bg-[linear-gradient(to_right"],
+.cabinet-premium [class*="grid-pattern"],
+.fid-prestige [class*="bg-[linear-gradient(to_right"] {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Typographie Institutionnelle Noble
+   -------------------------------------------------------------------------- */
+.cabinet-premium h1,
+.cabinet-premium h2,
+.cabinet-premium .font-serif-title {
+  font-family: var(--font-serif);
+  color: #142B45;
+  letter-spacing: -0.015em;
+  font-weight: 700;
+}
+
+.cabinet-premium h3,
+.cabinet-premium h4,
+.cabinet-premium .font-display {
+  font-family: var(--font-display);
+  color: #142B45;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.cabinet-premium .font-cinzel {
+  font-family: var(--font-cinzel);
+  letter-spacing: 0.06em;
+}
+
+.cabinet-premium p {
+  color: #4B5563;
+  line-height: 1.68;
+}
+
+/* --------------------------------------------------------------------------
+   En-tête de page (Header & Navigation)
+   -------------------------------------------------------------------------- */
+.cabinet-navbar {
+  background-color: #FFFFFF !important;
+  border-bottom: 1px solid #E8E6DF !important;
+  box-shadow: 0 2px 14px rgba(20, 43, 69, 0.04) !important;
+}
+
+/* Micro-barre d'annonce institutionnelle supérieure */
+.cabinet-topbar {
+  background-color: #142B45;
+  color: #CBD6E0;
+  border-bottom: 1px solid #1D3B5C;
+  font-size: 0.78rem;
+}
+
+.cabinet-topbar .text-gold {
+  color: #D9BD8E;
+}
+
+/* Liens de navigation principale */
+.cabinet-nav-link {
+  color: #4B5563;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  transition: all 0.18s ease;
+  position: relative;
+}
+
+.cabinet-nav-link:hover {
+  color: #142B45;
+  background-color: rgba(20, 43, 69, 0.04);
+}
+
+.cabinet-nav-link.active,
+.cabinet-nav-link[aria-current='page'] {
+  color: #142B45;
+  font-weight: 700;
+}
+
+.cabinet-nav-link.active::after,
+.cabinet-nav-link[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0.85rem;
+  right: 0.85rem;
+  height: 2px;
+  background-color: #B79661;
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Cartes & Conteneurs Premium (surfaces blanches soyeuses)
+   -------------------------------------------------------------------------- */
+.cabinet-card {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E8E6DF !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 24px rgba(20, 43, 69, 0.04) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.cabinet-card:hover {
+  border-color: #B79661 !important;
+  box-shadow: 0 12px 36px rgba(20, 43, 69, 0.08) !important;
+  transform: translateY(-2px);
+}
+
+.cabinet-card-muted {
+  background-color: #FAF9F6 !important;
+  border: 1px solid #E8E6DF !important;
+  border-radius: 12px !important;
+}
+
+.cabinet-card-dark {
+  background-color: #142B45 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #1D3B5C !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(20, 43, 69, 0.15) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Boutons & Actions
+   -------------------------------------------------------------------------- */
+/* Bouton Principal : Bleu Nuit Institutionnel */
+.cabinet-btn-primary {
+  background-color: #142B45 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #142B45 !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  border-radius: 10px !important;
+  padding: 0.65rem 1.35rem !important;
+  box-shadow: 0 4px 14px rgba(20, 43, 69, 0.14) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+
+.cabinet-btn-primary:hover {
+  background-color: #1D3B5C !important;
+  border-color: #B79661 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(20, 43, 69, 0.18) !important;
+}
+
+.cabinet-btn-primary :is(span, svg) {
+  color: #FFFFFF !important;
+}
+
+/* Bouton Secondaire : Blanc Pur avec bordure fine */
+.cabinet-btn-secondary {
+  background-color: #FFFFFF !important;
+  color: #142B45 !important;
+  border: 1px solid #D1D5DB !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  border-radius: 10px !important;
+  padding: 0.65rem 1.25rem !important;
+  box-shadow: 0 2px 6px rgba(20, 43, 69, 0.03) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.18s ease !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+
+.cabinet-btn-secondary:hover {
+  background-color: #F7F6F2 !important;
+  border-color: #B79661 !important;
+  color: #142B45 !important;
+}
+
+/* Bouton Or / Sceau de prestige */
+.cabinet-btn-gold {
+  background: linear-gradient(135deg, #B79661 0%, #A2804A 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid #9E7D49 !important;
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  border-radius: 10px !important;
+  padding: 0.65rem 1.35rem !important;
+  box-shadow: 0 4px 14px rgba(183, 150, 97, 0.22) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+
+.cabinet-btn-gold:hover {
+  background: linear-gradient(135deg, #C4A572 0%, #B79661 100%) !important;
+  transform: translateY(-1px) !important;
+}
+
+.cabinet-btn-gold :is(span, svg) {
+  color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   Badges & Sceaux Officiels
+   -------------------------------------------------------------------------- */
+.cabinet-badge-itaa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: rgba(183, 150, 97, 0.1);
+  border: 1px solid rgba(183, 150, 97, 0.35);
+  color: #8C6A34;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.cabinet-badge-neutral {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #F0EEE9;
+  border: 1px solid #E2DFD8;
+  color: #4B5563;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Champs de saisie & Formulaires
+   -------------------------------------------------------------------------- */
+.cabinet-input {
+  background-color: #FFFFFF !important;
+  border: 1px solid #D1D5DB !important;
+  border-radius: 10px !important;
+  color: #1F2937 !important;
+  padding: 0.65rem 1rem !important;
+  font-size: 0.875rem !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  width: 100% !important;
+}
+
+.cabinet-input:focus {
+  outline: none !important;
+  border-color: #B79661 !important;
+  box-shadow: 0 0 0 3px rgba(183, 150, 97, 0.18) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Tableaux & Calendriers Fiscaux
+   -------------------------------------------------------------------------- */
+.cabinet-table-wrapper {
+  background: #FFFFFF;
+  border: 1px solid #E8E6DF;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(20, 43, 69, 0.03);
+}
+
+.cabinet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.cabinet-table th {
+  background-color: #F8F7F4;
+  color: #142B45;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.9rem 1.15rem;
+  border-bottom: 1px solid #E8E6DF;
+}
+
+.cabinet-table td {
+  padding: 0.9rem 1.15rem;
+  border-bottom: 1px solid #F0EFEA;
+  color: #4B5563;
+}
+
+.cabinet-table tr:hover td {
+  background-color: #FCFBF9;
+}
+
+/* --------------------------------------------------------------------------
+   Modales & Fenêtres contextuelles
+   -------------------------------------------------------------------------- */
+.cabinet-modal-backdrop {
+  background-color: rgba(20, 43, 69, 0.6) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+.cabinet-modal-dialog {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E8E6DF !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 60px rgba(20, 43, 69, 0.22) !important;
+  overflow: hidden !important;
+}
+
+.cabinet-modal-header {
+  background-color: #142B45 !important;
+  color: #FFFFFF !important;
+  padding: 1.25rem 1.5rem !important;
+  border-bottom: 1px solid #1D3B5C !important;
+}
+
+/* --------------------------------------------------------------------------
+   Pied de page (Footer)
+   -------------------------------------------------------------------------- */
+.cabinet-footer {
+  background-color: #142B45 !important;
+  color: #94A3B8 !important;
+  border-top: 1px solid #1D3B5C !important;
+}
+
+.cabinet-footer h4,
+.cabinet-footer .text-white {
+  color: #FFFFFF !important;
+}
+
+.cabinet-footer a {
+  color: #CBD5E1 !important;
+  transition: color 0.15s ease !important;
+}
+
+.cabinet-footer a:hover {
+  color: #B79661 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive & Écrans mobiles
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .cabinet-hero-title {
+    font-size: 2.15rem !important;
+    line-height: 1.2 !important;
+  }
+}

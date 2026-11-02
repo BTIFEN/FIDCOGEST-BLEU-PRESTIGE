@@ -263,6 +263,77 @@ app.post('/api/simulate-tax', (req, res) => {
   }
 });
 
+// =========================================================================
+// Cabinet Content Administration API (Persistent storage in data/cabinet-content.json)
+// =========================================================================
+const CABINET_CONTENT_FILE = path.resolve(__dirname, 'data', 'cabinet-content.json');
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'fidcogest2026';
+
+// Helper to safely read cabinet content
+function getCabinetContent() {
+  try {
+    if (fs.existsSync(CABINET_CONTENT_FILE)) {
+      const data = fs.readFileSync(CABINET_CONTENT_FILE, 'utf-8');
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error('[Fidcogest] Erreur lecture cabinet-content.json:', err);
+  }
+  return null;
+}
+
+// GET active cabinet configuration
+app.get('/api/cabinet-config', (_req, res) => {
+  const content = getCabinetContent();
+  if (!content) {
+    return res.status(404).json({ error: 'Configuration introuvable.' });
+  }
+  return res.json(content);
+});
+
+// POST Admin login check
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (!password || password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Mot de passe d\'administration invalide.' });
+  }
+  // Return a simple session token
+  return res.json({ success: true, token: 'token-admin-fidcogest-' + Date.now() });
+});
+
+// POST update cabinet configuration
+app.post('/api/cabinet-config', (req, res) => {
+  const authHeader = req.headers.authorization;
+  const adminPassword = req.headers['x-admin-password'] || req.body._adminPassword;
+
+  // Simple auth validation
+  const isValidAuth =
+    (authHeader && authHeader.startsWith('Bearer token-admin-fidcogest-')) ||
+    adminPassword === ADMIN_PASSWORD;
+
+  if (!isValidAuth) {
+    return res.status(403).json({ error: 'Accès non autorisé à l\'administration.' });
+  }
+
+  try {
+    const updatedContent = req.body;
+    delete updatedContent._adminPassword;
+
+    // Ensure data directory exists
+    const dir = path.dirname(CABINET_CONTENT_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(updatedContent, null, 2), 'utf-8');
+    console.log('[Fidcogest] Configuration du cabinet mise à jour avec succès.');
+    return res.json({ success: true, message: 'Configuration enregistrée avec succès.' });
+  } catch (err: any) {
+    console.error('[Fidcogest] Erreur sauvegarde cabinet-content.json:', err);
+    return res.status(500).json({ error: 'Échec de la sauvegarde des contenus.' });
+  }
+});
+
 // Serve frontend in production or integrate Vite middleware in dev
 const isProduction =
   process.env.NODE_ENV === 'production' ||
