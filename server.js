@@ -231,7 +231,7 @@ app.post("/api/simulate-tax", (req, res) => {
     return res.status(500).json({ error: "Erreur de simulation fiscale." });
   }
 });
-var isProduction = process.env.NODE_ENV === "production" || process.env.NODE_ENV !== "development" && fs.existsSync(path.join(__dirname, "dist", "index.html"));
+var isProduction = process.env.NODE_ENV === "production" || !process.env.VITE_DEV && fs.existsSync(path.join(__dirname, "dist", "index.html"));
 if (isProduction) {
   app.use(express.static(path.join(__dirname, "dist")));
   app.get("*", (_req, res) => {

@@ -266,7 +266,7 @@ app.post('/api/simulate-tax', (req, res) => {
 // Serve frontend in production or integrate Vite middleware in dev
 const isProduction =
   process.env.NODE_ENV === 'production' ||
-  (process.env.NODE_ENV !== 'development' && fs.existsSync(path.join(__dirname, 'dist', 'index.html')));
+  (!process.env.VITE_DEV && fs.existsSync(path.join(__dirname, 'dist', 'index.html')));
 
 if (isProduction) {
   app.use(express.static(path.join(__dirname, 'dist')));
