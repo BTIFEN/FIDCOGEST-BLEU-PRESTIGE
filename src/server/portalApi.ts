@@ -91,6 +91,7 @@ export function setupPortalApi(app: express.Express) {
     }
 
     // Vérification du mot de passe
+    if (!user.passwordHash || !user.passwordSalt) return res.status(401).json({ error: 'Identifiants invalides.' });
     if (user.passwordHash && user.passwordSalt) {
       const isValid = verifyPassword(password, user.passwordHash, user.passwordSalt);
       if (!isValid) {
@@ -98,6 +99,8 @@ export function setupPortalApi(app: express.Express) {
         return res.status(401).json({ error: 'Identifiants invalides.' });
       }
     }
+
+    if (!user.mfaEnabled || !user.mfaSecretEncrypted) return res.status(403).json({ error: 'Double authentification non configurée.' });
 
     // Émission du challenge MFA temporaire
     const challengeToken = crypto.randomBytes(24).toString('hex');
@@ -121,38 +124,6 @@ export function setupPortalApi(app: express.Express) {
     });
   });
 
-  // Endpoint d'audit réservé au mode non-production : calcul du code TOTP sans exposer de secret brut
-  router.post('/auth/current-totp', (req, res) => {
-    if (process.env.NODE_ENV === 'production' && process.env.ENABLE_SECURITY_TEST_SUITE !== 'true') {
-      return res.status(404).json({ error: 'Endpoint indisponible en environnement de production.' });
-    }
-
-    const { challengeToken } = req.body;
-    if (!challengeToken) {
-      return res.status(400).json({ error: 'challengeToken requis.' });
-    }
-
-    const challenge = mfaChallenges.get(challengeToken);
-    if (!challenge || Date.now() > challenge.expiresAt) {
-      return res.status(401).json({ error: 'Challenge invalide ou expiré.' });
-    }
-
-    const user = db.getUserById(challenge.userId);
-    if (!user || !user.mfaSecretEncrypted) {
-      return res.status(404).json({ error: 'MFA non configuré pour cet utilisateur.' });
-    }
-
-    const secretBase32 = decryptData(user.mfaSecretEncrypted).toString('utf-8');
-    const totpCode = generateTotpCode(secretBase32);
-    const secondsRemaining = 30 - (Math.floor(Date.now() / 1000) % 30);
-
-    // ZÉRO exposition du secretBase32 ni de l'otpauthUri
-    return res.json({
-      totpCode,
-      secondsRemaining
-    });
-  });
-
   router.post('/auth/verify-mfa', (req, res) => {
     const { challengeToken, totpCode, recoveryCode } = req.body;
     const ip = getClientIp(req);
@@ -169,8 +140,8 @@ export function setupPortalApi(app: express.Express) {
     }
 
     const user = db.getUserById(challenge.userId);
-    if (!user) {
-      return res.status(404).json({ error: 'Utilisateur introuvable.' });
+    if (!user || user.status !== 'actif') {
+      return res.status(401).json({ error: 'Session MFA invalide.' });
     }
 
     let isMfaValid = false;

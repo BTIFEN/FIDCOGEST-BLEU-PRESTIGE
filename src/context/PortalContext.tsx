@@ -14,7 +14,6 @@ import {
 
 interface PortalContextType {
   currentUser: PortalUser | null;
-  setCurrentUser: (user: PortalUser | null) => void;
   users: PortalUser[];
   companies: CompanyDossier[];
   activeCompany: CompanyDossier | null;
@@ -66,7 +65,6 @@ interface PortalContextType {
   verifyMfa: (challengeToken: string, totpCode?: string, recoveryCode?: string) => Promise<{ success: boolean; error?: string }>;
   setupMfa: () => Promise<{ secretBase32: string; otpauthUri: string; recoveryCodes: string[] } | null>;
   logout: () => Promise<void>;
-  loginAsDemoRole: (email: string) => Promise<void>;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -415,42 +413,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     localStorage.removeItem('fidco_session_token');
   };
 
-  // Helper pour basculer facilement de rôle en démo / audit (authentification serveur réelle)
-  const loginAsDemoRole = async (email: string) => {
-    try {
-      // Pour les tests, on utilise le mot de passe initial certifié Fidcogest2026!
-      const step1 = await loginWithPassword(email, 'Fidcogest2026!');
-      if (step1.challengeToken) {
-        // En mode démo local, le serveur calcule le code TOTP réel à la seconde près
-        const verifyRes = await fetch('/api/portal/auth/verify-mfa', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            challengeToken: step1.challengeToken,
-            totpCode: '000000', // Test trigger
-            recoveryCode: 'DEMO-OVERRIDE'
-          })
-        });
-        
-        // Si besoin de login direct, on récupère la session
-        const loginDirect = await fetch('/api/portal/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: 'Fidcogest2026!' })
-        });
-        const dJson = await loginDirect.json();
-        if (dJson.challengeToken) {
-          // Si le challenge exige TOTP, on attend la saisie utilisateur
-        }
-      }
-    } catch (_) {}
-  };
-
   return (
     <PortalContext.Provider
       value={{
         currentUser,
-        setCurrentUser,
         users,
         companies,
         activeCompany,
@@ -480,8 +446,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loginWithPassword,
         verifyMfa,
         setupMfa,
-        logout,
-        loginAsDemoRole
+        logout
       }}
     >
       {children}

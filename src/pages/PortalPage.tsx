@@ -8,7 +8,6 @@ import { AdminSecurityView } from '../components/portal/AdminSecurityView';
 import { DocumentPreviewModal } from '../components/portal/DocumentPreviewModal';
 import { MissingRequestModal } from '../components/portal/MissingRequestModal';
 import { AuthLoginModal } from '../components/portal/AuthLoginModal';
-import { ValidationSuiteModal } from '../components/portal/ValidationSuiteModal';
 import {
   ShieldCheck,
   Building,
@@ -29,7 +28,6 @@ export const PortalPage: React.FC = () => {
   const navigate = useNavigate();
   const {
     currentUser,
-    setCurrentUser,
     users,
     companies,
     activeCompany,
@@ -42,18 +40,9 @@ export const PortalPage: React.FC = () => {
   const [missingModalOpen, setMissingModalOpen] = useState<boolean>(false);
   const [targetDocForMissing, setTargetDocForMissing] = useState<PortalDocument | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
-  const [validationSuiteOpen, setValidationSuiteOpen] = useState<boolean>(false);
 
   // For Admin or Supervisor: switch between views (Client perspective, Manager Cockpit, or Admin)
   const [viewPerspective, setViewPerspective] = useState<'default' | 'client_preview' | 'manager_preview'>('default');
-
-  const handleRoleChange = (roleOrUserId: string) => {
-    const found = users.find((u) => u.id === roleOrUserId);
-    if (found) {
-      setCurrentUser(found);
-      setViewPerspective('default');
-    }
-  };
 
   const handleOpenMissingModal = (doc?: PortalDocument) => {
     setTargetDocForMissing(doc || null);
@@ -123,46 +112,6 @@ export const PortalPage: React.FC = () => {
 
           {/* Quick Role Switcher Toolbar (DEMO & TEST ENGINE) */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            {/* Validation Suite Button - STRICTEMENT ISOLÉ AU RÔLE ADMIN CABINET */}
-            {currentUser.role === 'admin' && (
-              <button
-                onClick={() => setValidationSuiteOpen(true)}
-                className="px-2.5 py-1.5 rounded-lg bg-[#B79661] hover:bg-[#C5A059] text-[#142B45] text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
-                title="Banc d'Essai & Recette Technique Interne (Réservé Administration)"
-              >
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span className="hidden lg:inline">Banc d'Essai (Admin)</span>
-                <span className="lg:hidden">Tests</span>
-              </button>
-            )}
-
-            {/* Role Switcher Dropdown */}
-            <div className="flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-lg px-2.5 py-1 text-xs">
-              <User className="w-3.5 h-3.5 text-[#F3D085]" />
-              <span className="text-[#E2E8F0] hidden sm:inline">Rôle actif :</span>
-              <select
-                value={currentUser.id}
-                onChange={(e) => handleRoleChange(e.target.value)}
-                className="bg-transparent text-white font-bold text-xs cursor-pointer outline-none border-none pr-1"
-              >
-                <option value="usr-client-1" className="text-[#142B45]">
-                  👤 Client : Marie Vandamme (SRL Louise &amp; Ganshoren)
-                </option>
-                <option value="usr-client-2" className="text-[#142B45]">
-                  👤 Client : Philippe De Smet (BVBA TechConsult)
-                </option>
-                <option value="usr-manager-1" className="text-[#142B45]">
-                  👔 Gestionnaire : Sarah Benali
-                </option>
-                <option value="usr-supervisor-1" className="text-[#142B45]">
-                  ⚖️ Superviseur : Paul Holl Mpeck (ITAA)
-                </option>
-                <option value="usr-admin-1" className="text-[#142B45]">
-                  🛡️ Admin Cabinet : Fidcogest Direction
-                </option>
-              </select>
-            </div>
-
             {/* Login / Switch Account Button */}
             <button
               onClick={() => setAuthModalOpen(true)}
@@ -276,10 +225,6 @@ export const PortalPage: React.FC = () => {
         onClose={() => setAuthModalOpen(false)}
       />
 
-      <ValidationSuiteModal
-        isOpen={validationSuiteOpen}
-        onClose={() => setValidationSuiteOpen(false)}
-      />
 
     </div>
   );

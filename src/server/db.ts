@@ -17,7 +17,7 @@ import {
   SEED_MESSAGES,
   SEED_SECURITY_LOGS
 } from '../data/portalSeedData';
-import { hashPassword, generateBase32Secret, encryptData, generateRecoveryCodes } from './security';
+import { hashPassword, verifyPassword } from './security';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,6 +75,7 @@ class PersistentDatabase {
     this.ensureDirectories();
     this.state = this.loadOrInit();
     this.runMigrations();
+    this.revokeExposedDemoCredentials();
   }
 
   private ensureDirectories() {
@@ -104,100 +105,18 @@ class PersistentDatabase {
       }
     }
 
-    // Initialisation d'une nouvelle base persistante
-    const defaultPassword = hashPassword('Fidcogest2026!');
-    const initialUsers: StoredUser[] = [
-      {
-        id: 'usr-client-1',
-        email: 'marie.vandamme@louise-immo.be',
-        fullName: 'Marie Vandamme',
-        role: 'client',
-        phone: '+32 475 22 33 44',
-        assignedCompanyIds: ['cie-1', 'cie-2'],
-        status: 'actif',
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: '2024-03-10'
-      },
-      {
-        id: 'usr-client-2',
-        email: 'philippe@techconsult.be',
-        fullName: 'Philippe De Smet',
-        role: 'client',
-        phone: '+32 486 99 88 77',
-        assignedCompanyIds: ['cie-3'],
-        status: 'actif',
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: '2024-06-15'
-      },
-      {
-        id: 'usr-manager-1',
-        email: 'sarah.benali@fidcogest.be',
-        fullName: 'Sarah Benali',
-        role: 'manager',
-        phone: '+32 2 425 18 58',
-        assignedCompanyIds: ['cie-1', 'cie-3'],
-        status: 'actif',
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: '2022-09-01'
-      },
-      {
-        id: 'usr-supervisor-1',
-        email: 'paul.mpeck@fidcogest.be',
-        fullName: 'Paul Holl Mpeck (Expert ITAA)',
-        role: 'supervisor',
-        phone: '+32 2 425 18 58',
-        assignedCompanyIds: ['cie-1', 'cie-2', 'cie-3', 'cie-4'],
-        status: 'actif',
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: '2008-01-01'
-      },
-      {
-        id: 'usr-admin-1',
-        email: 'admin@fidcogest.be',
-        fullName: 'Administrateur Cabinet Fidcogest',
-        role: 'admin',
-        phone: '+32 2 425 18 58',
-        assignedCompanyIds: ['cie-1', 'cie-2', 'cie-3', 'cie-4'],
-        status: 'actif',
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: '2008-01-01'
-      }
-    ];
-
-    // Configurer les secrets TOTP RFC 6238 initiaux pour les comptes
-    initialUsers.forEach((u) => {
-      const base32 = generateBase32Secret();
-      u.mfaSecretEncrypted = encryptData(base32);
-      const { hashedCodes } = generateRecoveryCodes(10);
-      u.recoveryCodesHashed = hashedCodes;
-    });
-
+    // No automatic demonstration users in production.
+    const fixtureMode = process.env.NODE_ENV === 'test' && process.env.FIDCOGEST_TEST_FIXTURES === 'true';
     const initialState: DatabaseState = {
-      version: 1,
-      schema_migrations: [
-        {
-          version: 1,
-          appliedAt: new Date().toISOString(),
-          description: 'Création initiale du schéma relationnel Fidcogest V1'
-        }
-      ],
-      users: initialUsers,
+      version: 2,
+      schema_migrations: [{ version: 2, appliedAt: new Date().toISOString(), description: 'Initialisation sans comptes publics de demonstration' }],
+      users: [],
       sessions: [],
-      companies: SEED_COMPANIES,
-      documents: SEED_DOCUMENTS,
-      missingRequests: SEED_MISSING_REQUESTS,
-      messages: SEED_MESSAGES,
-      auditLogs: SEED_SECURITY_LOGS
+      companies: fixtureMode ? SEED_COMPANIES : [],
+      documents: fixtureMode ? SEED_DOCUMENTS : [],
+      missingRequests: fixtureMode ? SEED_MISSING_REQUESTS : [],
+      messages: fixtureMode ? SEED_MESSAGES : [],
+      auditLogs: fixtureMode ? SEED_SECURITY_LOGS : []
     };
 
     this.save(initialState);
@@ -244,6 +163,37 @@ class PersistentDatabase {
       this.state.version = 2;
       this.save();
       console.log('[Database] Migration V2 appliquée avec succès.');
+    }
+  }
+
+  private revokeExposedDemoCredentials(): void {
+    const oldIds = new Set(['usr-client-1', 'usr-client-2', 'usr-manager-1', 'usr-supervisor-1', 'usr-admin-1']);
+    const exposedPassword = process.env.PORTAL_REVOKE_EXPOSED_PASSWORD;
+    const affected = new Set<string>();
+    let updated = false;
+    for (const user of this.state.users) {
+      let compromised = oldIds.has(user.id);
+      if (!compromised && exposedPassword && user.passwordHash && user.passwordSalt) {
+        try { compromised = verifyPassword(exposedPassword, user.passwordHash, user.passwordSalt); }
+        catch { compromised = false; }
+      }
+      if (!compromised) continue;
+      affected.add(user.id);
+      const replacement = hashPassword(crypto.randomBytes(48).toString('hex'));
+      user.passwordHash = replacement.hash;
+      user.passwordSalt = replacement.salt;
+      user.status = 'suspendu';
+      user.mfaSecretEncrypted = undefined;
+      user.recoveryCodesHashed = [];
+      user.inviteToken = undefined;
+      user.inviteExpiresAt = undefined;
+      updated = true;
+    }
+    const count = this.state.sessions.length;
+    this.state.sessions = this.state.sessions.filter(session => !affected.has(session.userId));
+    if (updated || count !== this.state.sessions.length) {
+      this.save();
+      console.warn('[FIDCOGEST] Exposed demonstration identities suspended and sessions revoked.');
     }
   }
 

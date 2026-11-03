@@ -19,8 +19,8 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
   // Mode: 'login' | 'mfa' | 'recovery' | 'invite'
   const [authMode, setAuthMode] = useState<'login' | 'mfa' | 'recovery' | 'invite'>('login');
 
-  const [email, setEmail] = useState<string>('marie.vandamme@louise-immo.be');
-  const [password, setPassword] = useState<string>('Fidcogest2026!');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [challengeToken, setChallengeToken] = useState<string | null>(null);
   const [totpCode, setTotpCode] = useState<string>('');
   const [recoveryCode, setRecoveryCode] = useState<string>('');
@@ -28,11 +28,13 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Live TOTP helper for testing/audit
-  const [liveTotp, setLiveTotp] = useState<{
-    code: string;
-    remainingSeconds: number;
-  } | null>(null);
+  React.useEffect(() => {
+    if (!isOpen) {
+      setEmail(''); setPassword(''); setTotpCode('');
+      setRecoveryCode(''); setInviteToken(''); setChallengeToken(null);
+      setErrorMsg(null); setAuthMode('login');
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -52,21 +54,6 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
       if (result.requireMfa && result.challengeToken) {
         setChallengeToken(result.challengeToken);
         setAuthMode('mfa');
-        // Fetch current live TOTP info for test environment only
-        try {
-          const totpRes = await fetch('/api/portal/auth/current-totp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ challengeToken: result.challengeToken })
-          });
-          if (totpRes.ok) {
-            const totpData = await totpRes.json();
-            setLiveTotp({
-              code: totpData.totpCode,
-              remainingSeconds: totpData.secondsRemaining
-            });
-          }
-        } catch (_) {}
       } else {
         onClose();
       }
@@ -115,33 +102,6 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleQuickFillRole = (userEmail: string) => {
-    setEmail(userEmail);
-    setPassword('Fidcogest2026!');
-    setAuthMode('login');
-    setErrorMsg(null);
-    setLiveTotp(null);
-  };
-
-  const refreshLiveTotp = async () => {
-    if (!challengeToken) return;
-    try {
-      const totpRes = await fetch('/api/portal/auth/current-totp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ challengeToken })
-      });
-      if (totpRes.ok) {
-        const totpData = await totpRes.json();
-        setLiveTotp({
-          code: totpData.totpCode,
-          remainingSeconds: totpData.secondsRemaining
-        });
-        setTotpCode(totpData.totpCode);
-      }
-    } catch (_) {}
   };
 
   return (
@@ -245,39 +205,7 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
                 Consultez Google Authenticator, Microsoft Authenticator ou 1Password. Le code change toutes les 30 secondes.
               </p>
               
-              {liveTotp && (
-                <div className="mt-2 p-2.5 bg-white rounded-lg border border-emerald-200 text-left space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-emerald-800 flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                      Code TOTP actuel (Secret RFC 6238) :
-                    </span>
-                    <button
-                      type="button"
-                      onClick={refreshLiveTotp}
-                      className="text-[10px] text-[#142B45] underline flex items-center gap-1 hover:text-[#B79661]"
-                    >
-                      <RefreshCw className="w-3 h-3" />
-                      Actualiser
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-base font-bold text-emerald-700 tracking-widest">
-                      {liveTotp.code}
-                    </span>
-                    <span className="text-[10px] text-slate-500 font-mono">
-                      Expire dans {liveTotp.remainingSeconds}s
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setTotpCode(liveTotp.code)}
-                    className="text-[10px] text-emerald-800 font-semibold underline block"
-                  >
-                    Remplir automatiquement le code actif ({liveTotp.code})
-                  </button>
-                </div>
-              )}
+
             </div>
 
             <div>
@@ -414,42 +342,6 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
           </form>
         )}
 
-        {/* QUICK TEST PROFILES SELECTOR */}
-        <div className="border-t border-[#E8E6DF] pt-4 space-y-2">
-          <span className="text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider block">
-            Profils d'audit certifiés ITAA (Mot de passe : Fidcogest2026!) :
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
-            <button
-              type="button"
-              onClick={() => handleQuickFillRole('marie.vandamme@louise-immo.be')}
-              className="p-2 rounded-lg bg-[#FAF9F6] border border-[#E8E6DF] hover:border-[#142B45] text-left text-[#142B45] font-medium"
-            >
-              👤 Marie Vandamme (SRL Louise Immo)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickFillRole('philippe@techconsult.be')}
-              className="p-2 rounded-lg bg-[#FAF9F6] border border-[#E8E6DF] hover:border-[#142B45] text-left text-[#142B45] font-medium"
-            >
-              👤 Philippe De Smet (TechConsult SRL)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickFillRole('sarah.benali@fidcogest.be')}
-              className="p-2 rounded-lg bg-[#FAF9F6] border border-[#E8E6DF] hover:border-[#142B45] text-left text-[#142B45] font-medium"
-            >
-              👔 Sarah Benali (Gestionnaire Dossiers)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickFillRole('paul.mpeck@fidcogest.be')}
-              className="p-2 rounded-lg bg-[#FAF9F6] border border-[#E8E6DF] hover:border-[#142B45] text-left text-[#142B45] font-medium"
-            >
-              ⚖️ Paul Holl Mpeck (Superviseur ITAA)
-            </button>
-          </div>
-        </div>
 
       </div>
     </div>
