@@ -9,10 +9,9 @@ import { Language } from './types';
 import { CabinetProvider } from './context/CabinetContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
-import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { BookingModal } from './components/BookingModal';
 import { DocumentVaultModal } from './components/DocumentVaultModal';
-import { TaxAssistantWidget } from './components/TaxAssistantWidget';
+import { FloatingActions } from './components/ui';
 import { CookieBanner } from './components/CookieBanner';
 import { LegalModal } from './components/LegalModal';
 
@@ -28,6 +27,9 @@ import { NewsPage } from './pages/NewsPage';
 import { ContactPage } from './pages/ContactPage';
 import { LegalPage } from './pages/LegalPage';
 import { AdminPage } from './pages/AdminPage';
+import { PortalPage } from './pages/PortalPage';
+import { PortalProvider } from './context/PortalContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -41,11 +43,44 @@ function ScrollToTop() {
 }
 
 function MainLayout() {
+  const { pathname } = useLocation();
+  const isPortal = pathname.startsWith('/portail') || pathname.startsWith('/espace-client');
+
   const [lang, setLang] = useState<Language>('fr');
 
   const [bookingOpen, setBookingOpen] = useState(false);
   const [vaultOpen, setVaultOpen] = useState(false);
   const [legalOpen, setLegalOpen] = useState(false);
+  const [activeFloatingWidget, setActiveFloatingWidget] = useState<'none' | 'whatsapp' | 'tax-assistant'>('none');
+
+  // Close floating widget drawers when any full modal opens
+  const handleOpenBooking = () => {
+    setActiveFloatingWidget('none');
+    setBookingOpen(true);
+  };
+
+  const handleOpenVault = () => {
+    setActiveFloatingWidget('none');
+    setVaultOpen(true);
+  };
+
+  const handleOpenLegal = () => {
+    setActiveFloatingWidget('none');
+    setLegalOpen(true);
+  };
+
+  // Dedicated portal interface without public site chrome
+  if (isPortal) {
+    return (
+      <div className="cabinet-premium fid-prestige min-h-screen flex flex-col font-sans bg-[#F7F6F2] text-[#1F2937]">
+        <ScrollToTop />
+        <Routes>
+          <Route path="/portail" element={<PortalPage />} />
+          <Route path="/espace-client" element={<PortalPage />} />
+        </Routes>
+      </div>
+    );
+  }
 
   return (
     <div className="cabinet-premium fid-prestige min-h-screen flex flex-col font-sans bg-[#F7F6F2] text-[#1F2937]">
@@ -55,8 +90,8 @@ function MainLayout() {
       <Navbar
         lang={lang}
         setLang={setLang}
-        onOpenBooking={() => setBookingOpen(true)}
-        onOpenVault={() => setVaultOpen(true)}
+        onOpenBooking={handleOpenBooking}
+        onOpenVault={handleOpenVault}
       />
 
       {/* Router Viewport */}
@@ -66,8 +101,9 @@ function MainLayout() {
             path="/"
             element={
               <HomePage
-                onOpenBooking={() => setBookingOpen(true)}
-                onOpenVault={() => setVaultOpen(true)}
+                lang={lang}
+                onOpenBooking={handleOpenBooking}
+                onOpenVault={handleOpenVault}
               />
             }
           />
@@ -75,7 +111,7 @@ function MainLayout() {
             path="/a-propos"
             element={
               <AboutPage
-                onOpenBooking={() => setBookingOpen(true)}
+                onOpenBooking={handleOpenBooking}
               />
             }
           />
@@ -83,7 +119,7 @@ function MainLayout() {
             path="/notre-equipe"
             element={
               <TeamPage
-                onOpenBooking={() => setBookingOpen(true)}
+                onOpenBooking={handleOpenBooking}
               />
             }
           />
@@ -91,8 +127,8 @@ function MainLayout() {
             path="/services"
             element={
               <ServicesPage
-                onOpenBooking={() => setBookingOpen(true)}
-                onOpenVault={() => setVaultOpen(true)}
+                onOpenBooking={handleOpenBooking}
+                onOpenVault={handleOpenVault}
               />
             }
           />
@@ -100,7 +136,7 @@ function MainLayout() {
             path="/creation-entreprise"
             element={
               <CreationEntreprisePage
-                onOpenBooking={() => setBookingOpen(true)}
+                onOpenBooking={handleOpenBooking}
               />
             }
           />
@@ -108,7 +144,7 @@ function MainLayout() {
             path="/fiscalite"
             element={
               <FiscalitePage
-                onOpenBooking={() => setBookingOpen(true)}
+                onOpenBooking={handleOpenBooking}
               />
             }
           />
@@ -116,7 +152,7 @@ function MainLayout() {
             path="/e-compta"
             element={
               <EComptaPage
-                onOpenVault={() => setVaultOpen(true)}
+                onOpenVault={handleOpenVault}
               />
             }
           />
@@ -125,32 +161,32 @@ function MainLayout() {
           <Route
             path="/contact"
             element={
-              <ContactPage onOpenBooking={() => setBookingOpen(true)} />
+              <ContactPage onOpenBooking={handleOpenBooking} />
             }
           />
           <Route path="/mentions-legales" element={<LegalPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/portail" element={<PortalPage />} />
+          <Route path="/espace-client" element={<PortalPage />} />
 
           {/* Catch-all fallback */}
           <Route
             path="*"
             element={
               <HomePage
-                onOpenBooking={() => setBookingOpen(true)}
-                onOpenVault={() => setVaultOpen(true)}
+                onOpenBooking={handleOpenBooking}
+                onOpenVault={handleOpenVault}
               />
             }
           />
         </Routes>
       </main>
 
-      {/* Floating Widgets & Interactive Features */}
-      <WhatsAppWidget
-        onOpenBooking={() => setBookingOpen(true)}
-        onOpenVault={() => setVaultOpen(true)}
+      {/* Floating Actions (Assistant IA & WhatsApp) */}
+      <FloatingActions
+        onOpenBooking={handleOpenBooking}
+        onOpenVault={handleOpenVault}
       />
-
-      <TaxAssistantWidget />
 
       {/* Modals & Dialogs */}
       <BookingModal
@@ -173,9 +209,9 @@ function MainLayout() {
 
       {/* Footer */}
       <Footer
-        onOpenBooking={() => setBookingOpen(true)}
-        onOpenVault={() => setVaultOpen(true)}
-        onOpenLegal={() => setLegalOpen(true)}
+        onOpenBooking={handleOpenBooking}
+        onOpenVault={handleOpenVault}
+        onOpenLegal={handleOpenLegal}
       />
 
     </div>
@@ -184,10 +220,16 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <CabinetProvider>
-        <MainLayout />
-      </CabinetProvider>
-    </BrowserRouter>
+    <ErrorBoundary fallbackTitle="FIDCOGEST — Protection Système Cabinet">
+      <BrowserRouter>
+        <CabinetProvider>
+          <ErrorBoundary fallbackTitle="Portail Documentaire Sécurisé — Incident Isolé">
+            <PortalProvider>
+              <MainLayout />
+            </PortalProvider>
+          </ErrorBoundary>
+        </CabinetProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }

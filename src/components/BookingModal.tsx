@@ -60,28 +60,28 @@ END:VCALENDAR`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#142B45]/60 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] my-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] my-8 animate-in fade-in zoom-in-95 duration-200 modal-white-card">
         
         {/* Modal Header */}
-        <div className="p-6 border-b border-[#E8E6DF] bg-[#F7F6F2] flex items-center justify-between">
+        <div className="p-6 border-b border-[#1D3B5C] bg-[#142B45] text-white flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-[#142B45] text-[#B79661] flex items-center justify-center font-serif text-lg font-bold shadow-xs">
-              <Calendar className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-xl bg-white/10 text-[#F3D085] border border-white/20 flex items-center justify-center font-serif text-lg font-bold shadow-xs">
+              <Calendar className="w-5 h-5 text-[#F3D085]" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-lg text-[#142B45]">
+              <h3 className="font-serif font-bold text-lg text-white">
                 Prise de Rendez-vous en Ligne
               </h3>
-              <p className="text-xs text-[#6B7280] flex items-center gap-1.5 font-sans mt-0.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#B79661]" />
+              <p className="text-xs text-[#E2E8F0] flex items-center gap-1.5 font-sans mt-0.5 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#F3D085]" />
                 Cabinet Fidcogest • Agendas Certifiés ITAA Synchronisés
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#142B45] hover:bg-white transition-colors"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />
@@ -90,7 +90,7 @@ END:VCALENDAR`;
 
         {/* Step Indicator */}
         {!isSubmitted && (
-          <div className="px-6 py-3 bg-white border-b border-[#E8E6DF] flex items-center justify-between text-xs font-sans">
+          <div className="px-6 py-3 bg-[#FAF9F6] border-b border-[#E8E6DF] flex items-center justify-between text-xs font-sans">
             {[
               { num: 1, label: 'Motif & Modalité' },
               { num: 2, label: 'Conseiller & Date' },
@@ -98,17 +98,21 @@ END:VCALENDAR`;
             ].map((s) => (
               <div key={s.num} className="flex items-center gap-2">
                 <span
+                  style={{ color: step >= s.num ? '#FFFFFF' : '#4B5563' }}
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                     step === s.num
                       ? 'bg-[#142B45] text-white shadow-xs'
                       : step > s.num
                       ? 'bg-[#B79661] text-white'
-                      : 'bg-[#F7F6F2] border border-[#E8E6DF] text-[#6B7280]'
+                      : 'bg-white border border-[#E8E6DF] text-[#4B5563]'
                   }`}
                 >
                   {s.num}
                 </span>
-                <span className={`text-xs ${step === s.num ? 'font-bold text-[#142B45]' : 'text-[#6B7280] hidden sm:inline'}`}>
+                <span
+                  style={{ color: step === s.num ? '#142B45' : '#4B5563' }}
+                  className={`text-xs ${step === s.num ? 'font-bold text-[#142B45]' : 'text-[#4B5563] hidden sm:inline'}`}
+                >
                   {s.label}
                 </span>
               </div>
@@ -184,20 +188,28 @@ END:VCALENDAR`;
                         'Bilan annuel & Clôture',
                         'Conseil fiscal ponctuel',
                         'Remise de documents / TVA'
-                      ].map((m) => (
-                        <button
-                          key={m}
-                          type="button"
-                          onClick={() => setBooking({ ...booking, motif: m as any })}
-                          className={`p-3.5 rounded-xl border text-left text-xs font-medium transition-all ${
-                            booking.motif === m
-                              ? 'bg-[#142B45] text-white border-[#142B45] shadow-xs'
-                              : 'bg-white border-[#E8E6DF] text-[#4B5563] hover:border-[#B79661] hover:text-[#142B45]'
-                          }`}
-                        >
-                          {m}
-                        </button>
-                      ))}
+                      ].map((m) => {
+                        const isSelected = booking.motif === m;
+                        return (
+                          <button
+                            key={m}
+                            type="button"
+                            onClick={() => setBooking({ ...booking, motif: m as any })}
+                            className={`p-3.5 rounded-xl border text-left text-xs font-medium transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#142B45] !text-white border-[#142B45] shadow-xs'
+                                : 'bg-white border-[#E8E6DF] text-[#374151] hover:border-[#B79661] hover:text-[#142B45]'
+                            }`}
+                          >
+                            <span
+                              style={{ color: isSelected ? '#FFFFFF' : '#374151' }}
+                              className={isSelected ? '!text-white text-white font-bold' : 'text-[#374151]'}
+                            >
+                              {m}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -218,14 +230,19 @@ END:VCALENDAR`;
                             key={mod.label}
                             type="button"
                             onClick={() => setBooking({ ...booking, modality: mod.label as any })}
-                            className={`p-3.5 rounded-xl border text-left text-xs flex items-center gap-2.5 transition-all ${
+                            className={`p-3.5 rounded-xl border text-left text-xs flex items-center gap-2.5 transition-all cursor-pointer ${
                               isSelected
-                                ? 'bg-[#142B45] text-white border-[#142B45] shadow-xs font-semibold'
-                                : 'bg-white border-[#E8E6DF] text-[#4B5563] hover:border-[#B79661] hover:text-[#142B45]'
+                                ? 'bg-[#142B45] !text-white border-[#142B45] shadow-xs font-semibold'
+                                : 'bg-white border-[#E8E6DF] text-[#374151] hover:border-[#B79661] hover:text-[#142B45]'
                             }`}
                           >
-                            <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-[#B79661]' : 'text-[#6B7280]'}`} />
-                            <span>{mod.label}</span>
+                            <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-[#F3D085]' : 'text-[#6B7280]'}`} />
+                            <span
+                              style={{ color: isSelected ? '#FFFFFF' : '#374151' }}
+                              className={isSelected ? '!text-white text-white font-bold' : 'text-[#374151]'}
+                            >
+                              {mod.label}
+                            </span>
                           </button>
                         );
                       })}
@@ -264,7 +281,7 @@ END:VCALENDAR`;
                           }`}
                         >
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center font-serif font-bold text-sm shrink-0 ${
-                            booking.expertId === member.id ? 'bg-[#B79661] text-[#142B45]' : 'bg-[#F7F6F2] text-[#142B45] border border-[#E8E6DF]'
+                            booking.expertId === member.id ? 'bg-[#F3D085] text-[#0D1E30]' : 'bg-[#F7F6F2] text-[#142B45] border border-[#E8E6DF]'
                           }`}>
                             {member.name.charAt(0)}
                           </div>
@@ -272,12 +289,12 @@ END:VCALENDAR`;
                             <div className={`font-serif font-bold text-sm ${booking.expertId === member.id ? 'text-white' : 'text-[#142B45]'}`}>
                               {member.name}
                             </div>
-                            <div className={booking.expertId === member.id ? 'text-[#E8E6DF]' : 'text-[#6B7280]'}>
+                            <div className={booking.expertId === member.id ? 'text-[#F1F5F9] font-medium' : 'text-[#4B5563]'}>
                               {member.role}
                             </div>
                           </div>
-                          <span className={`text-[11px] font-mono px-2.5 py-1 rounded font-medium ${
-                            booking.expertId === member.id ? 'bg-white/10 text-[#B79661] border border-white/20' : 'bg-[#F7F6F2] text-[#B79661] border border-[#E8E6DF]'
+                          <span className={`text-xs font-mono px-2.5 py-1 rounded font-semibold ${
+                            booking.expertId === member.id ? 'bg-white/15 text-[#F3D085] border border-[#F3D085]/40' : 'bg-[#F7F6F2] text-[#8C6A34] border border-[#E8E6DF]'
                           }`}>
                             {member.itaaNumber}
                           </span>
@@ -305,20 +322,28 @@ END:VCALENDAR`;
                         3. Heure de consultation :
                       </label>
                       <div className="grid grid-cols-3 gap-2">
-                        {availableSlots.map((slot) => (
-                          <button
-                            key={slot}
-                            type="button"
-                            onClick={() => setBooking({ ...booking, timeSlot: slot })}
-                            className={`py-2 px-2 rounded-lg border text-xs font-mono transition-all ${
-                              booking.timeSlot === slot
-                                ? 'bg-[#142B45] text-white font-bold border-[#142B45]'
-                                : 'bg-white border-[#E8E6DF] text-[#4B5563] hover:border-[#B79661] hover:text-[#142B45]'
-                            }`}
-                          >
-                            {slot}
-                          </button>
-                        ))}
+                        {availableSlots.map((slot) => {
+                          const isSelected = booking.timeSlot === slot;
+                          return (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => setBooking({ ...booking, timeSlot: slot })}
+                              className={`py-2 px-2 rounded-lg border text-xs font-mono transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-[#142B45] !text-white border-[#142B45]'
+                                  : 'bg-white border-[#E8E6DF] text-[#374151] hover:border-[#B79661] hover:text-[#142B45]'
+                              }`}
+                            >
+                              <span
+                                style={{ color: isSelected ? '#FFFFFF' : '#374151' }}
+                                className={isSelected ? '!text-white text-white font-bold' : 'text-[#374151]'}
+                              >
+                                {slot}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>

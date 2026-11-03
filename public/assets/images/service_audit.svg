@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgAud" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B45"/>
+      <stop offset="100%" stop-color="#1D3B5C"/>
+    </linearGradient>
+    <linearGradient id="goldAud" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#B79661"/>
+      <stop offset="100%" stop-color="#8C6A34"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="16" fill="url(#bgAud)"/>
+  <!-- Magnifying glass examining balance sheet checkmark -->
+  <g transform="translate(400, 210)">
+    <!-- Shield perimeter -->
+    <path d="M0 -110 C80 -100 110 -60 110 10 C110 80 50 120 0 140 C-50 120 -110 80 -110 10 C-110 -60 -80 -100 0 -110 Z" fill="#FFFFFF" fill-opacity="0.05" stroke="url(#goldAud)" stroke-width="2"/>
+    <!-- Magnifier -->
+    <circle cx="-15" cy="-10" r="50" stroke="url(#goldAud)" stroke-width="6" fill="#142B45" fill-opacity="0.6"/>
+    <line x1="22" y1="27" x2="65" y2="70" stroke="url(#goldAud)" stroke-width="8" stroke-linecap="round"/>
+    <!-- Verified Checkmark inside lens -->
+    <path d="M-35 -10 L-20 5 L5 -20" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  <text x="400" y="445" font-family="'Cinzel', Georgia, serif" font-size="20" font-weight="bold" fill="#D9BD8E" text-anchor="middle" letter-spacing="3">AUDIT CONTRACTUEL &amp; ÉVALUATION</text>
+  <text x="400" y="470" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">DUE DILIGENCE • ÉVALUATION D'ENTREPRISE • TRANSMISSION DE PARTS</text>
+</svg>

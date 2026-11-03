@@ -1,16 +1,46 @@
 import React, { useState } from 'react';
 import { MessageSquare, X, Send, ShieldCheck, ArrowRight, Calendar, Lock } from 'lucide-react';
+import { useCabinet } from '../context/CabinetContext';
 
 interface WhatsAppWidgetProps {
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
   onOpenBooking: () => void;
   onOpenVault: () => void;
 }
 
-export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenBooking, onOpenVault }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({
+  isOpen: controlledIsOpen,
+  onOpen,
+  onClose,
+  onOpenBooking,
+  onOpenVault
+}) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [customMsg, setCustomMsg] = useState('');
+  const { config } = useCabinet();
+  const { cabinet } = config;
 
-  const phoneNumber = '3225550188'; // Fidcogest WhatsApp Business number
+  const isControlled = typeof controlledIsOpen === 'boolean';
+  const open = isControlled ? controlledIsOpen : internalIsOpen;
+
+  const handleToggle = () => {
+    if (open) {
+      if (onClose) onClose();
+      else setInternalIsOpen(false);
+    } else {
+      if (onOpen) onOpen();
+      else setInternalIsOpen(true);
+    }
+  };
+
+  const handleClose = () => {
+    if (onClose) onClose();
+    else setInternalIsOpen(false);
+  };
+
+  const phoneNumber = cabinet.mobile?.replace(/[^0-9]/g, '') || '32476626621';
 
   const presetMessages = [
     {
@@ -32,30 +62,30 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenBooking, o
   ];
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end pointer-events-none">
+    <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end pointer-events-none">
       {/* Expanded WhatsApp Drawer */}
-      {isOpen && (
-        <div className="pointer-events-auto mb-4 w-[350px] sm:w-[380px] rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] animate-in fade-in slide-in-from-bottom-5 duration-200">
+      {open && (
+        <div className="pointer-events-auto mb-3 w-[calc(100vw-2rem)] max-w-[360px] sm:max-w-[380px] rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
-          <div className="p-4 bg-[#142B45] text-white flex items-center justify-between border-b border-[#B79661]/40">
+          <div className="p-4 bg-[#075E54] text-white flex items-center justify-between border-b border-emerald-800">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-[#B79661] text-[#142B45] flex items-center justify-center font-serif font-bold shadow-xs">
+                <div className="w-9 h-9 rounded-full bg-[#25D366] text-white flex items-center justify-center font-serif font-bold shadow-xs">
                   F
                 </div>
-                <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#142B45]"></span>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-white border-2 border-[#075E54]" />
               </div>
               <div>
-                <h4 className="font-serif font-bold text-sm tracking-wide">Fidcogest Direct</h4>
-                <p className="text-[11px] text-[#B79661] flex items-center gap-1 font-sans">
-                  <ShieldCheck className="w-3 h-3" />
-                  Permanence Fiscale ITAA
+                <h4 className="font-serif font-bold text-sm tracking-wide text-white">Fidcogest Direct</h4>
+                <p className="text-xs text-emerald-100 flex items-center gap-1 font-sans font-medium">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#25D366]" />
+                  Permanence WhatsApp ITAA
                 </p>
               </div>
             </div>
             <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              onClick={handleClose}
+              className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               aria-label="Fermer"
             >
               <X className="w-5 h-5" />
@@ -63,59 +93,58 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenBooking, o
           </div>
 
           {/* Body content */}
-          <div className="p-4 space-y-3 bg-[#F7F6F2] max-h-[380px] overflow-y-auto text-xs">
-            {/* Introductory speech bubble */}
-            <div className="bg-white border border-[#E8E6DF] rounded-2xl rounded-tl-none p-3.5 max-w-[92%] text-[#374151] shadow-xs leading-relaxed font-sans">
-              <p className="font-serif font-bold text-[#142B45] mb-1">Bienvenue chez Fidcogest</p>
-              <p>Comment nos conseillers fiscaux certifiés ITAA peuvent-ils vous accompagner aujourd'hui ?</p>
-              <span className="text-[10px] text-[#6B7280] font-sans mt-1.5 block">
-                Réponse habituelle en moins de 15 minutes ouvrées
+          <div className="p-4 space-y-3 bg-[#F7F6F2] max-h-[360px] overflow-y-auto text-xs">
+            <div className="bg-white border border-[#E8E6DF] rounded-2xl rounded-tl-none p-3 max-w-[92%] text-[#374151] shadow-xs leading-relaxed font-sans">
+              <p className="font-serif font-bold text-[#142B45] mb-0.5">Bienvenue chez Fidcogest</p>
+              <p>Comment notre équipe peut-elle vous conseiller aujourd'hui ?</p>
+              <span className="text-xs text-[#6B7280] font-sans mt-1 block">
+                Réponse pendant les heures d'ouverture du cabinet
               </span>
             </div>
 
-            <p className="text-[11px] text-[#6B7280] font-semibold pt-1 uppercase tracking-wider">
+            <p className="text-xs text-[#6B7280] font-semibold pt-1 uppercase tracking-wider">
               Sélectionnez un sujet rapide :
             </p>
 
             {/* Quick preset links */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {presetMessages.map((msg, idx) => (
                 <a
                   key={idx}
                   href={`https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg.text)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full text-left p-3 rounded-xl bg-white hover:bg-[#F7F6F2] border border-[#E8E6DF] hover:border-[#B79661] transition-all flex items-center justify-between group shadow-xs block"
+                  className="w-full text-left p-2.5 rounded-xl bg-white hover:bg-[#FAF9F6] border border-[#E8E6DF] hover:border-[#B79661] transition-all flex items-center justify-between group shadow-xs block"
                 >
-                  <span className="text-xs text-[#142B45] font-medium group-hover:text-[#B79661] transition-colors">
+                  <span className="text-xs text-[#142B45] font-medium group-hover:text-[#8C6A34] transition-colors">
                     {msg.title}
                   </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#6B7280] group-hover:text-[#B79661] group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                  <ArrowRight className="w-3.5 h-3.5 text-[#6B7280] group-hover:text-[#8C6A34] group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
                 </a>
               ))}
             </div>
 
-            {/* Alternative Cabinet actions */}
+            {/* Actions alternatives */}
             <div className="pt-2 border-t border-[#E8E6DF] flex items-center justify-between gap-2 text-xs">
               <button
                 onClick={() => {
-                  setIsOpen(false);
+                  handleClose();
                   onOpenBooking();
                 }}
-                className="text-[#142B45] font-semibold hover:text-[#B79661] flex items-center gap-1"
+                className="text-[#142B45] font-semibold hover:text-[#8C6A34] flex items-center gap-1 cursor-pointer"
               >
                 <Calendar className="w-3.5 h-3.5 text-[#B79661]" />
-                Prendre rendez-vous
+                <span>Prendre rendez-vous</span>
               </button>
               <button
                 onClick={() => {
-                  setIsOpen(false);
+                  handleClose();
                   onOpenVault();
                 }}
-                className="text-[#6B7280] hover:text-[#142B45] flex items-center gap-1"
+                className="text-[#6B7280] hover:text-[#142B45] flex items-center gap-1 cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5 text-[#B79661]" />
-                Dépôt sécurisé
+                <span>Espace client</span>
               </button>
             </div>
           </div>
@@ -125,7 +154,7 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenBooking, o
             onSubmit={(e) => {
               e.preventDefault();
               if (customMsg.trim()) {
-                window.location.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(customMsg)}`;
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(customMsg)}`, '_blank');
                 setCustomMsg('');
               }
             }}
@@ -140,26 +169,27 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenBooking, o
             />
             <button
               type="submit"
-              className="p-2 rounded-xl bg-[#142B45] hover:bg-[#1D3B5C] text-[#B79661] transition-colors shadow-xs"
+              className="p-2 rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white transition-colors shadow-xs cursor-pointer"
               title="Envoyer via WhatsApp"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4 text-white" />
             </button>
           </form>
         </div>
       )}
 
-      {/* Main Trigger Button */}
+      {/* Main Trigger Button - Official WhatsApp Green */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#142B45] hover:bg-[#1D3B5C] text-white font-medium shadow-xl border border-[#B79661]/40 transition-all hover:scale-105 active:scale-95 group"
+        onClick={handleToggle}
+        className="pointer-events-auto flex items-center justify-center gap-2.5 p-3 sm:px-4 sm:py-3 rounded-full bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold shadow-xl shadow-emerald-950/20 border-2 border-white/40 transition-all hover:scale-105 active:scale-95 group cursor-pointer"
+        style={{ backgroundColor: '#25D366', color: '#FFFFFF' }}
         aria-label="Contacter le cabinet par WhatsApp"
       >
         <div className="relative">
-          <MessageSquare className="w-5 h-5 text-[#B79661]" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#142B45]"></span>
+          <MessageSquare className="w-5 h-5 text-white" />
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-white border-2 border-[#25D366] animate-pulse" />
         </div>
-        <span className="text-xs font-serif font-bold tracking-wide hidden sm:inline-block">
+        <span className="text-xs font-serif font-extrabold tracking-wide text-white hidden sm:inline-block">
           WhatsApp Cabinet
         </span>
       </button>

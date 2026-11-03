@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGans" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B45"/>
+      <stop offset="100%" stop-color="#1D3B5C"/>
+    </linearGradient>
+    <linearGradient id="goldGans" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#B79661"/>
+      <stop offset="100%" stop-color="#8C6A34"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="16" fill="url(#bgGans)"/>
+  <!-- Brussels Ganshoren Classical Townhouse / Headquarters Facade Silhouette -->
+  <g transform="translate(400, 215)">
+    <!-- Main building front -->
+    <rect x="-180" y="-100" width="360" height="200" fill="#183350" stroke="url(#goldGans)" stroke-width="2"/>
+    <!-- Triangular Pediment -->
+    <polygon points="-190,-100 0,-160 190,-100" fill="#1D3B5C" stroke="url(#goldGans)" stroke-width="2"/>
+    <circle cx="0" cy="-125" r="14" fill="url(#goldGans)" fill-opacity="0.3" stroke="url(#goldGans)" stroke-width="1.5"/>
+    <!-- Grand Entry Door -->
+    <path d="M-30 100 L-30 20 Q0 0 30 20 L30 100 Z" fill="#0E1E31" stroke="url(#goldGans)" stroke-width="2"/>
+    <!-- Brass plaque -->
+    <rect x="-20" y="35" width="40" height="15" rx="2" fill="url(#goldGans)"/>
+    <text x="0" y="46" font-family="'Cinzel', serif" font-size="7" font-weight="bold" fill="#142B45" text-anchor="middle">FIDCOGEST</text>
+    <!-- Windows Row 1 -->
+    <g fill="#B79661" fill-opacity="0.3" stroke="url(#goldGans)" stroke-width="1.5">
+      <rect x="-150" y="-70" width="45" height="60" rx="3"/>
+      <rect x="-85" y="-70" width="45" height="60" rx="3"/>
+      <rect x="40" y="-70" width="45" height="60" rx="3"/>
+      <rect x="105" y="-70" width="45" height="60" rx="3"/>
+    <!-- Windows Row 2 -->
+      <rect x="-150" y="10" width="45" height="60" rx="3"/>
+      <rect x="-85" y="10" width="45" height="60" rx="3"/>
+      <rect x="40" y="10" width="45" height="60" rx="3"/>
+      <rect x="105" y="10" width="45" height="60" rx="3"/>
+    </g>
+  </g>
+  <text x="400" y="445" font-family="'Cinzel', Georgia, serif" font-size="20" font-weight="bold" fill="#D9BD8E" text-anchor="middle" letter-spacing="3">SIÈGE DU CABINET FIDCOGEST</text>
+  <text x="400" y="470" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">PLACE DE LA REINE PAOLA N°3, 1083 GANSHOREN (BRUXELLES) • BCE 0899.441.309</text>
+</svg>

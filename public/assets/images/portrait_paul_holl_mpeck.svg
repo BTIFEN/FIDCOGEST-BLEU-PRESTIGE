@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgPaul" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B45"/>
+      <stop offset="50%" stop-color="#1D3B5C"/>
+      <stop offset="100%" stop-color="#0E1E31"/>
+    </linearGradient>
+    <linearGradient id="goldPaul" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#B79661"/>
+      <stop offset="100%" stop-color="#8C6A34"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" rx="20" fill="url(#bgPaul)"/>
+  
+  <!-- Outer Gold Frame -->
+  <rect x="25" y="25" width="550" height="550" rx="16" fill="none" stroke="url(#goldPaul)" stroke-width="2"/>
+  <rect x="35" y="35" width="530" height="530" rx="12" fill="none" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="1"/>
+
+  <!-- Elegant Monogram Medallion Centerpiece -->
+  <g transform="translate(300, 240)">
+    <circle cx="0" cy="0" r="140" fill="#183350" stroke="url(#goldPaul)" stroke-width="4"/>
+    <circle cx="0" cy="0" r="130" fill="none" stroke="#FFFFFF" stroke-opacity="0.15" stroke-dasharray="6 4" stroke-width="2"/>
+    
+    <!-- Stylized Executive Silhouette -->
+    <path d="M-80 120 C-80 70 -50 45 0 45 C50 45 80 70 80 120 Z" fill="#0E1E31"/>
+    <circle cx="0" cy="-20" r="45" fill="url(#goldPaul)" fill-opacity="0.9"/>
+    
+    <!-- Necktie / Collar in Gold -->
+    <polygon points="0,45 -12,85 0,115 12,85" fill="url(#goldPaul)"/>
+  </g>
+
+  <!-- Accreditation Ribbon -->
+  <g transform="translate(300, 420)">
+    <rect x="-180" y="0" width="360" height="34" rx="17" fill="url(#goldPaul)"/>
+    <text x="0" y="22" font-family="'Cinzel', Georgia, serif" font-size="13" font-weight="bold" fill="#142B45" text-anchor="middle" letter-spacing="2">EXPERT-COMPTABLE CERTIFIÉ ITAA</text>
+  </g>
+
+  <!-- Typography -->
+  <text x="300" y="490" font-family="'Cinzel', Georgia, serif" font-size="24" font-weight="bold" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">PAUL HOLL MPECK</text>
+  <text x="300" y="520" font-family="system-ui, sans-serif" font-size="13" fill="#B79661" text-anchor="middle" font-weight="600">Gérant Fondateur • Conseil Fiscal ITAA depuis 2008</text>
+  <text x="300" y="542" font-family="system-ui, sans-serif" font-size="11" fill="#94A3B8" text-anchor="middle">FIDCOGEST SRL • Ganshoren (Bruxelles)</text>
+</svg>

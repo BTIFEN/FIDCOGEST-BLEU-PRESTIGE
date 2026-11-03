@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCabinet } from '../context/CabinetContext';
-import { ShieldCheck, Mail, MapPin, HeartHandshake, Zap, Sparkles, Award, ArrowRight, Building, CheckCircle2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ShieldCheck, Mail, MapPin, HeartHandshake, Zap, Sparkles, ArrowRight } from 'lucide-react';
+import { Button, Card } from '../components/ui';
 
 interface AboutPageProps {
   onOpenBooking: () => void;
@@ -32,7 +32,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
       <section className="mx-auto max-w-7xl px-4 sm:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
-          <div className="lg:col-span-6 p-8 sm:p-10 rounded-2xl bg-white border border-[#E8E6DF] shadow-[0_4px_24px_rgba(20,43,69,0.03)] space-y-5">
+          <Card variant="standard" padding="lg" className="lg:col-span-6 space-y-5">
+            {/* Siège social et bureau de proximité Ganshoren */}
+            <div className="rounded-xl overflow-hidden border border-[#E8E6DF] shadow-xs bg-[#FAF9F6]">
+              <img
+                src={config.images?.cabinetGanshoren || '/assets/images/cabinet_ganshoren_modeste.webp'}
+                alt="Bureau et espace d'accueil FIDCOGEST SRL Ganshoren Bruxelles"
+                loading="lazy"
+                className="w-full h-48 sm:h-52 object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/assets/images/cabinet_ganshoren_modeste.jpg';
+                }}
+              />
+            </div>
+
             <span className="text-xs font-semibold text-[#8C6A34] uppercase tracking-widest">
               Notre Histoire &amp; Notre Ancrage
             </span>
@@ -42,25 +55,29 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
             <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
               Fondé à Bruxelles (Ganshoren) par <strong>Paul Holl Mpeck</strong>, expert-comptable et conseil fiscal certifié ITAA, le cabinet <strong>{cabinet.name}</strong> s'est imposé comme un acteur rigoureux et disponible pour les indépendants, les PME, les professions libérales et les groupes d'entreprises.
             </p>
+
             <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
               Nous cultivons quatre valeurs cardinales : <strong>proximité</strong>, <strong>compétence</strong>, <strong>rigueur</strong> et <strong>assistance continue</strong>. Nous veillons à ce que votre comptabilité soit un outil de prise de décision stratégique et de sérénité face à l'administration fiscale.
             </p>
             <div className="pt-2 flex flex-wrap gap-3">
-              <Link
+              <Button
+                variant="primary"
+                size="sm"
                 to="/notre-equipe"
-                className="px-5 py-2.5 rounded-xl bg-[#142B45] hover:bg-[#1D3B5C] text-white font-semibold text-xs transition-colors inline-flex items-center gap-2"
+                icon={<ArrowRight className="w-3.5 h-3.5 text-[#D9BD8E]" />}
+                iconPosition="right"
               >
-                <span>Découvrir l'équipe &amp; Paul Holl Mpeck</span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#D9BD8E]" />
-              </Link>
-              <button
+                Découvrir l'équipe &amp; Paul Holl Mpeck
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={onOpenBooking}
-                className="cabinet-btn-secondary text-xs"
               >
                 Prendre rendez-vous
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
 
           {/* Core Values Triad from cabinet config */}
           <div className="lg:col-span-6 space-y-4">
@@ -107,7 +124,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
                   <div className="w-12 h-12 rounded-xl bg-[#142B45] text-[#D9BD8E] font-serif font-bold text-xl flex items-center justify-center shadow-xs">
                     {member.name.charAt(0)}
                   </div>
-                  <span className="px-2.5 py-1 text-[11px] font-semibold text-[#8C6A34] bg-[#B79661]/12 border border-[#B79661]/30 rounded-full">
+                  <span className="px-2.5 py-1 text-xs font-semibold text-[#8C6A34] bg-[#B79661]/12 border border-[#B79661]/30 rounded-full">
                     {member.accreditation || 'ITAA'}
                   </span>
                 </div>
@@ -125,7 +142,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
                 </p>
 
                 <div className="space-y-2 pt-3 border-t border-[#F0EFEA]">
-                  <span className="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider block">Spécialisations :</span>
+                  <span className="text-xs text-[#6B7280] font-semibold uppercase tracking-wider block">Spécialisations :</span>
                   <div className="flex flex-wrap gap-1.5">
                     {member.specialties.map((spec, sIdx) => (
                       <span

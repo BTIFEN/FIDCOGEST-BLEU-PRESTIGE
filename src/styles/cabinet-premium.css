@@ -18,13 +18,13 @@
   --prem-deep-blue: #1D3B5C;
   --prem-gold: #B79661;
   --prem-gold-hover: #9E7D49;
-  --prem-gold-soft: rgba(183, 150, 97, 0.1);
-  --prem-gold-subtle: rgba(183, 150, 97, 0.05);
+  --prem-gold-soft: rgba(183, 150, 97, 0.12);
+  --prem-gold-subtle: rgba(183, 150, 97, 0.06);
   --prem-ivory: #F7F6F2;
   --prem-white: #FFFFFF;
-  --prem-text-gray: #4B5563;
-  --prem-anthracite: #1F2937;
-  --prem-border: #E8E6DF;
+  --prem-text-gray: #374151;
+  --prem-anthracite: #111827;
+  --prem-border: #D5D3CB;
   --prem-border-focus: #B79661;
   
   --font-serif: 'Playfair Display', Georgia, serif;
@@ -38,7 +38,7 @@
    -------------------------------------------------------------------------- */
 body {
   background-color: #F7F6F2 !important;
-  color: #1F2937 !important;
+  color: #111827 !important;
   font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -47,7 +47,7 @@ body {
 .cabinet-premium,
 .fid-prestige {
   background-color: #F7F6F2;
-  color: #1F2937;
+  color: #111827;
   font-family: var(--font-sans);
 }
 
@@ -59,7 +59,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   Typographie Institutionnelle Noble
+   Typographie Institutionnelle Noble & Haute Lisibilité
    -------------------------------------------------------------------------- */
 .cabinet-premium h1,
 .cabinet-premium h2,
@@ -85,51 +85,53 @@ body {
 }
 
 .cabinet-premium p {
-  color: #4B5563;
+  color: #374151;
   line-height: 1.68;
 }
 
 /* --------------------------------------------------------------------------
-   En-tête de page (Header & Navigation)
+   En-tête de page (Header & Navigation Haute Lisibilité)
    -------------------------------------------------------------------------- */
 .cabinet-navbar {
   background-color: #FFFFFF !important;
-  border-bottom: 1px solid #E8E6DF !important;
-  box-shadow: 0 2px 14px rgba(20, 43, 69, 0.04) !important;
+  border-bottom: 1.5px solid #E2DFD8 !important;
+  box-shadow: 0 2px 16px rgba(20, 43, 69, 0.06) !important;
 }
 
 /* Micro-barre d'annonce institutionnelle supérieure */
 .cabinet-topbar {
   background-color: #142B45;
-  color: #CBD6E0;
+  color: #E2E8F0;
   border-bottom: 1px solid #1D3B5C;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .cabinet-topbar .text-gold {
-  color: #D9BD8E;
+  color: #F3D085;
 }
 
 /* Liens de navigation principale */
 .cabinet-nav-link {
-  color: #4B5563;
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 0.5rem 0.85rem;
-  border-radius: 6px;
+  color: #142B45;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.55rem 0.95rem;
+  border-radius: 8px;
   transition: all 0.18s ease;
   position: relative;
 }
 
 .cabinet-nav-link:hover {
-  color: #142B45;
-  background-color: rgba(20, 43, 69, 0.04);
+  color: #0A1624;
+  background-color: rgba(20, 43, 69, 0.07);
 }
 
 .cabinet-nav-link.active,
 .cabinet-nav-link[aria-current='page'] {
   color: #142B45;
   font-weight: 700;
+  background-color: rgba(20, 43, 69, 0.06);
 }
 
 .cabinet-nav-link.active::after,
@@ -139,17 +141,17 @@ body {
   bottom: 0;
   left: 0.85rem;
   right: 0.85rem;
-  height: 2px;
+  height: 3px;
   background-color: #B79661;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 /* --------------------------------------------------------------------------
-   Cartes & Conteneurs Premium (surfaces blanches soyeuses)
+   Cartes & Conteneurs Premium (Surfaces claires et sombres haute lisibilité)
    -------------------------------------------------------------------------- */
 .cabinet-card {
   background-color: #FFFFFF !important;
-  border: 1px solid #E8E6DF !important;
+  border: 1.5px solid #E2DFD8 !important;
   border-radius: 16px !important;
   box-shadow: 0 4px 24px rgba(20, 43, 69, 0.04) !important;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -163,16 +165,142 @@ body {
 
 .cabinet-card-muted {
   background-color: #FAF9F6 !important;
-  border: 1px solid #E8E6DF !important;
+  border: 1.5px solid #E2DFD8 !important;
   border-radius: 12px !important;
 }
 
-.cabinet-card-dark {
-  background-color: #142B45 !important;
+/* ==========================================================================
+   RÈGLE ABSOLUE & GLOBALE UX/UI : HAUTE LISIBILITÉ SUR FONDS SOMBRES
+   Tout texte affiché sur un fond sombre (bleu nuit, bleu foncé, noir, ardoise)
+   doit obligatoirement être en blanc, blanc cassé (#F8FAFC, #F1F5F9) ou gris très clair (#E2E8F0).
+   Aucun texte gris foncé, bleu foncé ou peu contrasté sur fond sombre.
+   ========================================================================== */
+.cabinet-card-dark,
+[class*="bg-[#10243C]"],
+[class*="bg-[#142B45]"],
+[class*="bg-[#102B47]"],
+[class*="bg-[#0F2238]"],
+[class*="bg-[#163354]"],
+[class*="bg-[#183A5E]"],
+[class*="bg-[#0D1E30]"] {
+  color: #FFFFFF;
+}
+
+.cabinet-card-dark h1, .cabinet-card-dark h2, .cabinet-card-dark h3, .cabinet-card-dark h4,
+[class*="bg-[#10243C]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, h5, h6):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#142B45]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, h5, h6):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#102B47]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, h5, h6):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#0F2238]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, h5, h6):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#163354]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, h5, h6):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#183A5E]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, h5, h6):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#0D1E30]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, h5, h6):not(.modal-white-card *):not(.bg-white *) {
   color: #FFFFFF !important;
-  border: 1px solid #1D3B5C !important;
-  border-radius: 16px !important;
-  box-shadow: 0 10px 30px rgba(20, 43, 69, 0.15) !important;
+  font-weight: 700 !important;
+}
+
+.cabinet-card-dark p,
+[class*="bg-[#10243C]"]:not(.modal-white-card *):not(.bg-white *) p:not([class*="text-[#0D1E30]"]):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#142B45]"]:not(.modal-white-card *):not(.bg-white *) p:not([class*="text-[#0D1E30]"]):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#102B47]"]:not(.modal-white-card *):not(.bg-white *) p:not([class*="text-[#0D1E30]"]):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#0F2238]"]:not(.modal-white-card *):not(.bg-white *) p:not([class*="text-[#0D1E30]"]):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#163354]"]:not(.modal-white-card *):not(.bg-white *) p:not([class*="text-[#0D1E30]"]):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#183A5E]"]:not(.modal-white-card *):not(.bg-white *) p:not([class*="text-[#0D1E30]"]):not(.modal-white-card *):not(.bg-white *),
+[class*="bg-[#0D1E30]"]:not(.modal-white-card *):not(.bg-white *) p:not([class*="text-[#0D1E30]"]):not(.modal-white-card *):not(.bg-white *) {
+  color: #F8FAFC !important;
+  font-weight: 500 !important;
+}
+
+.cabinet-card-dark ul, .cabinet-card-dark li,
+[class*="bg-[#10243C]"] li:not([class*="text-[#0D1E30]"]),
+[class*="bg-[#142B45]"] li:not([class*="text-[#0D1E30]"]),
+[class*="bg-[#163354]"] li:not([class*="text-[#0D1E30]"]),
+[class*="bg-[#0F2238]"] li:not([class*="text-[#0D1E30]"]) {
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+}
+
+/* FORCER TITRES ET TEXTES SUR CARTES ET CONTENEURS SOMBRES (PARCOURS 4, CARTES NOIRES/BLEUES) */
+.cabinet-premium .cabinet-card-dark h3,
+.cabinet-premium .cabinet-card-dark h4,
+.cabinet-premium .cabinet-card-dark p,
+.cabinet-premium [class*="from-[#163354]"] h3,
+.cabinet-premium [class*="from-[#163354]"] h4,
+.cabinet-premium [class*="from-[#163354]"] p,
+.cabinet-premium [class*="bg-[#10243C]"] h3,
+.cabinet-premium [class*="bg-[#10243C]"] p,
+.fid-prestige .cabinet-card-dark h3,
+.fid-prestige [class*="from-[#163354]"] h3,
+.fid-prestige [class*="from-[#163354]"] p,
+[class*="from-[#163354]"] h3,
+[class*="from-[#163354]"] p {
+  color: #FFFFFF !important;
+}
+
+.cabinet-premium [class*="from-[#163354]"] p,
+.fid-prestige [class*="from-[#163354]"] p,
+[class*="from-[#163354]"] p {
+  color: #F8FAFC !important;
+}
+
+/* BOUTON BLANC HERO ET SECONDAIRE : TEXTE BLEU NUIT OBLIGATOIRE SUR TOUS LES ENFANTS */
+.cabinet-premium a[class*="bg-[#FFFFFF]"],
+.cabinet-premium a[class*="bg-white"],
+.cabinet-premium button[class*="bg-[#FFFFFF]"],
+.cabinet-premium button[class*="bg-white"],
+.fid-prestige a[class*="bg-[#FFFFFF]"],
+.fid-prestige a[class*="bg-white"],
+.fid-prestige button[class*="bg-[#FFFFFF]"],
+.fid-prestige button[class*="bg-white"],
+.cabinet-btn-secondary,
+.fid-photo-hero a[class*="bg-[#FFFFFF]"],
+.fid-photo-hero a[class*="bg-white"] {
+  color: #102B47 !important;
+  background-color: #FFFFFF !important;
+}
+
+.cabinet-premium a[class*="bg-[#FFFFFF]"] :is(span, p, strong, b),
+.cabinet-premium a[class*="bg-white"] :is(span, p, strong, b),
+.cabinet-premium button[class*="bg-[#FFFFFF]"] :is(span, p, strong, b),
+.cabinet-premium button[class*="bg-white"] :is(span, p, strong, b),
+.fid-prestige a[class*="bg-[#FFFFFF]"] :is(span, p, strong, b),
+.fid-prestige a[class*="bg-white"] :is(span, p, strong, b),
+.fid-prestige button[class*="bg-[#FFFFFF]"] :is(span, p, strong, b),
+.fid-prestige button[class*="bg-white"] :is(span, p, strong, b),
+.cabinet-btn-secondary :is(span, p, strong, b),
+.fid-photo-hero a[class*="bg-[#FFFFFF]"] :is(span, p, strong, b),
+.fid-photo-hero a[class*="bg-white"] :is(span, p, strong, b) {
+  color: #102B47 !important;
+}
+
+/* RÈGLE ABSOLUE : TOUT BOUTON FONCÉ DOIT AVOIR DU TEXTE BLANC ET SES ENFANTS AUSSI (HORS NAVIGATION) */
+button[class*="bg-[#142B45]"]:not(nav *):not(.cabinet-navbar *),
+button[class*="bg-[#10243C]"]:not(nav *):not(.cabinet-navbar *),
+button[class*="bg-[#102B47]"]:not(nav *):not(.cabinet-navbar *),
+button[class*="bg-[#163354]"]:not(nav *):not(.cabinet-navbar *),
+button[class*="bg-[#0F2238]"]:not(nav *):not(.cabinet-navbar *),
+button[class*="bg-[#183A5E]"]:not(nav *):not(.cabinet-navbar *),
+.cabinet-premium button[class*="bg-[#142B45]"]:not(nav *):not(.cabinet-navbar *),
+.cabinet-premium button[class*="bg-[#10243C]"]:not(nav *):not(.cabinet-navbar *),
+.fid-prestige button[class*="bg-[#142B45]"]:not(nav *):not(.cabinet-navbar *),
+.fid-prestige button[class*="bg-[#10243C]"]:not(nav *):not(.cabinet-navbar *) {
+  color: #FFFFFF !important;
+}
+
+button[class*="bg-[#142B45]"]:not(nav *):not(.cabinet-navbar *) :is(span, div, p, strong, b, label),
+button[class*="bg-[#10243C]"]:not(nav *):not(.cabinet-navbar *) :is(span, div, p, strong, b, label),
+.cabinet-premium button[class*="bg-[#142B45]"]:not(nav *):not(.cabinet-navbar *) :is(span, div, p, strong, b, label),
+.cabinet-premium button[class*="bg-[#10243C]"]:not(nav *):not(.cabinet-navbar *) :is(span, div, p, strong, b, label),
+.fid-prestige button[class*="bg-[#142B45]"]:not(nav *):not(.cabinet-navbar *) :is(span, div, p, strong, b, label),
+.fid-prestige button[class*="bg-[#10243C]"]:not(nav *):not(.cabinet-navbar *) :is(span, div, p, strong, b, label) {
+  color: #FFFFFF !important;
+}
+
+/* NAVBAR : TOUS LES TEXTES ET DROPDOWNS SONT BLEU NUIT LISIBLE SUR FOND BLANC */
+nav :is(button, a):not([class*="bg-[#10243C]"]):not([class*="bg-[#142B45]"]),
+nav :is(button, a):not([class*="bg-[#10243C]"]):not([class*="bg-[#142B45]"]) span,
+.cabinet-navbar :is(button, a):not([class*="bg-[#10243C]"]):not([class*="bg-[#142B45]"]),
+.cabinet-navbar :is(button, a):not([class*="bg-[#10243C]"]):not([class*="bg-[#142B45]"]) span {
+  color: #142B45 !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -180,14 +308,14 @@ body {
    -------------------------------------------------------------------------- */
 /* Bouton Principal : Bleu Nuit Institutionnel */
 .cabinet-btn-primary {
-  background-color: #142B45 !important;
+  background-color: #10243C !important;
   color: #FFFFFF !important;
-  border: 1px solid #142B45 !important;
-  font-weight: 600 !important;
+  border: 1.5px solid #10243C !important;
+  font-weight: 700 !important;
   font-size: 0.875rem !important;
   border-radius: 10px !important;
   padding: 0.65rem 1.35rem !important;
-  box-shadow: 0 4px 14px rgba(20, 43, 69, 0.14) !important;
+  box-shadow: 0 4px 14px rgba(20, 43, 69, 0.16) !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
@@ -197,10 +325,10 @@ body {
 }
 
 .cabinet-btn-primary:hover {
-  background-color: #1D3B5C !important;
+  background-color: #1A385C !important;
   border-color: #B79661 !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(20, 43, 69, 0.18) !important;
+  box-shadow: 0 6px 20px rgba(20, 43, 69, 0.22) !important;
 }
 
 .cabinet-btn-primary :is(span, svg) {
@@ -210,9 +338,9 @@ body {
 /* Bouton Secondaire : Blanc Pur avec bordure fine */
 .cabinet-btn-secondary {
   background-color: #FFFFFF !important;
-  color: #142B45 !important;
-  border: 1px solid #D1D5DB !important;
-  font-weight: 600 !important;
+  color: #0D1E30 !important;
+  border: 2px solid #CBD5E1 !important;
+  font-weight: 700 !important;
   font-size: 0.875rem !important;
   border-radius: 10px !important;
   padding: 0.65rem 1.25rem !important;
@@ -226,21 +354,21 @@ body {
 }
 
 .cabinet-btn-secondary:hover {
-  background-color: #F7F6F2 !important;
+  background-color: #F8FAFC !important;
   border-color: #B79661 !important;
-  color: #142B45 !important;
+  color: #0D1E30 !important;
 }
 
-/* Bouton Or / Sceau de prestige */
+/* Bouton Or / Sceau de prestige (Texte sombre #0D1E30 pour contraste WCAG AAA maximal) */
 .cabinet-btn-gold {
-  background: linear-gradient(135deg, #B79661 0%, #A2804A 100%) !important;
-  color: #FFFFFF !important;
-  border: 1px solid #9E7D49 !important;
-  font-weight: 700 !important;
+  background: #F3D085 !important;
+  color: #0D1E30 !important;
+  border: 2px solid #E2BD6D !important;
+  font-weight: 800 !important;
   font-size: 0.875rem !important;
   border-radius: 10px !important;
   padding: 0.65rem 1.35rem !important;
-  box-shadow: 0 4px 14px rgba(183, 150, 97, 0.22) !important;
+  box-shadow: 0 4px 14px rgba(183, 150, 97, 0.28) !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
@@ -250,12 +378,13 @@ body {
 }
 
 .cabinet-btn-gold:hover {
-  background: linear-gradient(135deg, #C4A572 0%, #B79661 100%) !important;
+  background: #E8C06C !important;
+  color: #0D1E30 !important;
   transform: translateY(-1px) !important;
 }
 
 .cabinet-btn-gold :is(span, svg) {
-  color: #FFFFFF !important;
+  color: #0D1E30 !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -368,26 +497,32 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   Pied de page (Footer)
+   Pied de page (Footer Haute Lisibilité)
    -------------------------------------------------------------------------- */
 .cabinet-footer {
-  background-color: #142B45 !important;
-  color: #94A3B8 !important;
-  border-top: 1px solid #1D3B5C !important;
+  background-color: #0F2238 !important;
+  color: #E2E8F0 !important;
+  border-top: 1.5px solid #1E3E62 !important;
 }
 
 .cabinet-footer h4,
 .cabinet-footer .text-white {
   color: #FFFFFF !important;
+  font-weight: 700 !important;
 }
 
 .cabinet-footer a {
-  color: #CBD5E1 !important;
-  transition: color 0.15s ease !important;
+  color: #E2E8F0 !important;
+  transition: all 0.15s ease !important;
 }
 
 .cabinet-footer a:hover {
-  color: #B79661 !important;
+  color: #F3D085 !important;
+  text-decoration: underline !important;
+}
+
+.cabinet-footer p {
+  color: #E2E8F0 !important;
 }
 
 /* --------------------------------------------------------------------------

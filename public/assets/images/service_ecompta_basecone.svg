@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgEcompta" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B45"/>
+      <stop offset="100%" stop-color="#1D3B5C"/>
+    </linearGradient>
+    <linearGradient id="goldEcompta" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#B79661"/>
+      <stop offset="100%" stop-color="#8C6A34"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="16" fill="url(#bgEcompta)"/>
+  <!-- Cloud & Mobile OCR Sync Illustration -->
+  <g transform="translate(400, 205)">
+    <!-- Cloud base -->
+    <path d="M-80 -20 C-95 -45 -60 -80 -20 -70 C-5 -100 45 -95 65 -65 C95 -60 105 -25 80 0 L-70 0 Z" fill="#FFFFFF" fill-opacity="0.1" stroke="url(#goldEcompta)" stroke-width="2"/>
+    <!-- Smartphone with OCR scanning laser -->
+    <rect x="-40" y="-30" width="80" height="130" rx="12" fill="#142B45" stroke="url(#goldEcompta)" stroke-width="2.5"/>
+    <!-- Phone screen -->
+    <rect x="-32" y="-15" width="64" height="95" rx="6" fill="#1D3B5C"/>
+    <!-- Document inside screen -->
+    <rect x="-24" y="-5" width="48" height="60" rx="3" fill="#FFFFFF" fill-opacity="0.9"/>
+    <!-- Scan laser line -->
+    <line x1="-30" y1="20" x2="30" y2="20" stroke="#E11D48" stroke-width="2"/>
+    <!-- Sync signals -->
+    <path d="M-60 30 A30 30 0 0 1 -60 -10" fill="none" stroke="url(#goldEcompta)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M60 30 A30 30 0 0 0 60 -10" fill="none" stroke="url(#goldEcompta)" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <text x="400" y="445" font-family="'Cinzel', Georgia, serif" font-size="20" font-weight="bold" fill="#D9BD8E" text-anchor="middle" letter-spacing="3">E-COMPTA &amp; BASECONE (WOLTERS KLUWER)</text>
+  <text x="400" y="470" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">ZÉRO PAPIER • OCR AUTOMATIQUE • ARCHIVAGE LÉGAL 10 ANS • PEPPOL 2026</text>
+</svg>

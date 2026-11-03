@@ -290,7 +290,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onOpenBooking }) => {
                     <option value="Comptabilité & Bilan Annuel">Tenue Comptable, TVA &amp; Bilan Annuel BNB</option>
                     <option value="Fiscalité & Contrôle Fiscal">Conseil Fiscal, IPP/ISOC &amp; Assistance Contrôle Fiscal</option>
                     <option value="Audit & Restructuration">Audit Comptable, Évaluation ou Restructuration</option>
-                    <option value="E-Compta Basecone & Peppol">Information E-Compta Basecone &amp; Peppol 2026</option>
+                    <option value="E-Compta & Peppol 2026">Information E-Compta &amp; Facturation Peppol 2026</option>
                     <option value="Autre demande">Autre sujet</option>
                   </select>
                 </div>

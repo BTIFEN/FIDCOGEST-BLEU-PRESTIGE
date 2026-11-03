@@ -209,7 +209,7 @@ export const ToolsPage: React.FC = () => {
                     onChange={(e) => setManagerSalary(Number(e.target.value))}
                     className="w-full accent-[#8C6A34] cursor-pointer"
                   />
-                  <p className="text-[11px] text-[#6B7280] leading-snug">
+                  <p className="text-xs text-[#6B7280] leading-snug">
                     💡 45.000 €/an est le seuil légal pour accéder au taux réduit d'ISOC à 20% sur la 1ère tranche de 100.000 €.
                   </p>
                 </div>
@@ -234,21 +234,21 @@ export const ToolsPage: React.FC = () => {
                   {/* KPI Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF]">
-                      <div className="text-[#6B7280] text-[11px]">Bénéfice Avant Impôt :</div>
+                      <div className="text-[#6B7280] text-xs">Bénéfice Avant Impôt :</div>
                       <div className="font-serif text-xl font-bold text-[#142B45] mt-1">
                         {simResult.netProfitBeforeTax.toLocaleString('fr-BE')} €
                       </div>
                     </div>
 
                     <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF]">
-                      <div className="text-[#6B7280] text-[11px]">Revenu Net Poche Global :</div>
+                      <div className="text-[#6B7280] text-xs">Revenu Net Poche Global :</div>
                       <div className="font-serif text-xl font-bold text-[#0E5E3A] mt-1">
                         {(simResult.netIncomeAfterAllTaxes || simResult.totalNetTakeHome).toFixed(0)} €
                       </div>
                     </div>
 
                     <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF]">
-                      <div className="text-[#6B7280] text-[11px]">Pression Fiscale Globale :</div>
+                      <div className="text-[#6B7280] text-xs">Pression Fiscale Globale :</div>
                       <div className="font-serif text-xl font-bold text-[#8C6A34] mt-1">
                         {simResult.effectiveTaxRatePercent} %
                       </div>
@@ -290,11 +290,14 @@ export const ToolsPage: React.FC = () => {
                   </div>
 
                   {/* Expert Recommendation Notice */}
-                  <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#B79661]/40 text-[#4B5563] leading-relaxed space-y-1">
+                  <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#B79661]/40 text-[#4B5563] leading-relaxed space-y-1.5">
                     <div className="font-bold flex items-center gap-1.5 text-[#8C6A34] font-serif text-sm">
-                      <Sparkles className="w-4 h-4 text-[#B79661]" /> Conseil Stratégique Fidcogest :
+                      <Sparkles className="w-4 h-4 text-[#B79661]" /> Orientation Stratégique Fidcogest :
                     </div>
                     <p className="text-xs leading-relaxed">{simResult.recommendation}</p>
+                    <div className="pt-2 border-t border-[#E8E6DF] text-xs text-[#6B7280]">
+                      ℹ️ <strong>Mention légale et déontologique :</strong> Cette simulation chiffrée est fournie à titre indicatif et ne constitue pas un avis fiscal personnalisé. Toute décision d'arbitrage requiert l'examen approfondi de votre dossier par un conseiller fiscal certifié ITAA.
+                    </div>
                   </div>
 
                 </div>
@@ -322,7 +325,7 @@ export const ToolsPage: React.FC = () => {
                 className="p-6 rounded-2xl bg-white border border-[#E8E6DF] hover:border-[#B79661] transition-all flex justify-between gap-5 shadow-[0_2px_12px_rgba(20,43,69,0.03)]"
               >
                 <div className="space-y-2">
-                  <span className="px-2.5 py-0.5 text-[11px] font-semibold rounded-md bg-[#FAF9F6] text-[#8C6A34] border border-[#E8E6DF]">
+                  <span className="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#FAF9F6] text-[#8C6A34] border border-[#E8E6DF]">
                     {dl.category} • {dl.period}
                   </span>
                   <h4 className="font-serif font-bold text-base text-[#142B45]">{dl.title}</h4>
@@ -334,7 +337,7 @@ export const ToolsPage: React.FC = () => {
                     {dl.dueDate}
                   </div>
                   {dl.isUrgent && (
-                    <div className="mt-2 text-[10px] font-bold text-[#8C6A34] bg-[#B79661]/12 px-2 py-0.5 rounded-full inline-block">
+                    <div className="mt-2 text-xs font-bold text-[#8C6A34] bg-[#B79661]/12 px-2 py-0.5 rounded-full inline-block">
                       Prioritaire
                     </div>
                   )}
@@ -364,7 +367,7 @@ export const ToolsPage: React.FC = () => {
                 <div className="space-y-3.5">
                   <div className="flex items-center justify-between">
                     <FileText className="w-8 h-8 text-[#B79661]" />
-                    <span className="px-2.5 py-0.5 text-[11px] font-semibold bg-[#FAF9F6] text-[#8C6A34] border border-[#E8E6DF] rounded-md">
+                    <span className="px-2.5 py-0.5 text-xs font-semibold bg-[#FAF9F6] text-[#8C6A34] border border-[#E8E6DF] rounded-md">
                       {guide.format}
                     </span>
                   </div>

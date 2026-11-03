@@ -81,7 +81,7 @@ export const CreationEntreprisePage: React.FC<CreationEntreprisePageProps> = ({ 
 
           {/* Société SRL Card */}
           <div className="cabinet-card p-8 space-y-5 border-2 border-[#B79661] bg-gradient-to-b from-[#F7F6F2] to-white relative shadow-md">
-            <div className="absolute -top-3 right-6 bg-[#142B45] text-white text-[11px] font-serif font-bold px-3 py-1 rounded-full shadow-xs">
+            <div className="absolute -top-3 right-6 bg-[#142B45] text-white text-xs font-serif font-bold px-3 py-1 rounded-full shadow-xs">
               Recommandé par Fidcogest
             </div>
 
@@ -178,18 +178,18 @@ export const CreationEntreprisePage: React.FC<CreationEntreprisePageProps> = ({ 
             ))}
           </div>
 
-          <div className="p-4 rounded-xl bg-[#142B45] text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-[#163354] to-[#0F2238] border-2 border-[#2B4E77] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
             <div>
-              <div className="font-serif font-bold text-sm text-white">
+              <div className="font-serif font-bold text-sm sm:text-base !text-white" style={{ color: '#FFFFFF' }}>
                 Besoin d'un audit préliminaire de faisabilité pour votre future SRL ?
               </div>
-              <div className="text-xs text-[#CBD5E1]">
+              <div className="text-xs !text-slate-100 font-medium mt-0.5" style={{ color: '#F1F5F9' }}>
                 Nos experts-comptables certifiés ITAA vous reçoivent à Ganshoren ou en visioconférence.
               </div>
             </div>
             <button
               onClick={onOpenBooking}
-              className="cabinet-btn-gold text-xs whitespace-nowrap"
+              className="cabinet-btn-gold text-xs font-extrabold whitespace-nowrap shadow-md cursor-pointer shrink-0"
             >
               <Calendar className="w-4 h-4" />
               Prendre rendez-vous starter

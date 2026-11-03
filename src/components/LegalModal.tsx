@@ -10,27 +10,27 @@ export const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#142B45]/60 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] my-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] my-8 animate-in fade-in zoom-in-95 duration-200 modal-white-card">
         
         {/* Header */}
-        <div className="p-6 border-b border-[#E8E6DF] bg-[#F7F6F2] flex items-center justify-between">
+        <div className="p-6 border-b border-[#1D3B5C] bg-[#142B45] text-white flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-[#142B45] text-[#B79661] flex items-center justify-center font-serif text-lg font-bold shadow-xs">
-              <ShieldCheck className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-xl bg-white/10 text-[#F3D085] border border-white/20 flex items-center justify-center font-serif text-lg font-bold shadow-xs">
+              <ShieldCheck className="w-5 h-5 text-[#F3D085]" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-lg text-[#142B45]">
+              <h3 className="font-serif font-bold text-lg text-white">
                 Mentions Légales, Agréments ITAA &amp; RGPD
               </h3>
-              <p className="text-xs text-[#6B7280] font-sans mt-0.5">
+              <p className="text-xs text-[#E2E8F0] font-sans mt-0.5 font-medium">
                 Cabinet Fidcogest SRL • Édition Révisée 2026
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#142B45] hover:bg-white transition-colors"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />

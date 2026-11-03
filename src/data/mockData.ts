@@ -77,35 +77,8 @@ export const SERVICE_POLES: ServicePole[] = (cabinetContent.services as ServiceP
 // Real verified team from https://www.fidcogest.be and BCE
 export const TEAM_MEMBERS: TeamMember[] = (cabinetContent.team as TeamMember[]) || [];
 
-export const TESTIMONIALS: Testimonial[] = [
-  {
-    id: 'test-1',
-    clientName: 'Alexandre Dubois',
-    roleCompany: 'Dirigeant • Entreprise de Services SRL',
-    companyType: 'SRL',
-    quote: 'Paul Holl Mpeck et l\'équipe Fidcogest nous accompagnent depuis plus de 8 ans. Grâce à l\'application Basecone et au suivi rigoureux de nos déclarations fiscales et bilans, nous avons un partenaire de confiance permanent.',
-    rating: 5,
-    location: 'Bruxelles (Ganshoren)'
-  },
-  {
-    id: 'test-2',
-    clientName: 'Dr. Valérie Moreau',
-    roleCompany: 'Médecin Spécialiste',
-    companyType: 'Profession Libérale',
-    quote: 'Un cabinet comptable d\'une écoute et d\'une réactivité rares. La prise en charge de ma déclaration IPP et la transition vers ma société médicale se sont déroulées en toute clarté.',
-    rating: 5,
-    location: 'Bruxelles'
-  },
-  {
-    id: 'test-3',
-    clientName: 'Marc Lefebvre',
-    roleCompany: 'Fondateur & Gérant PME',
-    companyType: 'Indépendant',
-    quote: 'La simplicité de transmission via Basecone me fait gagner un temps précieux chaque mois. Réponses concrètes, honoraires forfaitaires transparents : je recommande Fidcogest sans hésiter.',
-    rating: 5,
-    location: 'Brabant Wallon'
-  }
-];
+// Conformité & Déontologie ITAA : Aucun faux avis ou témoignage non authentifié
+export const TESTIMONIALS: Testimonial[] = [];
 
 export const NEWS_ARTICLES: NewsArticle[] = [
   {
@@ -118,7 +91,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     content: `Dès le 1er janvier 2026, l'envoi de simples factures au format PDF par email ne sera plus conforme pour les transactions B2B entre assujettis TVA belges. La loi impose l'échange de factures électroniques structurées au format XML UBL via le réseau sécurisé Peppol.
 
 ### Ce que cela change concrètement pour votre entreprise :
-1. **Format obligatoire** : Envoi et réception automatisés via un logiciel compatible Peppol (Basecone, Billit, Exact).
+1. **Format obligatoire** : Envoi et réception automatisés de factures électroniques structurées conformes Peppol.
 2. **Déduction fiscale avantageuse** : Déduction majorée pour l'acquisition d'outils de facturation électronique et frais de conseil associés.
 3. **Période de transition** : Le cabinet Fidcogest prépare l'ensemble de ses clients à cette échéance réglementaire.
 
@@ -188,11 +161,11 @@ export const PRACTICAL_GUIDES = [
 
 export const SOFTWARE_GATEWAYS = [
   {
-    id: 'basecone',
-    name: 'Basecone (Wolters Kluwer)',
-    category: 'E-Compta Officielle Fidcogest',
-    description: 'Solution cloud officielle utilisée par le cabinet Fidcogest pour la numérisation des factures, la reconnaissance OCR instantanée et l\'archivage certifié 10 ans.',
-    badge: 'Outil Principal du Cabinet'
+    id: 'portail-client',
+    name: 'Portail Client Sécurisé Fidcogest',
+    category: 'Transmission Dématérialisée',
+    description: 'Espace sécurisé de dépôt numérique des pièces comptables, factures d\'achat et justificatifs pour un encodage sans papier et un archivage certifié 10 ans.',
+    badge: 'Plateforme Sécurisée'
   },
   {
     id: 'peppol',

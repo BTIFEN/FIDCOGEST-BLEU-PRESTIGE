@@ -1,0 +1,221 @@
+/**
+ * Style CSS Cabinet Premium pour le Back-Office FIDCOGEST WordPress
+ * Palette : Bleu nuit #142B45, Or #B79661, Blanc cassé #F7F6F2
+ */
+
+.fidcogest-admin-wrap {
+    max-width: 1200px;
+    margin: 20px auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.fidcogest-header {
+    background: linear-gradient(135deg, #142B45 0%, #1D3B5C 100%);
+    color: #FFFFFF;
+    padding: 30px 40px;
+    border-radius: 14px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(20, 43, 69, 0.12);
+    border-left: 6px solid #B79661;
+}
+
+.fidcogest-header h1 {
+    color: #FFFFFF;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 10px 0 6px 0;
+    letter-spacing: -0.5px;
+}
+
+.fidcogest-header p {
+    color: #CBD5E1;
+    font-size: 14px;
+    margin: 0;
+}
+
+.fidcogest-badge {
+    display: inline-block;
+    background: rgba(183, 150, 97, 0.2);
+    border: 1px solid #B79661;
+    color: #F3E5AB;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.fidcogest-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 850px) {
+    .fidcogest-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.fidcogest-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+}
+
+.fidcogest-card h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #142B45;
+    margin-top: 0;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #F1F5F9;
+    padding-bottom: 8px;
+}
+
+.fidcogest-endpoint-box {
+    background: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.fidcogest-endpoint-box code {
+    font-size: 13px;
+    color: #0F172A;
+    background: transparent;
+    padding: 0;
+}
+
+/* Grille des 13 Visuels & Médias */
+.fidcogest-media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.fidcogest-media-item {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(20, 43, 69, 0.04);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fidcogest-media-item:hover {
+    border-color: #B79661;
+    box-shadow: 0 8px 24px rgba(183, 150, 97, 0.15);
+}
+
+.fidcogest-media-preview {
+    background: #0E1E31;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 10px;
+}
+
+.fidcogest-media-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.fidcogest-media-meta {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.fidcogest-media-meta h3 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #142B45;
+}
+
+.fidcogest-media-meta .description {
+    font-size: 12px;
+    color: #64748B;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.fidcogest-media-meta .recommended {
+    font-size: 11px;
+    color: #B79661;
+    margin: 0 0 12px 0;
+}
+
+.fidcogest-media-inputs input[type="text"] {
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid #CBD5E1;
+}
+
+.fidcogest-btn-group {
+    display: flex;
+    gap: 8px;
+}
+
+.fidcogest-submit-bar {
+    position: sticky;
+    bottom: 20px;
+    background: #FFFFFF;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    border: 1px solid #E2E8F0;
+    z-index: 50;
+}
+
+.button-primary {
+    background: #142B45 !important;
+    border-color: #142B45 !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+.button-primary:hover {
+    background: #1D3B5C !important;
+    border-color: #1D3B5C !important;
+}
+
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-ok {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.status-off {
+    background: #FEE2E2;
+    color: #991B1B;
+}

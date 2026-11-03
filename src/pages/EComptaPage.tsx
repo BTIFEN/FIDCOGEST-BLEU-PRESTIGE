@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCabinet } from '../context/CabinetContext';
-import { Smartphone, CloudUpload, ShieldCheck, CheckCircle2, Lock, FileText, ArrowRight, ExternalLink, HelpCircle } from 'lucide-react';
+import { Smartphone, CloudUpload, ShieldCheck, Lock, CheckCircle2, HelpCircle, FileCheck, ArrowRight, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface EComptaPageProps {
   onOpenVault: () => void;
@@ -13,7 +14,7 @@ export const EComptaPage: React.FC<EComptaPageProps> = ({ onOpenVault }) => {
   return (
     <div className="space-y-12 pb-20 font-sans">
       
-      {/* Editorial Header */}
+      {/* En-tête éditorial */}
       <section className="bg-gradient-to-b from-[#142B45]/5 to-transparent pt-12 pb-8 border-b border-[#E8E6DF]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#B79661]/40 text-xs font-serif text-[#142B45] shadow-xs">
@@ -22,52 +23,52 @@ export const EComptaPage: React.FC<EComptaPageProps> = ({ onOpenVault }) => {
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#142B45] tracking-tight">
-            E-Compta, E-Documents &amp; Basecone
+            E-Compta &amp; Services Digitaux
           </h1>
 
           <p className="text-base text-[#4B5563] max-w-2xl mx-auto leading-relaxed">
-            Fini le dépôt physique de fardes papier : transmettez vos factures d'achat et justificatifs en temps réel grâce à notre solution officielle Basecone.
+            Fini le dépôt physique de fardes papier : transmettez vos factures d'achat et justificatifs par voie numérique sécurisée pour un encodage continu et sans friction.
           </p>
         </div>
       </section>
 
-      {/* Presentation of Basecone */}
+      {/* Présentation de la démarche dématérialisée */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="cabinet-card p-8 sm:p-10 border border-[#B79661]/40 bg-gradient-to-br from-white via-white to-[#F7F6F2]">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             <div className="lg:col-span-8 space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#142B45] text-[#B79661] text-xs font-serif font-bold">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Outil Officiel Déployé chez Fidcogest SRL</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#142B45] text-[#D9BD8E] text-xs font-serif font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#B79661]" />
+                <span>Dématérialisation Certifiée &amp; Norme Peppol</span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#142B45]">
-                Basecone : L'Alliance du Numérique et de l'Expertise Humaine
+                L'Alliance de la Technologie et du Conseil Humain
               </h2>
 
               <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
-                Utilisé historiquement par notre cabinet, <strong>Basecone</strong> est une plateforme cloud certifiée (Wolters Kluwer) qui fluidifie les échanges entre vous et votre gestionnaire de dossier.
+                Le cabinet Fidcogest intègre des flux documentaires dématérialisés pour simplifier la gestion quotidienne de vos pièces comptables, garantir la conformité aux normes belges et accélérer l'établissement de vos déclarations TVA et bilans.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="p-4 rounded-xl bg-white border border-[#E8E6DF] space-y-1.5 shadow-xs">
                   <div className="font-serif font-bold text-sm text-[#142B45] flex items-center gap-2">
                     <CloudUpload className="w-4 h-4 text-[#B79661]" />
-                    Numérisation Instantanée
+                    <span>Dépôt Numérique Simple</span>
                   </div>
                   <p className="text-xs text-[#4B5563] leading-relaxed">
-                    Prenez en photo votre ticket de restaurant ou déposez votre facture PDF depuis votre application mobile ou ordinateur.
+                    Déposez vos factures PDF ou justificatifs scannés directement depuis votre ordinateur ou smartphone en quelques secondes.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-white border border-[#E8E6DF] space-y-1.5 shadow-xs">
                   <div className="font-serif font-bold text-sm text-[#142B45] flex items-center gap-2">
                     <Lock className="w-4 h-4 text-[#B79661]" />
-                    Archivage Légal 10 Ans
+                    <span>Archivage Légal 10 Ans</span>
                   </div>
                   <p className="text-xs text-[#4B5563] leading-relaxed">
-                    Toutes vos pièces comptables sont conservées sur des serveurs sécurisés en Europe conformément aux obligations fiscales belges.
+                    Toutes vos pièces comptables sont archivées de manière pérenne et sécurisée, conformément aux prescriptions strictes du SPF Finances.
                   </p>
                 </div>
               </div>
@@ -77,34 +78,32 @@ export const EComptaPage: React.FC<EComptaPageProps> = ({ onOpenVault }) => {
                   onClick={onOpenVault}
                   className="cabinet-btn-primary text-xs"
                 >
-                  <CloudUpload className="w-4 h-4" />
-                  Tester le dépôt express &amp; OCR
+                  <CloudUpload className="w-4 h-4 text-[#D9BD8E]" />
+                  <span>Tester le portail de dépôt express</span>
                 </button>
-                <a
-                  href="https://www.basecone.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cabinet-btn-secondary text-xs"
+                <Link
+                  to="/contact"
+                  className="cabinet-btn-secondary text-xs flex items-center gap-1.5"
                 >
-                  <ExternalLink className="w-3.5 h-3.5 text-[#B79661]" />
-                  Découvrir Basecone ↗
-                </a>
+                  <Calendar className="w-3.5 h-3.5 text-[#B79661]" />
+                  <span>Prendre rendez-vous au cabinet</span>
+                </Link>
               </div>
             </div>
 
-            <div className="lg:col-span-4 p-6 rounded-2xl bg-[#142B45] text-white space-y-4 text-center">
-              <div className="w-16 h-16 rounded-full bg-[#B79661] text-[#142B45] flex items-center justify-center font-serif text-2xl font-bold mx-auto shadow-md">
-                B
+            <div className="lg:col-span-4 p-6 rounded-2xl bg-gradient-to-br from-[#163354] to-[#0F2238] border-2 border-[#2B4E77] text-white space-y-4 text-center shadow-xl">
+              <div className="w-16 h-16 rounded-2xl bg-[#1E3E62] border border-[#B79661]/60 text-[#F3D085] flex items-center justify-center font-serif text-2xl font-bold mx-auto shadow-md">
+                F
               </div>
-              <h4 className="font-serif font-bold text-base text-white">
-                Accès Client Basecone
+              <h4 className="font-serif font-bold text-base !text-white" style={{ color: '#FFFFFF' }}>
+                Facturation Électronique B2B
               </h4>
-              <p className="text-xs text-[#CBD5E1] leading-relaxed">
-                Chaque client sous contrat dispose d'un identifiant dédié pour soumettre ses factures sans déplacement.
+              <p className="text-xs !text-slate-100 font-medium leading-relaxed" style={{ color: '#F1F5F9' }}>
+                Préparez votre entreprise à la transition obligatoire vers le format structuré Peppol en Belgique avec l'appui de votre expert-comptable.
               </p>
-              <div className="text-[11px] text-[#B79661] font-mono border-t border-white/10 pt-3">
+              <div className="text-xs text-[#F3D085] font-mono border-t border-white/20 pt-3 font-semibold">
                 Identifiant Peppol Fidcogest :<br />
-                <span className="text-white font-bold">0208:0899441309</span>
+                <span className="!text-white font-extrabold tracking-wider" style={{ color: '#FFFFFF' }}>0208:0899441309</span>
               </div>
             </div>
 
@@ -112,14 +111,14 @@ export const EComptaPage: React.FC<EComptaPageProps> = ({ onOpenVault }) => {
         </div>
       </section>
 
-      {/* How the Process Works */}
+      {/* Étapes du processus dématérialisé */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6 space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h3 className="font-serif font-bold text-2xl text-[#142B45]">
             Comment Fonctionne Votre E-Compta au Quotidien ?
           </h3>
           <p className="text-xs sm:text-sm text-[#4B5563]">
-            Un circuit sans friction pour ne plus jamais accumuler de reçus perdus.
+            Un circuit sans friction pour ne plus jamais accumuler de reçus perdus ou de fardes en retard.
           </p>
         </div>
 
@@ -127,27 +126,27 @@ export const EComptaPage: React.FC<EComptaPageProps> = ({ onOpenVault }) => {
           {[
             {
               step: '1',
-              title: 'Vous photographiez',
-              desc: 'À la réception d\'une facture ou d\'un ticket, vous le numérisez avec l\'app mobile ou par transfert email direct.'
+              title: 'Vous transmettez',
+              desc: 'À la réception d\'une facture d\'achat ou d\'un justificatif, vous le déposez en ligne en quelques secondes.'
             },
             {
               step: '2',
-              title: 'Reconnaissance OCR',
-              desc: 'Le moteur extrait automatiquement le numéro BCE du fournisseur, le montant HTVA, le taux de TVA et la date.'
+              title: 'Extraction & Contrôle',
+              desc: 'Le montant HTVA, le taux de TVA belge et l\'immatriculation BCE du fournisseur sont pré-analysés.'
             },
             {
               step: '3',
               title: 'Validation Fidcogest',
-              desc: 'Votre gestionnaire vérifie l\'imputation comptable exacte selon le Plan Comptable belge.'
+              desc: 'Votre gestionnaire certifié valide l\'imputation comptable exacte selon le Plan Comptable Minimum Normalisé.'
             },
             {
               step: '4',
-              title: 'Déclarations à jour',
-              desc: 'Vos déclarations périodiques de TVA et vos bilans se construisent en continu, sans stress de clôture.'
+              title: 'Déclarations à Jour',
+              desc: 'Vos déclarations périodiques TVA, vos bilans et vos situations intermédiaires sont tenus à jour avec rigueur.'
             }
           ].map((item) => (
             <div key={item.step} className="cabinet-card p-6 space-y-3">
-              <div className="w-8 h-8 rounded-full bg-[#142B45] text-[#B79661] flex items-center justify-center font-bold text-xs">
+              <div className="w-8 h-8 rounded-full bg-[#142B45] text-[#D9BD8E] flex items-center justify-center font-bold text-xs">
                 {item.step}
               </div>
               <h4 className="font-serif font-bold text-base text-[#142B45]">
@@ -161,15 +160,15 @@ export const EComptaPage: React.FC<EComptaPageProps> = ({ onOpenVault }) => {
         </div>
       </section>
 
-      {/* Transparent Disclaimer Box */}
+      {/* Cadre Déontologique et Légal */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="p-6 rounded-2xl bg-[#F7F6F2] border border-[#E8E6DF] space-y-2 text-xs text-[#4B5563]">
           <div className="flex items-center gap-2 font-serif font-bold text-sm text-[#142B45]">
             <HelpCircle className="w-4 h-4 text-[#B79661]" />
-            Précision déontologique et technique
+            <span>Précision Déontologique et Technique</span>
           </div>
           <p className="leading-relaxed">
-            Le module de démonstration de dépôt express intégré à ce site permet de tester la reconnaissance optique de caractères (OCR). L'accès complet à votre espace comptable pérenne Basecone et l'activation des flux automatisés nécessitent la signature préalable d'une lettre de mission auprès de FIDCOGEST SRL.
+            Le module de démonstration de dépôt express intégré à ce site illustre les principes de reconnaissance numérique et de dématérialisation. La prise en charge contractuelle de votre comptabilité, l'accès permanent aux plateformes professionnelles et la réalisation des déclarations fiscales nécessitent la signature préalable d'une lettre de mission auprès de FIDCOGEST SRL, conformément aux normes de l'ITAA.
           </p>
         </div>
       </section>

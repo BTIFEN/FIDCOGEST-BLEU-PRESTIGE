@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { UploadedDocResult } from '../types';
 import { SOFTWARE_GATEWAYS } from '../data/mockData';
-import { X, Lock, UploadCloud, FileText, CheckCircle2, ExternalLink, ShieldCheck, Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
+import { X, Lock, UploadCloud, FileText, CheckCircle2, ExternalLink, ShieldCheck, Sparkles, AlertCircle, RefreshCw, ArrowRight } from 'lucide-react';
 
 interface DocumentVaultModalProps {
   isOpen: boolean;
@@ -92,41 +93,57 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#142B45]/60 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] my-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-[#E8E6DF] shadow-2xl overflow-hidden text-[#1F2937] my-8 animate-in fade-in zoom-in-95 duration-200 modal-white-card">
         
         {/* Modal Header */}
-        <div className="p-6 border-b border-[#E8E6DF] bg-[#F7F6F2] flex items-center justify-between">
+        <div className="p-6 border-b border-[#1D3B5C] bg-[#142B45] text-white flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-[#142B45] text-[#B79661] flex items-center justify-center font-serif text-lg font-bold shadow-xs">
-              <Lock className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-xl bg-white/10 text-[#F3D085] border border-white/20 flex items-center justify-center font-serif text-lg font-bold shadow-xs">
+              <Lock className="w-5 h-5 text-[#F3D085]" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-lg text-[#142B45]">
+              <h3 className="font-serif font-bold text-lg text-white">
                 Portail Client Sécurisé &amp; Dépôt Express
               </h3>
-              <p className="text-xs text-[#6B7280] flex items-center gap-1.5 font-sans mt-0.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#B79661]" />
+              <p className="text-xs text-[#E2E8F0] flex items-center gap-1.5 font-sans mt-0.5 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#F3D085]" />
                 Chiffrement TLS 256-bit • Secret Professionnel Comptable (ITAA)
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#6B7280] hover:text-[#142B45] hover:bg-white transition-colors"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Portal Promo Banner */}
+        <div className="bg-[#FAF9F6] border-b border-[#E8E6DF] px-6 py-2.5 flex items-center justify-between text-xs gap-3">
+          <div className="text-[#142B45] font-medium flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Plateforme Documentaire V1 active (Espaces Client &amp; Gestionnaire)</span>
+          </div>
+          <Link
+            to="/portail"
+            onClick={onClose}
+            className="font-bold text-[#142B45] hover:text-[#B79661] flex items-center gap-1 hover:underline cursor-pointer"
+          >
+            Ouvrir la Plateforme Complète <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
         {/* Navigation Tabs */}
         <div className="flex border-b border-[#E8E6DF] bg-white px-6 pt-3 text-xs font-sans">
           <button
             onClick={() => setActiveTab('upload')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all ${
+            style={{ color: activeTab === 'upload' ? '#142B45' : '#4B5563' }}
+            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all cursor-pointer ${
               activeTab === 'upload'
-                ? 'border-[#142B45] text-[#142B45]'
+                ? 'border-[#142B45] !text-[#142B45] font-bold'
                 : 'border-transparent text-[#6B7280] hover:text-[#142B45]'
             }`}
           >
@@ -136,9 +153,10 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
 
           <button
             onClick={() => setActiveTab('gateway')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all ${
+            style={{ color: activeTab === 'gateway' ? '#142B45' : '#4B5563' }}
+            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all cursor-pointer ${
               activeTab === 'gateway'
-                ? 'border-[#142B45] text-[#142B45]'
+                ? 'border-[#142B45] !text-[#142B45] font-bold'
                 : 'border-transparent text-[#6B7280] hover:text-[#142B45]'
             }`}
           >
@@ -148,9 +166,10 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
 
           <button
             onClick={() => setActiveTab('portal')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all ${
+            style={{ color: activeTab === 'portal' ? '#142B45' : '#4B5563' }}
+            className={`py-3 px-4 flex items-center gap-2 border-b-2 font-semibold transition-all cursor-pointer ${
               activeTab === 'portal'
-                ? 'border-[#142B45] text-[#142B45]'
+                ? 'border-[#142B45] !text-[#142B45] font-bold'
                 : 'border-transparent text-[#6B7280] hover:text-[#142B45]'
             }`}
           >
@@ -185,8 +204,8 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
                   <Sparkles className="w-3.5 h-3.5 text-[#B79661]" />
                   <span>Démonstration Reconnaissance OCR Fidcogest</span>
                 </div>
-                <div className="mt-2 text-[10px] text-[#6B7280]">
-                  ℹ️ Démonstration technologique. Pour les clients sous contrat, la synchronisation sécurisée s'effectue via l'application certifiée <strong>Basecone</strong>.
+                <div className="mt-2 text-xs text-[#6B7280]">
+                  ℹ️ Démonstration de reconnaissance OCR. Pour les clients sous contrat, la transmission de vos documents s'effectue via votre espace client sécurisé dédié.
                 </div>
               </div>
 
@@ -216,7 +235,7 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
                         </div>
                         <div className="min-w-0">
                           <div className="font-semibold text-[#142B45] truncate">{doc.filename}</div>
-                          <div className="text-[11px] text-[#6B7280] flex items-center gap-2">
+                          <div className="text-xs text-[#6B7280] flex items-center gap-2">
                             <span>{doc.vendorName}</span>
                             <span>•</span>
                             <span>{doc.recommendedCategory}</span>
@@ -228,7 +247,7 @@ export const DocumentVaultModal: React.FC<DocumentVaultModalProps> = ({ isOpen, 
                         <div className="font-mono font-bold text-[#142B45]">
                           {doc.totalAmountEur.toFixed(2)} € TTC
                         </div>
-                        <div className="text-[11px] text-[#6B7280] font-mono">
+                        <div className="text-xs text-[#6B7280] font-mono">
                           TVA ({doc.vatRatePercent}%): {doc.vatAmountEur.toFixed(2)} €
                         </div>
                       </div>

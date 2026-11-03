@@ -156,3 +156,44 @@
   border-color: rgba(16, 185, 129, 0.3);
   color: #6EE7B7;
 }
+
+/* FIDCOGEST PHOTO HERO BLEU PRESTIGE */
+.fid-photo-hero {
+  isolation: isolate;
+  min-height: 540px;
+}
+.fid-photo-hero-image {
+  position: absolute;
+  inset: 0 0 0 38%;
+  z-index: -2;
+  background-image: url("https://www.fidcogest.be/data/files/photos/1517048676732-d65bc937f952-bad9e8f1.jpg"), url("https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+}
+.fid-photo-hero-fade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(90deg, #102B47 0%, #102B47 32%, rgba(16,43,71,.97) 42%, rgba(16,43,71,.72) 56%, rgba(16,43,71,.15) 78%, rgba(16,43,71,.02) 100%);
+}
+.fid-photo-hero-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(0px);
+  mask-image: linear-gradient(90deg, transparent 0%, black 12%, transparent 35%);
+}
+@media (max-width: 767px) {
+  .fid-photo-hero-image {
+    inset: 0;
+    background-position: 65% center;
+    opacity: 0.48;
+  }
+  .fid-photo-hero-fade {
+    background: linear-gradient(90deg, rgba(16,43,71,.98), rgba(16,43,71,.82)), linear-gradient(0deg, #102B47, transparent);
+  }
+  .fid-photo-hero {
+    min-height: auto;
+  }
+}

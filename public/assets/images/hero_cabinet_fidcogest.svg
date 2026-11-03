@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B45" />
+      <stop offset="50%" stop-color="#1D3B5C" />
+      <stop offset="100%" stop-color="#0E1E31" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37" />
+      <stop offset="50%" stop-color="#B79661" />
+      <stop offset="100%" stop-color="#8C6A34" />
+    </linearGradient>
+    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.03" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Canvas -->
+  <rect width="1200" height="800" fill="url(#skyGrad)" />
+  
+  <!-- Subtle Architectural Grid Background -->
+  <g opacity="0.1" stroke="#FFFFFF" stroke-width="0.5">
+    <line x1="0" y1="200" x2="1200" y2="200" />
+    <line x1="0" y1="400" x2="1200" y2="400" />
+    <line x1="0" y1="600" x2="1200" y2="600" />
+    <line x1="300" y1="0" x2="300" y2="800" />
+    <line x1="600" y1="0" x2="600" y2="800" />
+    <line x1="900" y1="0" x2="900" y2="800" />
+  </g>
+
+  <!-- Modern Belgian Architectural Silhouette -->
+  <path d="M150 700 L150 350 L350 250 L350 700 Z" fill="#183350" opacity="0.8" />
+  <path d="M380 700 L380 200 L580 140 L580 700 Z" fill="#1D3B5C" opacity="0.9" />
+  <path d="M620 700 L620 280 L880 280 L880 700 Z" fill="#183350" opacity="0.75" />
+  <path d="M920 700 L920 380 L1100 420 L1100 700 Z" fill="#11243A" opacity="0.9" />
+
+  <!-- Gold Architectural Accent Lines -->
+  <line x1="380" y1="200" x2="580" y2="140" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round" />
+  <line x1="150" y1="350" x2="350" y2="250" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" />
+  <line x1="620" y1="280" x2="880" y2="280" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Stylized Glass Windows -->
+  <g fill="#B79661" opacity="0.25">
+    <rect x="410" y="230" width="25" height="40" rx="3" />
+    <rect x="450" y="230" width="25" height="40" rx="3" />
+    <rect x="490" y="230" width="25" height="40" rx="3" />
+    <rect x="530" y="230" width="25" height="40" rx="3" />
+
+    <rect x="410" y="290" width="25" height="40" rx="3" />
+    <rect x="450" y="290" width="25" height="40" rx="3" />
+    <rect x="490" y="290" width="25" height="40" rx="3" />
+    <rect x="530" y="290" width="25" height="40" rx="3" />
+
+    <rect x="410" y="350" width="25" height="40" rx="3" />
+    <rect x="450" y="350" width="25" height="40" rx="3" />
+    <rect x="490" y="350" width="25" height="40" rx="3" />
+    <rect x="530" y="350" width="25" height="40" rx="3" />
+  </g>
+
+  <!-- Central Glass Floating Panel -->
+  <rect x="250" y="440" width="700" height="260" rx="20" fill="url(#glassGrad)" stroke="#B79661" stroke-width="1.5" />
+
+  <!-- Monogram & Emblem -->
+  <circle cx="340" cy="570" r="55" fill="#142B45" stroke="url(#goldGrad)" stroke-width="3" />
+  <text x="340" y="588" font-family="'Cinzel', serif" font-size="52" font-weight="bold" fill="url(#goldGrad)" text-anchor="middle">F</text>
+
+  <!-- Typography Inside Floating Panel -->
+  <text x="430" y="540" font-family="'Playfair Display', serif" font-size="28" font-weight="bold" fill="#FFFFFF">FIDCOGEST SRL</text>
+  <text x="430" y="570" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="600" fill="#B79661" letter-spacing="2">EXPERT-COMPTABLE &amp; CONSEIL FISCAL CERTIFIÉ ITAA</text>
+  <text x="430" y="605" font-family="'DM Sans', sans-serif" font-size="14" fill="#CBD5E1">Siège social : Place de la Reine Paola 3 • 1083 Ganshoren (Bruxelles)</text>
+  <text x="430" y="635" font-family="'DM Sans', sans-serif" font-size="13" fill="#94A3B8">BCE &amp; TVA : BE 0899.441.309 • Réseau Peppol : 0208:0899441309</text>
+</svg>

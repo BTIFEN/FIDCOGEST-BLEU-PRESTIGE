@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgCrea" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B45"/>
+      <stop offset="100%" stop-color="#1D3B5C"/>
+    </linearGradient>
+    <linearGradient id="goldCrea" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#B79661"/>
+      <stop offset="100%" stop-color="#8C6A34"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="16" fill="url(#bgCrea)"/>
+  <!-- Launch Rocket / Foundation Building Blueprint -->
+  <g transform="translate(400, 210)">
+    <!-- Architectural foundation compass -->
+    <circle cx="0" cy="0" r="130" stroke="url(#goldCrea)" stroke-width="1.5" stroke-dasharray="6 4" fill="none" opacity="0.4"/>
+    <circle cx="0" cy="0" r="90" stroke="#FFFFFF" stroke-width="1" fill="none" opacity="0.2"/>
+    <!-- Rocket symbol -->
+    <path d="M0 -110 C45 -60 45 40 30 70 L-30 70 C-45 40 -45 -60 0 -110 Z" fill="url(#goldCrea)"/>
+    <circle cx="0" cy="-20" r="18" fill="#142B45" stroke="#FFFFFF" stroke-width="2"/>
+    <!-- Fins -->
+    <path d="M-30 40 L-65 75 L-30 70 Z" fill="#D4AF37"/>
+    <path d="M30 40 L65 75 L30 70 Z" fill="#D4AF37"/>
+    <!-- Flame plume -->
+    <path d="M-15 70 Q0 110 15 70 Z" fill="#FFFFFF" opacity="0.8"/>
+  </g>
+  <text x="400" y="445" font-family="'Cinzel', Georgia, serif" font-size="20" font-weight="bold" fill="#D9BD8E" text-anchor="middle" letter-spacing="3">CRÉATION D'ENTREPRISES &amp; PLAN FINANCIER</text>
+  <text x="400" y="470" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">PASSAGE EN SOCIÉTÉ SRL • PLAN NOTARIÉ • INSCRIPTION BCE &amp; TVA</text>
+</svg>

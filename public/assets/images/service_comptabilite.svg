@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgComp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B45"/>
+      <stop offset="100%" stop-color="#1D3B5C"/>
+    </linearGradient>
+    <linearGradient id="goldComp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#B79661"/>
+      <stop offset="100%" stop-color="#8C6A34"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="16" fill="url(#bgComp)"/>
+  <g opacity="0.08" stroke="#FFFFFF" stroke-width="1">
+    <line x1="50" y1="100" x2="750" y2="100"/>
+    <line x1="50" y1="200" x2="750" y2="200"/>
+    <line x1="50" y1="300" x2="750" y2="300"/>
+    <line x1="50" y1="400" x2="750" y2="400"/>
+    <line x1="200" y1="50" x2="200" y2="450"/>
+    <line x1="400" y1="50" x2="400" y2="450"/>
+    <line x1="600" y1="50" x2="600" y2="450"/>
+  </g>
+  <!-- Ledger Document / Ledger Book Icon -->
+  <g transform="translate(260, 90)">
+    <rect x="0" y="0" width="280" height="320" rx="12" fill="#FFFFFF" opacity="0.08" stroke="url(#goldComp)" stroke-width="2"/>
+    <!-- Header bar -->
+    <rect x="25" y="30" width="230" height="28" rx="6" fill="url(#goldComp)" opacity="0.9"/>
+    <!-- Lines of ledger -->
+    <rect x="25" y="80" width="150" height="12" rx="3" fill="#FFFFFF" opacity="0.7"/>
+    <rect x="200" y="80" width="55" height="12" rx="3" fill="url(#goldComp)" opacity="0.8"/>
+    <rect x="25" y="110" width="130" height="12" rx="3" fill="#FFFFFF" opacity="0.5"/>
+    <rect x="200" y="110" width="55" height="12" rx="3" fill="url(#goldComp)" opacity="0.8"/>
+    <rect x="25" y="140" width="160" height="12" rx="3" fill="#FFFFFF" opacity="0.5"/>
+    <rect x="200" y="140" width="55" height="12" rx="3" fill="url(#goldComp)" opacity="0.8"/>
+    <rect x="25" y="170" width="120" height="12" rx="3" fill="#FFFFFF" opacity="0.5"/>
+    <rect x="200" y="170" width="55" height="12" rx="3" fill="url(#goldComp)" opacity="0.8"/>
+    <line x1="25" y1="210" x2="255" y2="210" stroke="url(#goldComp)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <!-- Bottom totals -->
+    <rect x="25" y="235" width="100" height="16" rx="4" fill="#FFFFFF" opacity="0.9"/>
+    <rect x="180" y="235" width="75" height="16" rx="4" fill="url(#goldComp)"/>
+  </g>
+  <text x="400" y="445" font-family="'Cinzel', Georgia, serif" font-size="20" font-weight="bold" fill="#D9BD8E" text-anchor="middle" letter-spacing="3">COMPTABILITÉ GÉNÉRALE &amp; ANALYTIQUE</text>
+  <text x="400" y="470" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">FIDCOGEST SRL • CONSEIL &amp; TENUE CERTIFIÉE ITAA</text>
+</svg>

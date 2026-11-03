@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useCabinet } from '../context/CabinetContext';
-import { Calculator, TrendingUp, Rocket, PieChart, CheckCircle2, ShieldCheck, ArrowRight, Lock, Building, Smartphone, FileText, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Calculator, TrendingUp, Rocket, PieChart, CheckCircle2, ShieldCheck, ArrowRight, Lock, Building, Smartphone, FileText, ChevronRight, Calendar } from 'lucide-react';
+import { Button } from '../components/ui';
 
 interface ServicesPageProps {
   onOpenBooking: () => void;
@@ -40,7 +40,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
         'Tenue de la comptabilité simplifiée ou complète',
         'Déclarations périodiques TVA & listing clients annuel',
         'Déclaration Impôt des Personnes Physiques (IPP)',
-        'Accès à l\'application Basecone pour l\'envoi direct des reçus',
+        'Transmission dématérialisée et sécurisée de vos pièces justificatives',
         'Accompagnement continu par téléphone et email'
       ],
       recommendedFor: 'Consultants, indépendants complémentaires, artisans et professions médicales.'
@@ -55,7 +55,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
         'Tenue comptable complète PCMN et situations périodiques',
         'Déclarations TVA, déclarations ISOC et versements anticipés (VA1-VA4)',
         'Optimisation fiscale rémunération dirigeant vs dividendes VVPR-bis 15%',
-        'Connexion Basecone et conformité facturation Peppol 2026 incluse',
+        'Transmission numérique sécurisée et conformité facturation Peppol 2026',
         'Dépôt officiel du bilan et des comptes annuels à la BNB'
       ],
       recommendedFor: 'Dirigeants de SRL, PME bruxelloises et wallonnes, sociétés de management.'
@@ -92,30 +92,36 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
         </p>
       </section>
 
-      {/* Interactive 7 Poles Navigation */}
+      {/* Navigation des 7 pôles (2 colonnes mobile, flex desktop) */}
       <section className="mx-auto max-w-7xl px-4 sm:px-8 space-y-8">
-        <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-white border border-[#E8E6DF] shadow-xs">
-          {services.map((pole) => (
-            <button
-              key={pole.id}
-              onClick={() => setActivePoleId(pole.id)}
-              className={`py-3 px-4 rounded-xl transition-all text-left flex items-center gap-2 cursor-pointer text-xs font-semibold flex-1 min-w-[150px] justify-center ${
-                activePoleId === pole.id
-                  ? 'bg-[#142B45] text-white shadow-xs'
-                  : 'text-[#4B5563] hover:text-[#142B45] hover:bg-[#F7F6F2]'
-              }`}
-            >
-              <span className={activePoleId === pole.id ? 'text-[#D9BD8E]' : 'text-[#6B7280]'}>
-                {getPoleIcon(pole.id)}
-              </span>
-              <span className="truncate">{pole.shortTitle || pole.title}</span>
-            </button>
-          ))}
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2.5 p-2 rounded-2xl bg-white border border-[#E8E6DF] shadow-xs">
+          {services.map((pole) => {
+            const isActive = activePoleId === pole.id;
+            return (
+              <button
+                key={pole.id}
+                type="button"
+                onClick={() => setActivePoleId(pole.id)}
+                className={`min-h-[48px] py-2.5 px-3 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 cursor-pointer text-xs font-bold sm:flex-1 min-w-[140px] border ${
+                  isActive
+                    ? 'bg-[#142B45] text-[#FFFFFF] border-[#142B45] shadow-xs'
+                    : 'bg-[#FAF9F6] text-[#374151] hover:text-[#142B45] hover:bg-[#F0EEE9] border-[#E8E6DF]'
+                }`}
+              >
+                <span className={`shrink-0 ${isActive ? 'text-[#F3D085]' : 'text-[#B79661]'}`}>
+                  {getPoleIcon(pole.id)}
+                </span>
+                <span className={`leading-tight text-center sm:text-left ${isActive ? 'text-[#FFFFFF] font-bold' : 'text-[#374151]'}`}>
+                  {pole.shortTitle || pole.title}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Selected Pole Active Deep Dive */}
+        {/* Fiche détaillée du pôle sélectionné */}
         {selectedPole && (
-          <div className="p-8 sm:p-10 rounded-2xl bg-white border border-[#E8E6DF] space-y-8 shadow-[0_6px_30px_rgba(20,43,69,0.04)]">
+          <div className="p-6 sm:p-10 rounded-2xl bg-white border border-[#E8E6DF] space-y-8 shadow-[0_6px_30px_rgba(20,43,69,0.04)]">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#F0EFEA] pb-6">
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-[#8C6A34] uppercase tracking-wider">
@@ -129,36 +135,41 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <button
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  variant="primary"
+                  size="sm"
                   onClick={onOpenBooking}
-                  className="px-5 py-2.5 bg-[#142B45] hover:bg-[#1D3B5C] text-white font-semibold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+                  icon={<Calendar className="w-4 h-4 text-[#FFFFFF]" />}
                 >
                   Prendre RDV sur ce pôle
-                </button>
+                </Button>
                 {selectedPole.id === 'creation-entreprises' && (
-                  <Link
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     to="/creation-entreprise"
-                    className="cabinet-btn-secondary text-xs"
                   >
                     Guide Création SRL →
-                  </Link>
+                  </Button>
                 )}
                 {selectedPole.id === 'fiscalite' && (
-                  <Link
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     to="/fiscalite"
-                    className="cabinet-btn-secondary text-xs"
                   >
                     Détails Fiscalité &amp; Contrôles →
-                  </Link>
+                  </Button>
                 )}
                 {selectedPole.id === 'e-compta' && (
-                  <Link
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     to="/e-compta"
-                    className="cabinet-btn-secondary text-xs"
                   >
-                    Découvrir Basecone →
-                  </Link>
+                    E-Compta &amp; Dématérialisation →
+                  </Button>
                 )}
               </div>
             </div>
@@ -220,7 +231,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
               }`}
             >
               {pkg.isPopular && (
-                <span className="absolute -top-3 right-6 px-3 py-1 text-[11px] font-bold text-white bg-[#B79661] rounded-full shadow-xs">
+                <span className="absolute -top-3 right-6 px-3 py-1 text-xs font-bold text-white bg-[#B79661] rounded-full shadow-xs">
                   Recommandé SRL
                 </span>
               )}

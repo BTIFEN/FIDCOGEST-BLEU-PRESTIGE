@@ -192,7 +192,7 @@ export const VatCalculatorModule: React.FC = () => {
             </div>
 
             <div className="p-4 rounded-xl bg-white border border-[#E8E6DF] space-y-2">
-              <div className="text-[11px] font-semibold text-[#8C6A34] uppercase tracking-wider">
+              <div className="text-xs font-semibold text-[#8C6A34] uppercase tracking-wider">
                 Impact sur Déclaration TVA (Grille 59) :
               </div>
               <div className="flex justify-between text-xs">

@@ -108,7 +108,7 @@ export interface DivergenceItem {
   field: string;
   sourceHistorique: string;
   valeurPrototype: string;
-  statut: 'VALIDÉ_OFFICIEL' | 'CORRIGÉ_VERS_HISTORIQUE' | 'VALIDÉ_HISTORIQUE' | 'ENRICHI_AVEC_BASECONE';
+  statut: 'VALIDÉ_OFFICIEL' | 'CORRIGÉ_VERS_HISTORIQUE' | 'VALIDÉ_HISTORIQUE';
   notes: string;
 }
 
@@ -140,6 +140,24 @@ export interface CabinetIdentity {
   verificationNotice: string;
 }
 
+export interface CabinetImages {
+  heroCabinet?: string;
+  serviceComptabilite?: string;
+  serviceFiscalite?: string;
+  serviceCreation?: string;
+  serviceConseil?: string;
+  serviceAudit?: string;
+  serviceFinancement?: string;
+  serviceEcompta?: string;
+  serviceEcomptaBasecone?: string;
+  cabinetGanshoren?: string;
+  consultationFounder?: string;
+  portraitPaulHollMpeck?: string;
+  logo?: string;
+  logoDark?: string;
+  favicon?: string;
+}
+
 export interface CabinetConfig {
   cabinet: CabinetIdentity;
   divergenceAudit: DivergenceItem[];
@@ -151,4 +169,6 @@ export interface CabinetConfig {
     experienceYears: number;
     piliers: { titre: string; texte: string }[];
   };
+  images?: CabinetImages;
 }
+

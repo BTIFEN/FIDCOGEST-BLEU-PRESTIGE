@@ -101,23 +101,63 @@
 }
 
 /* --------------------------------------------------------------------------
-   Couleurs de texte & Contrastes
+   Couleurs de texte & Contrastes (Garantie WCAG AA : Blanc pur sur fonds sombres)
    -------------------------------------------------------------------------- */
 .fid-prestige :is(
   main,
   .fid-home,
   section,
   form
-) :is(.text-white, .text-slate-100, .text-slate-200):not(button *):not(.fid-navbar *):not(footer *):not(.badge-dark *) {
+) :is(.text-white, .text-slate-100, .text-slate-200):not(button):not(button *):not(.fid-navbar *):not(footer *):not(.badge-dark *):not(.fixed.inset-0 *):not([class*="bg-[#142B45]"]):not([class*="bg-[#10243C]"]):not([class*="bg-[#102B47]"]):not([class*="from-[#163354]"]):not([class*="from-[#142B45]"]):not([class*="bg-[#163354]"]):not([class*="bg-[#183A5E]"]):not([class*="bg-[#0F2238]"]):not(.fid-photo-hero *):not(.cabinet-card-dark *):not([class*="bg-slate-900"] *) {
+  color: #142B45;
+}
+
+/* RÈGLE ABSOLUE : Tout texte blanc ou clair sur fond sombre reste BLANC PUR (HORS CONTENEURS CLAIRS / MODALES) */
+.fid-prestige [class*="from-[#163354]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, div, span, strong, b, label):not(.modal-white-card *):not(.bg-white *):not([class*="bg-white"] *):not([class*="bg-[#FAF9F6]"] *):not([class*="bg-[#F7F6F2]"] *),
+.fid-prestige [class*="bg-[#142B45]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, div, span, strong, b, label):not(.modal-white-card *):not(.bg-white *):not([class*="bg-white"] *):not([class*="bg-[#FAF9F6]"] *):not([class*="bg-[#F7F6F2]"] *),
+.fid-prestige [class*="bg-[#10243C]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, div, span, strong, b, label):not(.modal-white-card *):not(.bg-white *):not([class*="bg-white"] *):not([class*="bg-[#FAF9F6]"] *):not([class*="bg-[#F7F6F2]"] *),
+.fid-prestige [class*="bg-[#102B47]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, div, span, strong, b, label):not(.modal-white-card *):not(.bg-white *):not([class*="bg-white"] *):not([class*="bg-[#FAF9F6]"] *):not([class*="bg-[#F7F6F2]"] *),
+.fid-prestige [class*="bg-[#183A5E]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, div, span, strong, b, label):not(.modal-white-card *):not(.bg-white *):not([class*="bg-white"] *):not([class*="bg-[#FAF9F6]"] *):not([class*="bg-[#F7F6F2]"] *),
+.fid-prestige [class*="bg-[#0F2238]"]:not(.modal-white-card *):not(.bg-white *) :is(h1, h2, h3, h4, div, span, strong, b, label):not(.modal-white-card *):not(.bg-white *):not([class*="bg-white"] *):not([class*="bg-[#FAF9F6]"] *):not([class*="bg-[#F7F6F2]"] *),
+.fid-prestige .cabinet-card-dark :is(h1, h2, h3, h4, div, span, strong, b, label):not(.modal-white-card *):not(.bg-white *):not([class*="bg-white"] *),
+.fid-prestige .fid-photo-hero :is(h1, h2, h3, h4, div, span, strong, b, label) {
+  color: #FFFFFF !important;
+}
+
+.fid-prestige [class*="from-[#163354]"]:not(.modal-white-card *):not(.bg-white *) p:not(.modal-white-card *):not(.bg-white *),
+.fid-prestige [class*="bg-[#142B45]"]:not(.modal-white-card *):not(.bg-white *) p:not(.modal-white-card *):not(.bg-white *),
+.fid-prestige [class*="bg-[#10243C]"]:not(.modal-white-card *):not(.bg-white *) p:not(.modal-white-card *):not(.bg-white *),
+.fid-prestige [class*="bg-[#102B47]"]:not(.modal-white-card *):not(.bg-white *) p:not(.modal-white-card *):not(.bg-white *),
+.fid-prestige [class*="bg-[#183A5E]"]:not(.modal-white-card *):not(.bg-white *) p:not(.modal-white-card *):not(.bg-white *),
+.fid-prestige [class*="bg-[#0F2238]"]:not(.modal-white-card *):not(.bg-white *) p:not(.modal-white-card *):not(.bg-white *),
+.fid-prestige .cabinet-card-dark p:not(.modal-white-card *):not(.bg-white *),
+.fid-prestige .fid-photo-hero p {
+  color: #F1F5F9 !important;
+}
+
+/* HAUTE LISIBILITÉ DANS TOUTES LES MODALES ET CONTENEURS CLAIRS (TEXTE SOMBRE SUR FOND BLANC) */
+.modal-white-card,
+.modal-portal-card {
   color: #142B45 !important;
 }
 
-.fid-prestige :is(main, section, form) .text-slate-300:not(button *):not(.fid-navbar *):not(footer *) {
-  color: #3D4F5E !important;
+.modal-white-card :is(label, h2, h3, h4, div, span, p, strong, b, button):not([class*="bg-[#142B45]"]):not([class*="bg-[#142B45]"] *):not([class*="bg-[#10243C]"]):not([class*="bg-[#10243C]"] *):not([class*="bg-slate-900"]):not([class*="bg-slate-900"] *):not(.cabinet-btn-primary *):not(.cabinet-btn-gold *):not(.badge-dark *) {
+  color: #142B45;
 }
 
-.fid-prestige :is(main, section, form) :is(.text-slate-400, .text-slate-500):not(button *):not(.fid-navbar *):not(footer *) {
-  color: #607181 !important;
+.modal-white-card label {
+  color: #142B45 !important;
+  font-weight: 700 !important;
+}
+
+.modal-white-card p:not([class*="bg-[#142B45]"] *):not([class*="bg-[#10243C]"] *):not([class*="bg-slate-900"] *) {
+  color: #374151 !important;
+}
+
+.modal-white-card .text-muted,
+.modal-white-card .text-gray-500,
+.modal-white-card .text-slate-500 {
+  color: #6B7280 !important;
 }
 
 .fid-prestige :is(main, section, form) :is(
@@ -224,15 +264,15 @@
   color: #142B45 !important;
 }
 
-/* Bouton WhatsApp direct */
+/* Bouton WhatsApp direct vert officiel */
 .fid-prestige a[href*="wa.me"] {
-  background-color: #0E5E3A !important;
+  background-color: #25D366 !important;
   color: #FFFFFF !important;
-  border-color: #0E5E3A !important;
-  box-shadow: 0 4px 12px rgba(14, 94, 58, 0.18);
+  border-color: #25D366 !important;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
 }
 .fid-prestige a[href*="wa.me"]:hover {
-  background-color: #0B4A2D !important;
+  background-color: #20BD5A !important;
 }
 .fid-prestige a[href*="wa.me"] span {
   color: #FFFFFF !important;
@@ -428,19 +468,45 @@
 }
 
 /* --------------------------------------------------------------------------
-   Widget Assistant Fiscal IA (Gemini ITAA)
+   Widget Assistant Fiscal IA & WhatsApp (Verts Distincts et Accessibles)
    -------------------------------------------------------------------------- */
-/* Bouton lanceur flottant */
+/* Bouton lanceur Assistant Fiscal Vert Émeraude */
+.fid-prestige button[aria-label*="Assistant Fiscal"],
 .fid-prestige .fixed.bottom-5.left-5 button {
-  background-color: #142B45 !important;
-  border-color: #B79661 !important;
+  background-color: #059669 !important;
+  border-color: rgba(110, 231, 183, 0.5) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 8px 25px rgba(20, 43, 69, 0.25) !important;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3) !important;
 }
 
+.fid-prestige button[aria-label*="Assistant Fiscal"]:hover {
+  background-color: #047857 !important;
+}
+
+.fid-prestige button[aria-label*="Assistant Fiscal"] :is(span, svg) {
+  color: #FFFFFF !important;
+}
+
+.fid-prestige button[aria-label*="Assistant Fiscal"] > div,
 .fid-prestige .fixed.bottom-5.left-5 button > div {
-  background: linear-gradient(135deg, #B79661 0%, #9B7744 100%) !important;
-  color: #142B45 !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+}
+
+/* Bouton lanceur WhatsApp Vert Officiel */
+.fid-prestige button[aria-label*="WhatsApp"] {
+  background-color: #25D366 !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3) !important;
+}
+
+.fid-prestige button[aria-label*="WhatsApp"]:hover {
+  background-color: #20BD5A !important;
+}
+
+.fid-prestige button[aria-label*="WhatsApp"] :is(span, svg) {
+  color: #FFFFFF !important;
 }
 
 /* Fenêtre de chat dépliée */

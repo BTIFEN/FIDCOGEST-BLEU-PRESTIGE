@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCabinet } from '../context/CabinetContext';
-import { Lock, ShieldCheck, CheckCircle2, AlertTriangle, Save, RefreshCw, Eye, Edit3, Building, Users, Briefcase, FileText, Info } from 'lucide-react';
-import { CabinetConfig } from '../types';
+import { Lock, ShieldCheck, CheckCircle2, AlertTriangle, Save, RefreshCw, Eye, Edit3, Building, Users, Briefcase, FileText, Info, Globe, Image, Zap, ExternalLink } from 'lucide-react';
+import { CabinetConfig, CabinetImages } from '../types';
 
 export const AdminPage: React.FC = () => {
   const { config, updateConfig, refreshConfig } = useCabinet();
@@ -12,13 +12,24 @@ export const AdminPage: React.FC = () => {
 
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
-  const [activeTab, setActiveTab] = useState<'audit' | 'identity' | 'team' | 'services' | 'presentation'>('audit');
+  const [activeTab, setActiveTab] = useState<'audit' | 'wordpress' | 'images' | 'identity' | 'team' | 'services' | 'presentation'>('wordpress');
 
   // Local working copy of editable config
   const [draftConfig, setDraftConfig] = useState<CabinetConfig>(config);
   const [saveStatus, setSaveStatus] = useState<{ loading: boolean; success?: boolean; error?: string }>({
     loading: false
   });
+
+  // Diagnostic WordPress
+  const [wpStatus, setWpStatus] = useState<any>(null);
+  const [wpChecking, setWpChecking] = useState<boolean>(false);
+  const [flushStatus, setFlushStatus] = useState<{ loading: boolean; message?: string; error?: string }>({
+    loading: false
+  });
+
+  useEffect(() => {
+    setDraftConfig(config);
+  }, [config]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +46,58 @@ export const AdminPage: React.FC = () => {
         const data = await res.json();
         sessionStorage.setItem('fidcogest_admin_token', data.token || 'admin-session');
         setIsAuthenticated(true);
+        // Test auto WP connectivity
+        checkWpStatus();
       } else {
-        setAuthError('Mot de passe administrateur incorrect.');
+        const errData = await res.json().catch(() => ({}));
+        setAuthError(errData.error || 'Mot de passe administrateur incorrect.');
       }
     } catch (err) {
       setAuthError('Erreur de connexion au serveur.');
     }
+  };
+
+  const checkWpStatus = async () => {
+    setWpChecking(true);
+    try {
+      const token = sessionStorage.getItem('fidcogest_admin_token');
+      const res = await fetch('/api/admin/wp-status', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setWpStatus(data);
+      } else {
+        setWpStatus({ error: `Erreur HTTP ${res.status}` });
+      }
+    } catch (err: any) {
+      setWpStatus({ error: err.message });
+    } finally {
+      setWpChecking(false);
+    }
+  };
+
+  const handleFlushCache = async () => {
+    setFlushStatus({ loading: true });
+    try {
+      const token = sessionStorage.getItem('fidcogest_admin_token');
+      const res = await fetch('/api/admin/flush-cache', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setFlushStatus({ loading: false, message: 'Cache mémoire Express purgé avec succès.' });
+        await refreshConfig();
+      } else {
+        setFlushStatus({ loading: false, error: data.error || 'Échec de la purge.' });
+      }
+    } catch (err: any) {
+      setFlushStatus({ loading: false, error: err.message });
+    }
+
   };
 
   const handleSave = async () => {
@@ -66,7 +123,7 @@ export const AdminPage: React.FC = () => {
               Administration Fidcogest
             </h1>
             <p className="text-xs text-[#6B7280]">
-              Espace de gestion des données légales, des contenus et de l'audit de migration.
+              Espace de gestion sécurisé des données légales, des visuels et de la synchronisation WordPress.
             </p>
           </div>
 
@@ -87,11 +144,11 @@ export const AdminPage: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Entrez le mot de passe d'administration..."
+                placeholder="Entrez le mot de passe configuré dans .env..."
                 className="cabinet-input"
               />
-              <span className="text-[11px] text-[#6B7280] block mt-1">
-                Mot de passe par défaut : <code>fidcogest2026</code>
+              <span className="text-xs text-[#6B7280] block mt-1">
+                Authentification cryptographique protégée contre le brute-force.
               </span>
             </div>
 
@@ -108,6 +165,7 @@ export const AdminPage: React.FC = () => {
     );
   }
 
+
   return (
     <div className="space-y-8 pb-20 font-sans max-w-7xl mx-auto px-4 sm:px-6 pt-6">
       
@@ -122,7 +180,7 @@ export const AdminPage: React.FC = () => {
               <h1 className="font-serif font-bold text-xl text-[#142B45]">
                 Console d'Administration &amp; Gouvernance
               </h1>
-              <span className="cabinet-badge-itaa text-[10px]">Session Active</span>
+              <span className="cabinet-badge-itaa text-xs">Session Active</span>
             </div>
             <p className="text-xs text-[#6B7280] mt-0.5">
               Gestion persistante des données officielles de FIDCOGEST SRL (BCE 0899.441.309).
@@ -172,11 +230,13 @@ export const AdminPage: React.FC = () => {
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-[#E8E6DF] pb-2 text-xs">
         {[
-          { key: 'audit', label: '1. Audit & Divergences', icon: Info },
-          { key: 'identity', label: '2. Identité & Coordonnées', icon: Building },
-          { key: 'team', label: '3. Équipe & Direction', icon: Users },
-          { key: 'services', label: '4. Les 7 Pôles de Services', icon: Briefcase },
-          { key: 'presentation', label: '5. Textes & Accueil', icon: FileText }
+          { key: 'wordpress', label: '1. Connexion WordPress & Webhook', icon: Globe },
+          { key: 'images', label: '2. Visuels & Médias (13)', icon: Image },
+          { key: 'audit', label: '3. Audit & Divergences', icon: Info },
+          { key: 'identity', label: '4. Identité & Coordonnées', icon: Building },
+          { key: 'team', label: '5. Équipe & Direction', icon: Users },
+          { key: 'services', label: '6. Les 7 Pôles de Services', icon: Briefcase },
+          { key: 'presentation', label: '7. Textes & Accueil', icon: FileText }
         ].map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.key;
@@ -184,7 +244,7 @@ export const AdminPage: React.FC = () => {
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key as any)}
-              className={`px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-all ${
+              className={`px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                 isActive
                   ? 'bg-[#142B45] text-white shadow-xs'
                   : 'bg-white border border-[#E8E6DF] text-[#4B5563] hover:text-[#142B45]'
@@ -197,8 +257,253 @@ export const AdminPage: React.FC = () => {
         })}
       </div>
 
-      {/* TAB 1: Audit & Divergences */}
+      {/* TAB 1: WordPress Sync & Webhook */}
+      {activeTab === 'wordpress' && (
+        <div className="space-y-6">
+          <div className="cabinet-card p-6 sm:p-8 space-y-6 border border-[#B79661]/30">
+            <div className="border-b border-[#E8E6DF] pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-[#B79661]" />
+                  <h2 className="font-serif font-bold text-xl text-[#142B45]">
+                    Architecture Hybride Headless WordPress
+                  </h2>
+                </div>
+                <p className="text-xs text-[#6B7280] mt-1">
+                  Site WordPress de référence : <strong className="text-[#142B45]">https://fidcogestv2.indusale.top</strong> (Thème Astra / LiteSpeed PHP 8.3)
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={checkWpStatus}
+                  disabled={wpChecking}
+                  className="cabinet-btn-secondary text-xs flex items-center gap-2 cursor-pointer"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${wpChecking ? 'animate-spin text-[#B79661]' : ''}`} />
+                  <span>Tester la connexion WP</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleFlushCache}
+                  disabled={flushStatus.loading}
+                  className="px-4 py-2 rounded-xl bg-[#142B45] hover:bg-[#1D3B5C] text-white font-semibold text-xs flex items-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Zap className="w-3.5 h-3.5 text-[#D9BD8E]" />
+                  <span>Purger le cache Express</span>
+                </button>
+              </div>
+            </div>
+
+            {flushStatus.message && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-800 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{flushStatus.message}</span>
+              </div>
+            )}
+
+            {flushStatus.error && (
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-300 text-xs text-red-800 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>{flushStatus.error}</span>
+              </div>
+            )}
+
+            {/* Diagnostic Widget */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF] space-y-1.5">
+                <div className="text-xs font-semibold text-[#8C6A34] uppercase tracking-wider">État de l'API REST WP</div>
+                <div className="text-sm font-bold text-[#142B45] flex items-center gap-2">
+                  {wpStatus?.reachable ? (
+                    <>
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                      <span>En ligne ({wpStatus?.latencyMs || 0} ms)</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                      <span>En attente de test</span>
+                    </>
+                  )}
+                </div>
+                <p className="text-xs text-[#6B7280]">
+                  Endpoint : <code>/wp-json/fidcogest/v1/content</code>
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF] space-y-1.5">
+                <div className="text-xs font-semibold text-[#8C6A34] uppercase tracking-wider">Plugin FIDCOGEST sur WP</div>
+                <div className="text-sm font-bold text-[#142B45] flex items-center gap-2">
+                  {wpStatus?.pluginActive ? (
+                    <span className="text-emerald-700 font-bold">Extension Activée</span>
+                  ) : (
+                    <span className="text-[#8C6A34] font-medium">Extension Prête à installer</span>
+                  )}
+                </div>
+                <p className="text-xs text-[#6B7280]">
+                  Archive disponible : <code>FIDCOGEST-Content-Manager.zip</code>
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#E8E6DF] space-y-1.5">
+                <div className="text-xs font-semibold text-[#8C6A34] uppercase tracking-wider">Cache Mémoire Express</div>
+                <div className="text-sm font-bold text-[#142B45]">
+                  TTL : 5 minutes (300s)
+                </div>
+                <p className="text-xs text-[#6B7280]">
+                  Invalidation instantanée via Webhook <code>POST /api/webhook/wp-flush</code>
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Actions & Links */}
+            <div className="p-5 rounded-xl bg-[#F7F6F2] border border-[#E8E6DF] space-y-3">
+              <h3 className="font-serif font-bold text-sm text-[#142B45]">
+                Accès direct au tableau de bord WordPress (fidcogestv2.indusale.top)
+              </h3>
+              <p className="text-xs text-[#4B5563] leading-relaxed">
+                Connectez-vous à votre interface d'administration WordPress pour administrer les visuels dans la Médiathèque standard :
+              </p>
+              <div className="flex flex-wrap gap-3 pt-1">
+                <a
+                  href="https://fidcogestv2.indusale.top/wp-login.php"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-xl bg-white border border-[#B79661] hover:bg-[#FAF9F6] text-[#142B45] font-semibold text-xs flex items-center gap-2 shadow-xs transition-colors"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-[#B79661]" />
+                  <span>Ouvrir l'administration WordPress</span>
+                </a>
+                <a
+                  href="https://fidcogestv2.indusale.top/wp-json/fidcogest/v1/content"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-xl bg-white border border-[#E8E6DF] hover:bg-[#FAF9F6] text-[#142B45] font-semibold text-xs flex items-center gap-2 shadow-xs transition-colors"
+                >
+                  <Eye className="w-3.5 h-3.5 text-[#6B7280]" />
+                  <span>Voir le flux JSON brut</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Guide rapide d'installation du plugin */}
+            <div className="border-t border-[#E8E6DF] pt-5 space-y-3 text-xs text-[#4B5563]">
+              <h4 className="font-bold text-[#142B45] uppercase tracking-wider text-xs">
+                Procédure d'installation de l'extension FIDCOGEST sur WordPress en 3 étapes :
+              </h4>
+              <ol className="list-decimal pl-5 space-y-1.5 leading-relaxed">
+                <li>Dans WordPress, rendez-vous dans le menu <strong>Extensions &gt; Ajouter une extension &gt; Téléverser une extension</strong>.</li>
+                <li>Sélectionnez le fichier <code>FIDCOGEST-Content-Manager.zip</code> créé à la racine du projet et cliquez sur <strong>Installer maintenant</strong>.</li>
+                <li>Cliquez sur <strong>Activer l'extension</strong>. Le menu <strong>FIDCOGEST</strong> apparaît immédiatement avec l'accès à la Médiathèque des 13 visuels officiels.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: Visuels & Médias */}
+      {activeTab === 'images' && (
+        <div className="space-y-6">
+          <div className="cabinet-card p-6 sm:p-8 space-y-6">
+            <div className="border-b border-[#E8E6DF] pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Image className="w-5 h-5 text-[#B79661]" />
+                  <h2 className="font-serif font-bold text-xl text-[#142B45]">
+                    Gestionnaire des 13 Visuels Officiels du Cabinet
+                  </h2>
+                </div>
+                <p className="text-xs text-[#6B7280] mt-1">
+                  Les images sont administrables soit via la Médiathèque WordPress, soit directement ici en saisissant une URL.
+                </p>
+              </div>
+
+              <a
+                href="https://fidcogestv2.indusale.top/wp-admin/admin.php?page=fidcogest-images"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cabinet-btn-primary text-xs flex items-center gap-2"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Ouvrir la Médiathèque WP</span>
+              </a>
+            </div>
+
+            {/* Grille des 13 Emplacements Médias avec Identifiants WordPress Stables */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { key: 'heroCabinet', label: '1. Hero Cabinet Vitrine', desc: 'Bannière haute de la page d\'accueil', def: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80' },
+                { key: 'service-accounting', altKey: 'serviceComptabilite', label: '2. Pôle 1 - Comptabilité', desc: 'WP ID : service-accounting', def: '/assets/images/services/service-accounting.webp' },
+                { key: 'service-tax', altKey: 'serviceFiscalite', label: '3. Pôle 2 - Fiscalité', desc: 'WP ID : service-tax', def: '/assets/images/services/service-tax.webp' },
+                { key: 'service-creation', altKey: 'serviceCreation', label: '4. Pôle 3 - Création & Starters', desc: 'WP ID : service-creation', def: '/assets/images/services/service-creation.webp' },
+                { key: 'service-consulting', altKey: 'serviceConseil', label: '5. Pôle 4 - Conseil de Gestion', desc: 'WP ID : service-consulting', def: '/assets/images/services/service-consulting.webp' },
+                { key: 'service-audit', altKey: 'serviceAudit', label: '6. Pôle 5 - Audit Contractuel', desc: 'WP ID : service-audit', def: '/assets/images/services/service-audit.webp' },
+                { key: 'service-financing', altKey: 'serviceFinancement', label: '7. Pôle 6 - Financements & Subsides', desc: 'WP ID : service-financing', def: '/assets/images/services/service-financing.webp' },
+                { key: 'service-digital', altKey: 'serviceEcompta', label: '8. Pôle 7 - E-Compta & Dématérialisation', desc: 'WP ID : service-digital', def: '/assets/images/services/service-digital.webp' },
+                { key: 'cabinetGanshoren', label: '9. Siège Ganshoren (Bureaux)', desc: 'Place de la Reine Paola 3, Bruxelles', def: '/assets/images/cabinet_ganshoren_modeste.webp' },
+                { key: 'portraitPaulHollMpeck', label: '10. Portrait de Paul Holl Mpeck', desc: 'Gérant Fondateur & Conseil Fiscal ITAA', def: '/assets/images/portrait_paul_holl_mpeck.svg' },
+                { key: 'logo', label: '11. Logo Principal (Fond clair)', desc: 'Barre de navigation principale', def: '/assets/images/logo_fidcogest.svg' },
+                { key: 'logoDark', label: '12. Logo Inversé (Fond sombre)', desc: 'Pied de page & bannières de prestige', def: '/assets/images/logo_fidcogest_dark.svg' },
+                { key: 'favicon', label: '13. Favicon d\'onglet', desc: 'Icône carrée d\'onglet navigateur', def: '/assets/images/favicon.svg' }
+              ].map((item) => {
+                const currentVal = (draftConfig.images as any)?.[item.key] || (item.altKey ? (draftConfig.images as any)?.[item.altKey] : null) || item.def;
+                return (
+                  <div key={item.key} className="rounded-xl border border-[#E8E6DF] bg-[#FAF9F6] p-4 flex flex-col justify-between space-y-3 shadow-xs">
+                    <div className="space-y-2">
+                      <div className="h-28 rounded-lg overflow-hidden bg-[#142B45] border border-[#E8E6DF] flex items-center justify-center p-2">
+                        <img
+                          src={currentVal}
+                          alt={item.label}
+                          className="max-h-full max-w-full object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = item.def;
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <h4 className="font-serif font-bold text-xs text-[#142B45]">{item.label}</h4>
+                        <p className="text-xs text-[#6B7280]">{item.desc}</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-2 border-t border-[#E8E6DF]">
+                      <input
+                        type="text"
+                        value={currentVal}
+                        onChange={(e) => {
+                          const updatedImgs = { ...(draftConfig.images || {}), [item.key]: e.target.value };
+                          if (item.key === 'serviceEcompta') {
+                            (updatedImgs as any).serviceEcomptaBasecone = e.target.value;
+                          }
+                          setDraftConfig({ ...draftConfig, images: updatedImgs as any });
+                        }}
+                        className="cabinet-input text-xs py-1.5 px-2.5 font-mono"
+                        placeholder="URL de l'image (https://... ou /assets/...)"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedImgs = { ...(draftConfig.images || {}), [item.key]: item.def };
+                          setDraftConfig({ ...draftConfig, images: updatedImgs as any });
+                        }}
+                        className="text-xs text-[#8C6A34] hover:underline font-semibold"
+                      >
+                        Rétablir le visuel vectoriel officiel
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Audit & Divergences */}
       {activeTab === 'audit' && (
+
         <div className="space-y-6">
           <div className="cabinet-card p-6 space-y-4">
             <div className="border-b border-[#E8E6DF] pb-3">
@@ -228,7 +533,7 @@ export const AdminPage: React.FC = () => {
                       <td className="p-3 font-mono text-[#1F2937] bg-emerald-50/50">{item.sourceHistorique}</td>
                       <td className="p-3 text-[#6B7280] line-through">{item.valeurPrototype}</td>
                       <td className="p-3">
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#142B45] text-[#B79661]">
+                        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#142B45] text-[#B79661]">
                           {item.statut}
                         </span>
                       </td>
@@ -469,7 +774,7 @@ export const AdminPage: React.FC = () => {
               <div key={service.id} className="p-5 rounded-xl bg-[#F7F6F2] border border-[#E8E6DF] space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="font-serif font-bold text-base text-[#142B45]">{service.title}</h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white border border-[#E8E6DF] text-[#B79661]">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-white border border-[#E8E6DF] text-[#B79661]">
                     {service.id}
                   </span>
                 </div>

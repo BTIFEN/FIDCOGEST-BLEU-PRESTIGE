@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgCons" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B45"/>
+      <stop offset="100%" stop-color="#1D3B5C"/>
+    </linearGradient>
+    <linearGradient id="goldCons" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#B79661"/>
+      <stop offset="100%" stop-color="#8C6A34"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="16" fill="url(#bgCons)"/>
+  <!-- Strategic Chess / Target & Compass Icon -->
+  <g transform="translate(400, 210)" stroke="url(#goldCons)" stroke-width="2.5" fill="none">
+    <circle cx="0" cy="0" r="110" stroke-width="2" opacity="0.3"/>
+    <circle cx="0" cy="0" r="75" stroke-width="1.5" opacity="0.5"/>
+    <circle cx="0" cy="0" r="40" stroke-width="2" fill="url(#goldCons)" fill-opacity="0.15"/>
+    <!-- Compass markers -->
+    <line x1="0" y1="-120" x2="0" y2="120" stroke-width="1" stroke-dasharray="4 4" opacity="0.4"/>
+    <line x1="-120" y1="0" x2="120" y2="0" stroke-width="1" stroke-dasharray="4 4" opacity="0.4"/>
+    <!-- Strategy Arrow pointer -->
+    <polygon points="0,-90 12,-30 0,-40 -12,-30" fill="url(#goldCons)" stroke="none"/>
+    <polygon points="0,90 12,30 0,40 -12,30" fill="#FFFFFF" fill-opacity="0.4" stroke="none"/>
+    <circle cx="0" cy="0" r="8" fill="url(#goldCons)"/>
+  </g>
+  <text x="400" y="445" font-family="'Cinzel', Georgia, serif" font-size="20" font-weight="bold" fill="#D9BD8E" text-anchor="middle" letter-spacing="3">CONSEIL DE GESTION &amp; TABLEAUX DE BORD</text>
+  <text x="400" y="470" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">PILOTAGE DE TRÉSORERIE • INDICATEURS CLÉS • STRATÉGIE DE CROISSANCE</text>
+</svg>

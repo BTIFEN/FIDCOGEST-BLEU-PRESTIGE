@@ -21,7 +21,7 @@
     "openingHours": "Lundi au Vendredi : 08h30 - 18h00 (sur rendez-vous)",
     "officialAccreditation": "ITAA (Institute for Tax Advisors and Accountants)",
     "accreditationStatus": "Cabinet agréé et certifié ITAA",
-    "primaryTool": "Basecone (Wolters Kluwer)",
+    "primaryTool": "Portail Sécurisé & Dématérialisation Peppol",
     "verificationNotice": "Informations vérifiées conformément à la Banque-Carrefour des Entreprises (BCE) et aux publications officielles de FIDCOGEST SRL."
   },
   "divergenceAudit": [
@@ -69,10 +69,10 @@
     },
     {
       "field": "Solution digitale principale",
-      "sourceHistorique": "Basecone (numérisation, archivage légal 10 ans, validation continue)",
+      "sourceHistorique": "Transmission numérique de documents et conformité Peppol 2026",
       "valeurPrototype": "Simulateur OCR générique",
-      "statut": "ENRICHI_AVEC_BASECONE",
-      "notes": "Présentation honnête de Basecone comme solution collaborative privilégiée du cabinet."
+      "statut": "VALIDÉ_OFFICIEL",
+      "notes": "Présentation conforme de la dématérialisation et de la facturation électronique Peppol B2B."
     }
   ],
   "team": [
@@ -98,7 +98,7 @@
       "name": "Pôle Gestion Comptable & Fiscale",
       "role": "Collaborateurs Comptables & Fiscaux Qualifiés",
       "title": "Équipe Comptable & Déclarations Fiscales",
-      "bio": "Équipe pluridisciplinaire assurant la tenue des dossiers, l'encodage via Basecone, les déclarations TVA périodiques, l'IPP, l'ISOC et la préparation des bilans BNB sous la supervision directe du gérant certifié.",
+      "bio": "Équipe pluridisciplinaire assurant la tenue des dossiers, l'encodage dématérialisé, les déclarations TVA périodiques, l'IPP, l'ISOC et la préparation des bilans BNB sous la supervision directe du gérant certifié.",
       "specialties": [
         "Tenue et révision comptable",
         "Déclarations périodiques TVA & Listing annuel",
@@ -113,10 +113,10 @@
       "id": "pole-digital-ecompta",
       "name": "Pôle E-Compta & Solutions Numériques",
       "role": "Support Digital & Gestion Électronique des Documents",
-      "title": "Accompagnement Outils Digitaux & Basecone",
-      "bio": "Accompagnement technique des clients pour l'utilisation de l'application Basecone, la transmission dématérialisée des pièces comptables et la transition vers la facturation électronique structurée Peppol 2026.",
+      "title": "Accompagnement Outils Digitaux & Peppol",
+      "bio": "Accompagnement technique des clients pour la transmission dématérialisée des pièces comptables et la transition vers la facturation électronique structurée Peppol 2026.",
       "specialties": [
-        "Application mobile et portail Basecone",
+        "Portail sécurisé de transmission de pièces",
         "Numérisation et archivage légal 10 ans",
         "Conformité facturation Peppol 2026",
         "Échanges et flux documentaires sécurisés"
@@ -308,17 +308,17 @@
     {
       "id": "e-compta",
       "title": "E-compta et services digitaux",
-      "shortTitle": "E-Compta & Basecone",
+      "shortTitle": "E-Compta & Dématérialisation",
       "tagline": "Une collaboration 100% numérique, fluide et sécurisée avec votre expert",
-      "description": "Fidcogest privilégie les technologies de pointe pour simplifier la vie des entrepreneurs. Fini le dépôt physique de fardes papier : transmettez vos documents en quelques clics via notre solution Basecone.",
+      "description": "Fidcogest privilégie les technologies numériques modernes pour simplifier la vie des entrepreneurs. Fini le dépôt physique de fardes papier : transmettez vos documents comptables en quelques clics via notre portail sécurisé.",
       "subServices": [
         {
           "name": "Transmission numérique de documents",
-          "details": "Scannez ou prenez en photo vos factures d'achat et justificatifs depuis votre smartphone ou ordinateur pour un transfert instantané."
+          "details": "Scannez ou déposez vos factures d'achat et justificatifs depuis votre smartphone ou ordinateur pour un traitement rapide."
         },
         {
-          "name": "Présentation de Basecone (Wolters Kluwer)",
-          "details": "Outil officiel adopté par Fidcogest pour la reconnaissance optique (OCR) automatique des factures, le traitement sans papier et la fluidité des échanges."
+          "name": "Portail documentaire sécurisé",
+          "details": "Plateforme centralisée adoptée par Fidcogest pour le dépôt, le classement numérique et la fluidité des échanges avec votre gestionnaire."
         },
         {
           "name": "Archivage sécurisé certifié 10 ans",
@@ -349,7 +349,7 @@
         "texte": "Des conseils certifiés fondés sur le strict respect de la déontologie professionnelle et du secret professionnel (art. 458 CP)."
       },
       {
-        "titre": "Innovation Digitale (Basecone)",
+        "titre": "Innovation Digitale & Zéro Papier",
         "texte": "Zéro papier superflu : numérisation simplifiée de vos pièces et visibilité instantanée sur vos finances."
       },
       {
@@ -357,5 +357,29 @@
         "texte": "Une optimisation proactive de vos revenus nets et de la charge fiscale de votre entreprise tout au long de l'année."
       }
     ]
+  },
+  "images": {
+    "heroCabinet": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+    "service-accounting": "/assets/images/services/service-accounting.webp",
+    "service-tax": "/assets/images/services/service-tax.webp",
+    "service-creation": "/assets/images/services/service-creation.webp",
+    "service-consulting": "/assets/images/services/service-consulting.webp",
+    "service-audit": "/assets/images/services/service-audit.webp",
+    "service-financing": "/assets/images/services/service-financing.webp",
+    "service-digital": "/assets/images/services/service-digital.webp",
+    "serviceComptabilite": "/assets/images/services/service-accounting.webp",
+    "serviceFiscalite": "/assets/images/services/service-tax.webp",
+    "serviceCreation": "/assets/images/services/service-creation.webp",
+    "serviceConseil": "/assets/images/services/service-consulting.webp",
+    "serviceAudit": "/assets/images/services/service-audit.webp",
+    "serviceFinancement": "/assets/images/services/service-financing.webp",
+    "serviceEcompta": "/assets/images/services/service-digital.webp",
+    "serviceEcomptaBasecone": "/assets/images/services/service-digital.webp",
+    "cabinetGanshoren": "/assets/images/cabinet_ganshoren_modeste.webp",
+    "consultationFounder": "/assets/images/senior_founder_desk.webp",
+    "portraitPaulHollMpeck": "/assets/images/portrait_paul_holl_mpeck.svg",
+    "logo": "/assets/images/logo_fidcogest.svg",
+    "logoDark": "/assets/images/logo_fidcogest_dark.svg",
+    "favicon": "/assets/images/favicon.svg"
   }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCabinet } from '../context/CabinetContext';
 import { ShieldCheck, Award, Mail, MapPin, CheckCircle2, UserCheck, Calendar, ArrowRight, Building } from 'lucide-react';
+import { Button, Card } from '../components/ui';
 
 interface TeamPageProps {
   onOpenBooking: () => void;
@@ -36,14 +37,21 @@ export const TeamPage: React.FC<TeamPageProps> = ({ onOpenBooking }) => {
 
       {/* Main Founder Showcase Card */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="cabinet-card p-8 sm:p-10 border border-[#B79661]/40 bg-gradient-to-br from-white via-white to-[#F7F6F2]">
+        <Card variant="standard" padding="lg" className="border-[#B79661]/40 bg-gradient-to-br from-white via-white to-[#F7F6F2]">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* Visual Monogram & Crest */}
+            {/* Visual Portrait & Crest */}
             <div className="lg:col-span-4 text-center space-y-4">
-              <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto rounded-2xl bg-gradient-to-br from-[#142B45] to-[#1D3B5C] border-2 border-[#B79661] text-[#B79661] flex flex-col items-center justify-center shadow-xl">
-                <span className="font-serif text-5xl font-bold tracking-wider">PHM</span>
-                <span className="text-[10px] uppercase font-sans text-white/80 tracking-widest mt-1">ITAA Certifié</span>
+              <div className="w-36 h-36 sm:w-44 sm:h-44 mx-auto rounded-2xl overflow-hidden border-2 border-[#B79661] shadow-xl bg-[#142B45] group">
+                <img
+                  src={config.images?.portraitPaulHollMpeck || '/assets/images/portrait_paul_holl_mpeck.svg'}
+                  alt="Paul Holl Mpeck - Gérant Fondateur FIDCOGEST SRL ITAA"
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/assets/images/portrait_paul_holl_mpeck.svg';
+                  }}
+                />
               </div>
 
               <div className="space-y-1">
@@ -95,26 +103,28 @@ export const TeamPage: React.FC<TeamPageProps> = ({ onOpenBooking }) => {
 
               {/* Action buttons */}
               <div className="pt-3 flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
+                <Button
+                  variant="primary"
+                  size="sm"
                   onClick={onOpenBooking}
-                  className="cabinet-btn-primary text-xs"
+                  icon={<Calendar className="w-4 h-4 text-white" />}
                 >
-                  <Calendar className="w-4 h-4" />
                   Prendre rendez-vous avec le cabinet
-                </button>
-                <a
-                  href={`mailto:${founder.email}`}
-                  className="cabinet-btn-secondary text-xs"
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  to={`mailto:${founder.email}`}
+                  external
+                  icon={<Mail className="w-4 h-4 text-[#B79661]" />}
                 >
-                  <Mail className="w-4 h-4 text-[#B79661]" />
                   Contacter la direction
-                </a>
+                </Button>
               </div>
             </div>
 
           </div>
-        </div>
+        </Card>
       </section>
 
       {/* Collaborating Teams Grid */}
@@ -136,7 +146,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({ onOpenBooking }) => {
                   <div className="w-10 h-10 rounded-xl bg-[#142B45] text-[#B79661] flex items-center justify-center font-serif font-bold shadow-xs">
                     <Building className="w-5 h-5" />
                   </div>
-                  <span className="cabinet-badge-neutral text-[11px]">
+                  <span className="cabinet-badge-neutral text-xs">
                     {collab.accreditation || 'Équipe Fidcogest'}
                   </span>
                 </div>
@@ -150,7 +160,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({ onOpenBooking }) => {
                 </p>
 
                 <div className="space-y-1.5 pt-2">
-                  <span className="text-[11px] font-semibold text-[#142B45] uppercase tracking-wider block">
+                  <span className="text-xs font-semibold text-[#142B45] uppercase tracking-wider block">
                     Missions clés :
                   </span>
                   <ul className="space-y-1 text-xs text-[#4B5563]">
@@ -181,31 +191,31 @@ export const TeamPage: React.FC<TeamPageProps> = ({ onOpenBooking }) => {
 
       {/* Code of Ethics & ITAA Commitment */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="rounded-2xl p-8 bg-[#142B45] text-white border border-[#1D3B5C] space-y-6">
+        <div className="rounded-2xl p-8 bg-gradient-to-br from-[#163354] to-[#0F2238] text-white border-2 border-[#2B4E77] space-y-6 shadow-xl">
           <div className="max-w-3xl space-y-2">
-            <span className="text-xs font-serif text-[#B79661] uppercase tracking-widest font-semibold block">
+            <span className="text-xs font-serif text-[#F3D085] uppercase tracking-widest font-bold block">
               Garantie Professionnelle &amp; Déontologie
             </span>
             <h3 className="font-serif font-bold text-2xl text-white">
               Le Secret Professionnel et l'Indépendance au Cœur de Notre Engagement
             </h3>
-            <p className="text-xs sm:text-sm text-[#CBD5E1] leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-100 font-medium leading-relaxed">
               En tant que membres assermentés de l'Institute for Tax Advisors and Accountants (ITAA), l'ensemble de nos interventions est encadré par les normes de déontologie légale les plus strictes de Belgique.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-1">
-              <div className="font-serif font-bold text-sm text-[#B79661]">Article 458 CP</div>
-              <div className="text-xs text-[#CBD5E1]">Secret professionnel absolu couvrant l'ensemble des données confidentielles de nos clients.</div>
+            <div className="p-4 rounded-xl bg-white/10 border border-white/20 space-y-1">
+              <div className="font-serif font-bold text-sm text-[#F3D085]">Article 458 CP</div>
+              <div className="text-xs text-slate-100 font-medium">Secret professionnel absolu couvrant l'ensemble des données confidentielles de nos clients.</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-1">
-              <div className="font-serif font-bold text-sm text-[#B79661]">Formation Continue</div>
-              <div className="text-xs text-[#CBD5E1]">Actualisation obligatoire de plus de 40 heures par an pour maîtriser l'évolution fiscale belge.</div>
+            <div className="p-4 rounded-xl bg-white/10 border border-white/20 space-y-1">
+              <div className="font-serif font-bold text-sm text-[#F3D085]">Formation Continue</div>
+              <div className="text-xs text-slate-100 font-medium">Actualisation obligatoire de plus de 40 heures par an pour maîtriser l'évolution fiscale belge.</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-1">
-              <div className="font-serif font-bold text-sm text-[#B79661]">Assurance Professionnelle</div>
-              <div className="text-xs text-[#CBD5E1]">Responsabilité civile professionnelle certifiée couvrant chaque acte et déclaration posé par le cabinet.</div>
+            <div className="p-4 rounded-xl bg-white/10 border border-white/20 space-y-1">
+              <div className="font-serif font-bold text-sm text-[#F3D085]">Assurance Professionnelle</div>
+              <div className="text-xs text-slate-100 font-medium">Responsabilité civile professionnelle certifiée couvrant chaque acte et déclaration posé par le cabinet.</div>
             </div>
           </div>
         </div>

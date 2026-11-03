@@ -155,19 +155,19 @@ export const FiscalitePage: React.FC<FiscalitePageProps> = ({ onOpenBooking }) =
               </ul>
             </div>
 
-            <div className="lg:col-span-4 p-6 rounded-2xl bg-[#142B45] text-white space-y-4 text-center">
+            <div className="lg:col-span-4 p-6 rounded-2xl bg-gradient-to-br from-[#163354] to-[#0F2238] border-2 border-[#2B4E77] text-white space-y-4 text-center shadow-xl">
               <div className="w-12 h-12 rounded-full bg-[#B79661] text-[#142B45] flex items-center justify-center mx-auto shadow-md">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h4 className="font-serif font-bold text-base text-white">
+              <h4 className="font-serif font-bold text-base !text-white" style={{ color: '#FFFFFF' }}>
                 Contrôle fiscal en cours ?
               </h4>
-              <p className="text-xs text-[#CBD5E1] leading-relaxed">
+              <p className="text-xs !text-slate-100 font-medium leading-relaxed" style={{ color: '#F1F5F9' }}>
                 Ne répondez pas seul sans avoir consulté un conseiller fiscal certifié ITAA.
               </p>
               <button
                 onClick={onOpenBooking}
-                className="cabinet-btn-gold text-xs w-full justify-center"
+                className="cabinet-btn-gold text-xs font-extrabold w-full justify-center shadow-md"
               >
                 <Calendar className="w-4 h-4" />
                 Prendre rendez-vous urgent
