@@ -5,6 +5,7 @@ import type express from 'express';
 import { DATA_DIRECTORY } from './db';
 import { encryptData, decryptData } from './security';
 import { storeEncryptedFile, retrieveDecryptedFile, type StoredVaultFile } from './vault';
+import { isPrivateStorageConfigured } from './privateStorage';
 
 export type StorageProviderName = 'hostinger' | 'google_drive';
 type LocationPreference = { provider: StorageProviderName; folderId?: string };
@@ -15,14 +16,15 @@ type StorageSettings = {
 };
 
 const settingsFile = path.join(DATA_DIRECTORY, 'storage-settings.json');
-const oauthStates = new Map<string, { expiresAt: number }>();
+const oauthStates = new Map<string, { expiresAt: number; verifier: string }>();
+const oauthCookie = 'fidcogest_drive_oauth';
+const cookieOptions = () => ({ httpOnly: true, secure: process.env.NODE_ENV !== 'test', sameSite: 'lax' as const, path: '/api/portal/storage/google/callback' });
 const scopes = 'https://www.googleapis.com/auth/drive.file';
 const clientId = () => process.env.GOOGLE_OAUTH_CLIENT_ID || '';
 const clientSecret = () => process.env.GOOGLE_OAUTH_CLIENT_SECRET || '';
 const redirectUri = () => process.env.GOOGLE_OAUTH_REDIRECT_URI || '';
 const googleReady = () => !!(clientId() && clientSecret() && redirectUri());
 const validFolderId = (id: string) => /^[\w-]{10,180}$/.test(id);
-const isPrivateStorageConfigured = () => !!process.env.PERSISTENT_STORAGE_DIR && path.isAbsolute(process.env.PERSISTENT_STORAGE_DIR);
 
 function defaultSettings(): StorageSettings {
   return { defaultStorage: { provider: 'hostinger' }, companyOverrides: {}, google: {} };
@@ -80,8 +82,7 @@ async function driveRequest(token: string, url: string, init: RequestInit = {}) 
     headers: { Authorization: 'Bearer ' + token, ...init.headers }
   });
   if (!response.ok) {
-    const responseText = (await response.text()).slice(0, 300);
-    throw new Error('Google Drive a refusé l’opération (' + response.status + ') : ' + responseText);
+    throw new Error('Google Drive a refusé l’opération (' + response.status + ').');
   }
   return response;
 }
@@ -107,6 +108,7 @@ function mimeFromName(name: string) {
 }
 
 export async function savePortalDocument(companyId: string, filename: string, buffer: Buffer): Promise<StoredVaultFile & {provider:StorageProviderName}> {
+  if (!isPrivateStorageConfigured()) throw new Error('Stockage privé non configuré : dépôt désactivé.');
   const settings = loadSettings();
   const dest = selectedLocation(settings, companyId);
   if (dest.provider === 'hostinger') {
@@ -157,6 +159,7 @@ export function registerStorageAdminRoutes(
 ) {
   const router = app;
   const admin = (req: express.Request, res: express.Response): boolean => {
+    res.setHeader('Cache-Control', 'no-store');
     const auth = authenticate(req);
     if (auth?.user.role !== 'admin') {
       res.status(403).json({error:'Accès réservé à l’administrateur du cabinet.'});
@@ -206,23 +209,30 @@ export function registerStorageAdminRoutes(
     if (!admin(req,res)) return;
     if (!googleReady() || !isPrivateStorageConfigured()) return res.status(503).json({error:'OAuth ou stockage persistant non configuré.'});
     const state = crypto.randomBytes(32).toString('hex');
-    oauthStates.set(state, {expiresAt:Date.now()+5*60_000});
+    for (const [key, pending] of oauthStates) if (pending.expiresAt < Date.now()) oauthStates.delete(key);
+    const verifier = crypto.randomBytes(32).toString('base64url');
+    oauthStates.set(state, {expiresAt:Date.now()+5*60_000, verifier});
+    res.cookie(oauthCookie, state, {...cookieOptions(), maxAge:5*60_000});
     const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-    url.search = new URLSearchParams({client_id:clientId(), redirect_uri:redirectUri(), response_type:'code', scope:scopes, access_type:'offline', prompt:'consent', state}).toString();
+    url.search = new URLSearchParams({client_id:clientId(), redirect_uri:redirectUri(), response_type:'code', scope:scopes, access_type:'offline', prompt:'consent', state, code_challenge:crypto.createHash('sha256').update(verifier).digest('base64url'), code_challenge_method:'S256'}).toString();
     res.json({url:url.toString()});
   });
   router.get('/api/portal/storage/google/callback', async(req,res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Referrer-Policy', 'no-referrer');
     const state = typeof req.query.state === 'string' ? req.query.state : '';
     const code = typeof req.query.code === 'string' ? req.query.code : '';
     const pending = oauthStates.get(state);
-    oauthStates.delete(state);
-    if (!pending || pending.expiresAt < Date.now() || !code || !googleReady()) {
+    const browserState = (req.headers.cookie || '').split(';').map(s=>s.trim()).find(s=>s.startsWith(oauthCookie+'='))?.slice(oauthCookie.length+1);
+    if (!pending || pending.expiresAt < Date.now() || browserState !== state || !code || !googleReady() || !isPrivateStorageConfigured()) {
       return res.status(400).type('text/plain').send('Autorisation expirée ou invalide.');
     }
+    oauthStates.delete(state);
+    res.clearCookie(oauthCookie, cookieOptions());
     try {
       const result = await fetch('https://oauth2.googleapis.com/token', {
         method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body:new URLSearchParams({client_id:clientId(),client_secret:clientSecret(),redirect_uri:redirectUri(),grant_type:'authorization_code',code})
+        body:new URLSearchParams({client_id:clientId(),client_secret:clientSecret(),redirect_uri:redirectUri(),grant_type:'authorization_code',code,code_verifier:pending.verifier})
       });
       const tokens:any = await result.json();
       if (!result.ok || !tokens.refresh_token) throw new Error('Aucun jeton de renouvellement reçu.');
@@ -240,7 +250,7 @@ export function registerStorageAdminRoutes(
     if (!admin(req,res)) return;
     const apiKey = process.env.GOOGLE_PICKER_API_KEY || '';
     const appId = process.env.GOOGLE_CLOUD_PROJECT_NUMBER || '';
-    if (!apiKey || !/^\\d+$/.test(appId)) return res.status(503).json({error:'Google Picker non configuré.'});
+    if (!apiKey || !/^\d+$/.test(appId)) return res.status(503).json({error:'Google Picker non configuré.'});
     try {
       const accessToken = await googleToken(loadSettings());
       res.setHeader('Cache-Control','no-store');

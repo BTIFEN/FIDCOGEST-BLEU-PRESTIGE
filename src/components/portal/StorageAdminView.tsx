@@ -155,7 +155,7 @@ export const StorageAdminView: React.FC = () => {
       <div className="rounded-lg bg-[#F7F6F2] p-4 space-y-2 text-sm">
         <p><strong>Hostinger :</strong> {config.hostingerConfigured?'Répertoire configuré':'Répertoire privé non configuré'}</p>
         <p><strong>Google Drive :</strong> {config.googleConnected?('Connecté — '+(config.googleEmail || 'compte autorisé')):'Non connecté'}</p>
-        {!config.googleConnected && <button type="button" onClick={connectGoogle} disabled={busy || !config.oauthConfigured} className="cabinet-btn-primary px-4 py-2 text-white">Connecter Google Drive</button>}
+        <button type="button" onClick={connectGoogle} disabled={busy || !config.oauthConfigured || !config.hostingerConfigured} className="cabinet-btn-primary px-4 py-2 text-white">{config.googleConnected ? 'Reconnecter Google Drive' : 'Connecter Google Drive'}</button>
         {!config.oauthConfigured && <p className="text-amber-900">Configurez GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET et GOOGLE_OAUTH_REDIRECT_URI sur le serveur.</p>}
       </div>
       <div className="space-y-2">

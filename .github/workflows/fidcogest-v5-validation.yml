@@ -2,6 +2,8 @@ name: FIDCOGEST V5 — validation technique
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -29,5 +31,7 @@ jobs:
         run: node --test tests/storage-v6-static.test.mjs
       - name: Local storage round-trip
         run: npx tsx --test tests/storage-v6.integration.test.ts
+      - name: Storage admin, OAuth and Drive contract tests
+        run: npx tsx --test tests/storage-v6-routes.integration.test.ts
       - name: Bootstrap CLI build
         run: npm run build:bootstrap --if-present
