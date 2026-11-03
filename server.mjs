@@ -2,7 +2,7 @@
 import express2 from "express";
 import { GoogleGenAI as GoogleGenAI2 } from "@google/genai";
 import dotenv from "dotenv";
-import path6 from "path";
+import path7 from "path";
 import fs6 from "fs";
 import crypto7 from "crypto";
 import { fileURLToPath as fileURLToPath2 } from "url";
@@ -2150,10 +2150,23 @@ function setupPortalApi(app2) {
   console.log("[Fidcogest Portal V2] API s\xE9curis\xE9e initialis\xE9e avec sessions Bearer, TOTP RFC 6238 et coffre chiffr\xE9.");
 }
 
+// src/server/browserEnrollment.ts
+import path6 from "node:path";
+function registerBrowserEnrollment(app2, publicDirectory) {
+  app2.get("/preparer-administrateur", (_req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    res.setHeader("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'");
+    res.sendFile(path6.join(publicDirectory, "preparer-administrateur.html"));
+  });
+}
+
 // server.ts
 dotenv.config();
 var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path6.dirname(__filename2);
+var __dirname2 = path7.dirname(__filename2);
 var app = express2();
 app.use(express2.json({ limit: "10mb" }));
 var PORT = Number(process.env.PORT) || 3e3;
@@ -2245,7 +2258,7 @@ setInterval(() => {
     }
   }
 }, 10 * 60 * 1e3);
-var CABINET_CONTENT_FILE = path6.resolve(__dirname2, "data", "cabinet-content.json");
+var CABINET_CONTENT_FILE = path7.resolve(__dirname2, "data", "cabinet-content.json");
 var WORDPRESS_URL = (process.env.WORDPRESS_URL || "https://fidcogestv2.indusale.top").replace(/\/+$/, "");
 var WP_WEBHOOK_SECRET = process.env.WP_WEBHOOK_SECRET ? process.env.WP_WEBHOOK_SECRET.trim() : "";
 if (!WP_WEBHOOK_SECRET) {
@@ -2296,7 +2309,7 @@ async function resolveCabinetContent(forceFresh = false) {
           source: "wordpress"
         };
         try {
-          const dir = path6.dirname(CABINET_CONTENT_FILE);
+          const dir = path7.dirname(CABINET_CONTENT_FILE);
           if (!fs6.existsSync(dir)) fs6.mkdirSync(dir, { recursive: true });
           fs6.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(wpData, null, 2), "utf-8");
         } catch (writeErr) {
@@ -2500,7 +2513,7 @@ app.post("/api/cabinet-config", (req, res) => {
     const updatedContent = req.body;
     delete updatedContent._adminPassword;
     delete updatedContent._sync;
-    const dir = path6.dirname(CABINET_CONTENT_FILE);
+    const dir = path7.dirname(CABINET_CONTENT_FILE);
     if (!fs6.existsSync(dir)) {
       fs6.mkdirSync(dir, { recursive: true });
     }
@@ -2596,7 +2609,7 @@ app.post("/api/analyze-document", async (req, res) => {
     const { textSnippet, filename } = req.body;
     if (filename && typeof filename === "string") {
       const allowedExtensions = [".pdf", ".png", ".jpg", ".jpeg"];
-      const ext = path6.extname(filename).toLowerCase();
+      const ext = path7.extname(filename).toLowerCase();
       if (!allowedExtensions.includes(ext)) {
         return res.status(400).json({
           error: `Type de fichier non autoris\xE9 (${ext}). Formats accept\xE9s : PDF, PNG, JPG, JPEG.`
@@ -2745,6 +2758,7 @@ app.use(["/data/vault_storage", "/data/private_vault", "/vault_storage", "/priva
   return res.status(403).json({ error: "Acc\xE8s interdit au stockage priv\xE9 documentaire." });
 });
 var isProduction = process.env.NODE_ENV === "production";
+registerBrowserEnrollment(app, path7.join(__dirname2, isProduction ? "dist" : "public"));
 app.use((req, res, next) => {
   if (req.path === "/preparer-administrateur.html" || req.path.startsWith("/enrollment/")) {
     res.setHeader("Cache-Control", "no-store");
@@ -2768,7 +2782,7 @@ async function setupDevMiddleware() {
       return next();
     }
     try {
-      const indexHtmlPath = path6.resolve(__dirname2, "index.html");
+      const indexHtmlPath = path7.resolve(__dirname2, "index.html");
       let rawTemplate = fs6.readFileSync(indexHtmlPath, "utf-8");
       const template = await vite.transformIndexHtml(url, rawTemplate);
       res.status(200).set({ "Content-Type": "text/html" }).end(template);
@@ -2778,14 +2792,14 @@ async function setupDevMiddleware() {
     }
   });
 }
-if (isProduction && fs6.existsSync(path6.join(__dirname2, "dist", "index.html"))) {
-  app.use(express2.static(path6.join(__dirname2, "dist")));
+if (isProduction && fs6.existsSync(path7.join(__dirname2, "dist", "index.html"))) {
+  app.use(express2.static(path7.join(__dirname2, "dist")));
   app.get("*", (req, res, next) => {
     if (req.originalUrl.startsWith("/api")) return next();
-    res.sendFile(path6.join(__dirname2, "dist", "index.html"));
+    res.sendFile(path7.join(__dirname2, "dist", "index.html"));
   });
 } else if (isProduction) {
-  const rootIndex = path6.join(__dirname2, "index.html");
+  const rootIndex = path7.join(__dirname2, "index.html");
   app.get("*", (req, res, next) => {
     if (req.originalUrl.startsWith("/api")) return next();
     if (fs6.existsSync(rootIndex)) {

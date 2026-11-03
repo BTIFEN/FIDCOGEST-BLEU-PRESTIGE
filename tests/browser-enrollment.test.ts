@@ -8,6 +8,8 @@ import { runPrivateBootstrap } from '../src/server/privateBootstrap';
 import { generateTotpCode, verifyPassword, decryptData, verifyAndConsumeRecoveryCode } from '../src/server/security';
 import { readRequest, passwordRecord, newMfaSecret, totp, recoveryCodes, makeEnvelope } from '../public/enrollment/crypto.mjs';
 import type { StoredUser } from '../src/server/db';
+import express from 'express';
+import { registerBrowserEnrollment } from '../src/server/browserEnrollment';
 
 test('browser Web Crypto envelope is accepted by the unchanged private server bootstrap', async () => {
   const previous = { ...process.env };
@@ -64,4 +66,24 @@ test('preparation has no network submission, storage, telemetry or external scri
   assert.match(app, /pagehide/); assert.match(app, /revokeObjectURL/);
   const server = fs.readFileSync('server.ts', 'utf8');
   assert.match(server, /connect-src 'none'/); assert.match(server, /form-action 'none'/);
+});
+
+test('canonical browser preparation passes through Node and enforces security headers', async () => {
+  const app = express(); registerBrowserEnrollment(app, path.resolve('public'));
+  const server = app.listen(0, '127.0.0.1'); await new Promise<void>(resolve => server.once('listening', resolve));
+  try {
+    const response = await fetch(`http://127.0.0.1:${(server.address() as { port: number }).port}/preparer-administrateur`);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.equal(response.headers.get('referrer-policy'), 'no-referrer');
+    assert.equal(response.headers.get('x-frame-options'), 'DENY');
+    const csp = response.headers.get('content-security-policy')!;
+    for (const directive of ["connect-src 'none'", "form-action 'none'", "frame-ancestors 'none'"]) assert.ok(csp.includes(directive));
+    const html = await response.text();
+    assert.ok(html.includes('step-credentials'));
+    assert.match(html, /http-equiv="Content-Security-Policy"/);
+    const script = fs.readFileSync('public/enrollment/app.mjs', 'utf8');
+    assert.match(script, /window.top !== window.self/);
+    assert.match(script, /location.replace\('\/preparer-administrateur'\)/);
+  } finally { await new Promise<void>((resolve, reject) => server.close(err => err ? reject(err) : resolve())); }
 });
