@@ -4,16 +4,21 @@ import crypto from 'crypto';
 // 1. GESTION DES CLÉS ET CHIFFREMENT AU REPOS (AES-256-GCM)
 // ============================================================================
 
-// Clé maîtresse dérivée à partir de la variable d'environnement ou d'un sel sécurisé
-const MASTER_SECRET = process.env.PORTAL_ENCRYPTION_KEY || 'fidcogest-master-cryptographic-salt-2026-secure-key-itaa';
-const MASTER_KEY = crypto.scryptSync(MASTER_SECRET, 'fidcogest_salt_9821_itaa', 32);
+// Aucune clé de secours. Clé de 32 octets, fournie via le gestionnaire de secrets de l'hébergeur.
+function getMasterKey(): Buffer {
+  const value = process.env.PORTAL_ENCRYPTION_KEY;
+  if (!value || !/^[a-fA-F0-9]{64}$/.test(value)) {
+    throw new Error('PORTAL_ENCRYPTION_KEY doit contenir 64 caractères hexadécimaux aléatoires.');
+  }
+  return Buffer.from(value, 'hex');
+}
 
 /**
  * Chiffre une chaîne ou un buffer avec AES-256-GCM (authentifié)
  */
 export function encryptData(data: string | Buffer): { ciphertext: string; iv: string; authTag: string } {
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv('aes-256-gcm', MASTER_KEY, iv);
+  const cipher = crypto.createCipheriv('aes-256-gcm', getMasterKey(), iv);
   
   const buffer = typeof data === 'string' ? Buffer.from(data, 'utf-8') : data;
   const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
@@ -32,7 +37,7 @@ export function encryptData(data: string | Buffer): { ciphertext: string; iv: st
 export function decryptData(encrypted: { ciphertext: string; iv: string; authTag: string }): Buffer {
   const decipher = crypto.createDecipheriv(
     'aes-256-gcm',
-    MASTER_KEY,
+    getMasterKey(),
     Buffer.from(encrypted.iv, 'hex')
   );
   decipher.setAuthTag(Buffer.from(encrypted.authTag, 'hex'));
