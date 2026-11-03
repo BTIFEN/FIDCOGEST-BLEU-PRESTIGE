@@ -6,6 +6,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { setupPortalApi } from './src/server/portalApi';
+import { registerBrowserEnrollment } from './src/server/browserEnrollment';
 
 dotenv.config();
 
@@ -756,6 +757,7 @@ app.use(['/data/vault_storage', '/data/private_vault', '/vault_storage', '/priva
 // SERVICE DU FRONTEND REACT (PRODUCTION STATIC & VITE DEV MIDDLEWARE)
 // =========================================================================
 const isProduction = process.env.NODE_ENV === 'production';
+registerBrowserEnrollment(app, path.join(__dirname, isProduction ? 'dist' : 'public'));
 
 // Stateless browser preparation only; no public account-creation API.
 app.use((req, res, next) => {

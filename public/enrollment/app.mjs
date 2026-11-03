@@ -1,5 +1,15 @@
 import { readRequest, passwordRecord, newMfaSecret, totp, recoveryCodes, makeEnvelope } from './crypto.mjs';
 
+// Do not enable secret entry in an iframe or at the static-server bypass URL.
+if (window.top !== window.self) {
+  document.body.replaceChildren(document.createTextNode('Ouvrez cette page directement dans votre navigateur.'));
+  throw new Error('DIRECT_WINDOW_REQUIRED');
+}
+if (location.pathname !== '/preparer-administrateur') {
+  location.replace('/preparer-administrateur');
+  throw new Error('CANONICAL_ROUTE_REQUIRED');
+}
+
 const byId = id => document.getElementById(id);
 let state = {}, downloadUrl, timer;
 const messages = {
