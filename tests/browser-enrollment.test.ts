@@ -85,5 +85,13 @@ test('canonical browser preparation passes through Node and enforces security he
     const script = fs.readFileSync('public/enrollment/app.mjs', 'utf8');
     assert.match(script, /window.top !== window.self/);
     assert.match(script, /location.replace\('\/preparer-administrateur'\)/);
+    for (const name of ['app', 'crypto']) {
+      const asset = await fetch(`http://127.0.0.1:${(server.address() as { port: number }).port}/enrollment/${name}.js`);
+      assert.equal(asset.status, 200);
+      assert.match(asset.headers.get('content-type')!, /application\/javascript/);
+      assert.equal(asset.headers.get('cache-control'), 'no-store');
+    }
+    assert.match(html, /src="\/enrollment\/app.js"/);
+    assert.match(script, /from '.\/crypto.js'/);
   } finally { await new Promise<void>((resolve, reject) => server.close(err => err ? reject(err) : resolve())); }
 });
