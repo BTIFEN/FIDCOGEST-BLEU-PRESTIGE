@@ -17,7 +17,7 @@ export interface StoredVaultFile {
 export function storeEncryptedFile(companyId: string, originalFilename: string, fileBuffer: Buffer): StoredVaultFile {
   const companyDir = path.join(VAULT_DIRECTORY, companyId);
   if (!fs.existsSync(companyDir)) {
-    fs.mkdirSync(companyDir, { recursive: true });
+    fs.mkdirSync(companyDir, { recursive: true, mode: 0o700 });
   }
 
   // Identifiant UUIDv4 non prédictible
@@ -37,7 +37,7 @@ export function storeEncryptedFile(companyId: string, originalFilename: string, 
   };
 
   const finalDiskPath = path.join(companyDir, `${docId}.enc`);
-  fs.writeFileSync(finalDiskPath, JSON.stringify(fileRecord), 'utf-8');
+  fs.writeFileSync(finalDiskPath, JSON.stringify(fileRecord), { encoding: 'utf-8', mode: 0o600, flag: 'wx' });
 
   return {
     docId,

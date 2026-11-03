@@ -2,18 +2,18 @@
 import express2 from "express";
 import { GoogleGenAI as GoogleGenAI2 } from "@google/genai";
 import dotenv from "dotenv";
-import path3 from "path";
-import fs3 from "fs";
-import crypto5 from "crypto";
+import path5 from "path";
+import fs5 from "fs";
+import crypto6 from "crypto";
 import { fileURLToPath as fileURLToPath2 } from "url";
 
 // src/server/portalApi.ts
 import express from "express";
-import crypto4 from "crypto";
+import crypto5 from "crypto";
 
 // src/server/db.ts
-import fs from "fs";
-import path from "path";
+import fs2 from "fs";
+import path2 from "path";
 import crypto2 from "crypto";
 import { fileURLToPath } from "url";
 
@@ -501,11 +501,16 @@ var SEED_SECURITY_LOGS = [
 
 // src/server/security.ts
 import crypto from "crypto";
-var MASTER_SECRET = process.env.PORTAL_ENCRYPTION_KEY || "fidcogest-master-cryptographic-salt-2026-secure-key-itaa";
-var MASTER_KEY = crypto.scryptSync(MASTER_SECRET, "fidcogest_salt_9821_itaa", 32);
+function getMasterKey() {
+  const value = process.env.PORTAL_ENCRYPTION_KEY;
+  if (!value || !/^[a-fA-F0-9]{64}$/.test(value)) {
+    throw new Error("PORTAL_ENCRYPTION_KEY doit contenir 64 caract\xE8res hexad\xE9cimaux al\xE9atoires.");
+  }
+  return Buffer.from(value, "hex");
+}
 function encryptData(data) {
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv("aes-256-gcm", MASTER_KEY, iv);
+  const cipher = crypto.createCipheriv("aes-256-gcm", getMasterKey(), iv);
   const buffer = typeof data === "string" ? Buffer.from(data, "utf-8") : data;
   const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
   const authTag = cipher.getAuthTag();
@@ -518,7 +523,7 @@ function encryptData(data) {
 function decryptData(encrypted) {
   const decipher = crypto.createDecipheriv(
     "aes-256-gcm",
-    MASTER_KEY,
+    getMasterKey(),
     Buffer.from(encrypted.iv, "hex")
   );
   decipher.setAuthTag(Buffer.from(encrypted.authTag, "hex"));
@@ -726,31 +731,72 @@ function inspectFileContent(buffer, claimedFilename) {
   };
 }
 
+// src/server/privateStorage.ts
+import fs from "node:fs";
+import path from "node:path";
+function resolvedDestination(directory) {
+  if (fs.existsSync(directory)) return fs.realpathSync(directory);
+  const parent = path.dirname(directory);
+  if (parent === directory) return directory;
+  return path.join(resolvedDestination(parent), path.basename(directory));
+}
+function assertPrivateStorageDirectory(directory = process.env.PERSISTENT_STORAGE_DIR) {
+  if (!directory || !path.isAbsolute(directory)) {
+    throw new Error("PERSISTENT_STORAGE_DIR doit \xEAtre configur\xE9 avec un chemin absolu priv\xE9.");
+  }
+  const destination = resolvedDestination(path.resolve(directory));
+  const codeRoot = fs.realpathSync(process.cwd());
+  const insideCode = path.relative(codeRoot, destination);
+  if (!insideCode || !insideCode.startsWith(".." + path.sep) && !path.isAbsolute(insideCode)) {
+    throw new Error("Le stockage priv\xE9 doit \xEAtre hors du code d\xE9ploy\xE9.");
+  }
+  if (destination === path.parse(destination).root || /(^|[/\\])(hbuilds|public_html)([/\\]|$)/i.test(directory) || /(^|[/\\])(hbuilds|public_html)([/\\]|$)/i.test(destination)) {
+    throw new Error("Le stockage priv\xE9 doit \xEAtre hors de hbuilds et public_html.");
+  }
+  if (fs.existsSync(destination)) {
+    const stat = fs.statSync(destination);
+    if (!stat.isDirectory() || process.platform !== "win32" && (stat.mode & 63) !== 0) {
+      throw new Error("Le r\xE9pertoire priv\xE9 doit \xEAtre un dossier r\xE9serv\xE9 \xE0 son propri\xE9taire (0700).");
+    }
+    fs.accessSync(destination, fs.constants.R_OK | fs.constants.W_OK | fs.constants.X_OK);
+  }
+}
+function isPrivateStorageConfigured() {
+  try {
+    assertPrivateStorageDirectory();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // src/server/db.ts
 var __filename = fileURLToPath(import.meta.url);
-var __dirname = path.dirname(__filename);
-var DATA_DIRECTORY = process.env.PERSISTENT_STORAGE_DIR || path.resolve(__dirname, "../../data");
-var DB_FILE_PATH = path.join(DATA_DIRECTORY, "portal-database-v2.json");
-var VAULT_DIRECTORY = path.join(DATA_DIRECTORY, "vault_storage");
+var __dirname = path2.dirname(__filename);
+var DATA_DIRECTORY = process.env.PERSISTENT_STORAGE_DIR || path2.resolve(__dirname, "../../data");
+var DB_FILE_PATH = path2.join(DATA_DIRECTORY, "portal-database-v2.json");
+var VAULT_DIRECTORY = path2.join(DATA_DIRECTORY, "vault_storage");
 var PersistentDatabase = class {
   constructor() {
     this.isLoaded = false;
     this.ensureDirectories();
     this.state = this.loadOrInit();
     this.runMigrations();
+    this.revokeExposedDemoCredentials();
   }
   ensureDirectories() {
-    if (!fs.existsSync(DATA_DIRECTORY)) {
-      fs.mkdirSync(DATA_DIRECTORY, { recursive: true });
+    if (process.env.PERSISTENT_STORAGE_DIR) assertPrivateStorageDirectory();
+    if (!fs2.existsSync(DATA_DIRECTORY)) {
+      fs2.mkdirSync(DATA_DIRECTORY, { recursive: true, mode: 448 });
     }
-    if (!fs.existsSync(VAULT_DIRECTORY)) {
-      fs.mkdirSync(VAULT_DIRECTORY, { recursive: true });
+    if (!fs2.existsSync(VAULT_DIRECTORY)) {
+      fs2.mkdirSync(VAULT_DIRECTORY, { recursive: true, mode: 448 });
     }
   }
   loadOrInit() {
-    if (fs.existsSync(DB_FILE_PATH)) {
+    if (fs2.existsSync(DB_FILE_PATH)) {
       try {
-        const raw = fs.readFileSync(DB_FILE_PATH, "utf-8");
+        const raw = fs2.readFileSync(DB_FILE_PATH, "utf-8");
         const parsed = JSON.parse(raw);
         if (parsed && typeof parsed.version === "number" && Array.isArray(parsed.users)) {
           this.isLoaded = true;
@@ -760,101 +806,22 @@ var PersistentDatabase = class {
         console.error("[Database] Erreur lecture fichier BDD, cr\xE9ation d\u2019un snapshot de secours:", err);
         const backupPath = `${DB_FILE_PATH}.corrupt.${Date.now()}`;
         try {
-          fs.copyFileSync(DB_FILE_PATH, backupPath);
+          fs2.copyFileSync(DB_FILE_PATH, backupPath);
         } catch (_) {
         }
       }
     }
-    const defaultPassword = hashPassword("Fidcogest2026!");
-    const initialUsers = [
-      {
-        id: "usr-client-1",
-        email: "marie.vandamme@louise-immo.be",
-        fullName: "Marie Vandamme",
-        role: "client",
-        phone: "+32 475 22 33 44",
-        assignedCompanyIds: ["cie-1", "cie-2"],
-        status: "actif",
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: "2024-03-10"
-      },
-      {
-        id: "usr-client-2",
-        email: "philippe@techconsult.be",
-        fullName: "Philippe De Smet",
-        role: "client",
-        phone: "+32 486 99 88 77",
-        assignedCompanyIds: ["cie-3"],
-        status: "actif",
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: "2024-06-15"
-      },
-      {
-        id: "usr-manager-1",
-        email: "sarah.benali@fidcogest.be",
-        fullName: "Sarah Benali",
-        role: "manager",
-        phone: "+32 2 425 18 58",
-        assignedCompanyIds: ["cie-1", "cie-3"],
-        status: "actif",
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: "2022-09-01"
-      },
-      {
-        id: "usr-supervisor-1",
-        email: "paul.mpeck@fidcogest.be",
-        fullName: "Paul Holl Mpeck (Expert ITAA)",
-        role: "supervisor",
-        phone: "+32 2 425 18 58",
-        assignedCompanyIds: ["cie-1", "cie-2", "cie-3", "cie-4"],
-        status: "actif",
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: "2008-01-01"
-      },
-      {
-        id: "usr-admin-1",
-        email: "admin@fidcogest.be",
-        fullName: "Administrateur Cabinet Fidcogest",
-        role: "admin",
-        phone: "+32 2 425 18 58",
-        assignedCompanyIds: ["cie-1", "cie-2", "cie-3", "cie-4"],
-        status: "actif",
-        mfaEnabled: true,
-        passwordHash: defaultPassword.hash,
-        passwordSalt: defaultPassword.salt,
-        createdAt: "2008-01-01"
-      }
-    ];
-    initialUsers.forEach((u) => {
-      const base32 = generateBase32Secret();
-      u.mfaSecretEncrypted = encryptData(base32);
-      const { hashedCodes } = generateRecoveryCodes(10);
-      u.recoveryCodesHashed = hashedCodes;
-    });
+    const fixtureMode = process.env.NODE_ENV === "test" && process.env.FIDCOGEST_TEST_FIXTURES === "true";
     const initialState = {
-      version: 1,
-      schema_migrations: [
-        {
-          version: 1,
-          appliedAt: (/* @__PURE__ */ new Date()).toISOString(),
-          description: "Cr\xE9ation initiale du sch\xE9ma relationnel Fidcogest V1"
-        }
-      ],
-      users: initialUsers,
+      version: 2,
+      schema_migrations: [{ version: 2, appliedAt: (/* @__PURE__ */ new Date()).toISOString(), description: "Initialisation sans comptes publics de demonstration" }],
+      users: [],
       sessions: [],
-      companies: SEED_COMPANIES,
-      documents: SEED_DOCUMENTS,
-      missingRequests: SEED_MISSING_REQUESTS,
-      messages: SEED_MESSAGES,
-      auditLogs: SEED_SECURITY_LOGS
+      companies: fixtureMode ? SEED_COMPANIES : [],
+      documents: fixtureMode ? SEED_DOCUMENTS : [],
+      missingRequests: fixtureMode ? SEED_MISSING_REQUESTS : [],
+      messages: fixtureMode ? SEED_MESSAGES : [],
+      auditLogs: fixtureMode ? SEED_SECURITY_LOGS : []
     };
     this.save(initialState);
     this.isLoaded = true;
@@ -868,12 +835,12 @@ var PersistentDatabase = class {
     this.ensureDirectories();
     const tempFile = `${DB_FILE_PATH}.${crypto2.randomBytes(6).toString("hex")}.tmp`;
     try {
-      fs.writeFileSync(tempFile, JSON.stringify(stateToSave, null, 2), "utf-8");
-      fs.renameSync(tempFile, DB_FILE_PATH);
+      fs2.writeFileSync(tempFile, JSON.stringify(stateToSave, null, 2), { encoding: "utf-8", mode: 384, flag: "wx" });
+      fs2.renameSync(tempFile, DB_FILE_PATH);
     } catch (err) {
-      if (fs.existsSync(tempFile)) {
+      if (fs2.existsSync(tempFile)) {
         try {
-          fs.unlinkSync(tempFile);
+          fs2.unlinkSync(tempFile);
         } catch (_) {
         }
       }
@@ -897,6 +864,39 @@ var PersistentDatabase = class {
       this.state.version = 2;
       this.save();
       console.log("[Database] Migration V2 appliqu\xE9e avec succ\xE8s.");
+    }
+  }
+  revokeExposedDemoCredentials() {
+    const oldIds = /* @__PURE__ */ new Set(["usr-client-1", "usr-client-2", "usr-manager-1", "usr-supervisor-1", "usr-admin-1"]);
+    const exposedPassword = process.env.PORTAL_REVOKE_EXPOSED_PASSWORD;
+    const affected = /* @__PURE__ */ new Set();
+    let updated = false;
+    for (const user of this.state.users) {
+      let compromised = oldIds.has(user.id);
+      if (!compromised && exposedPassword && user.passwordHash && user.passwordSalt) {
+        try {
+          compromised = verifyPassword(exposedPassword, user.passwordHash, user.passwordSalt);
+        } catch {
+          compromised = false;
+        }
+      }
+      if (!compromised) continue;
+      affected.add(user.id);
+      const replacement = hashPassword(crypto2.randomBytes(48).toString("hex"));
+      user.passwordHash = replacement.hash;
+      user.passwordSalt = replacement.salt;
+      user.status = "suspendu";
+      user.mfaSecretEncrypted = void 0;
+      user.recoveryCodesHashed = [];
+      user.inviteToken = void 0;
+      user.inviteExpiresAt = void 0;
+      updated = true;
+    }
+    const count = this.state.sessions.length;
+    this.state.sessions = this.state.sessions.filter((session) => !affected.has(session.userId));
+    if (updated || count !== this.state.sessions.length) {
+      this.save();
+      console.warn("[FIDCOGEST] Exposed demonstration identities suspended and sessions revoked.");
     }
   }
   // --- Accesseurs Sécurisés ---
@@ -1062,14 +1062,19 @@ var PersistentDatabase = class {
 };
 var db = new PersistentDatabase();
 
+// src/server/storageProviders.ts
+import fs4 from "node:fs";
+import path4 from "node:path";
+import crypto4 from "node:crypto";
+
 // src/server/vault.ts
-import fs2 from "fs";
-import path2 from "path";
+import fs3 from "fs";
+import path3 from "path";
 import crypto3 from "crypto";
 function storeEncryptedFile(companyId, originalFilename, fileBuffer) {
-  const companyDir = path2.join(VAULT_DIRECTORY, companyId);
-  if (!fs2.existsSync(companyDir)) {
-    fs2.mkdirSync(companyDir, { recursive: true });
+  const companyDir = path3.join(VAULT_DIRECTORY, companyId);
+  if (!fs3.existsSync(companyDir)) {
+    fs3.mkdirSync(companyDir, { recursive: true, mode: 448 });
   }
   const docId = `doc-${crypto3.randomUUID()}`;
   const sha256Checksum = crypto3.createHash("sha256").update(fileBuffer).digest("hex");
@@ -1083,8 +1088,8 @@ function storeEncryptedFile(companyId, originalFilename, fileBuffer) {
     encryptedAt: (/* @__PURE__ */ new Date()).toISOString(),
     payload: encryptedPayload
   };
-  const finalDiskPath = path2.join(companyDir, `${docId}.enc`);
-  fs2.writeFileSync(finalDiskPath, JSON.stringify(fileRecord), "utf-8");
+  const finalDiskPath = path3.join(companyDir, `${docId}.enc`);
+  fs3.writeFileSync(finalDiskPath, JSON.stringify(fileRecord), { encoding: "utf-8", mode: 384, flag: "wx" });
   return {
     docId,
     storagePath: finalDiskPath,
@@ -1093,10 +1098,10 @@ function storeEncryptedFile(companyId, originalFilename, fileBuffer) {
   };
 }
 function retrieveDecryptedFile(storagePath) {
-  if (!fs2.existsSync(storagePath)) {
+  if (!fs3.existsSync(storagePath)) {
     throw new Error(`Fichier introuvable dans le coffre priv\xE9 : ${storagePath}`);
   }
-  const raw = fs2.readFileSync(storagePath, "utf-8");
+  const raw = fs3.readFileSync(storagePath, "utf-8");
   const record = JSON.parse(raw);
   if (!record.payload || !record.payload.ciphertext) {
     throw new Error("Fichier chiffr\xE9 corrompu ou format incompatible.");
@@ -1111,6 +1116,279 @@ function retrieveDecryptedFile(storagePath) {
     buffer: decryptedBuffer,
     sha256Checksum: computedSha
   };
+}
+
+// src/server/storageProviders.ts
+var settingsFile = path4.join(DATA_DIRECTORY, "storage-settings.json");
+var oauthStates = /* @__PURE__ */ new Map();
+var oauthCookie = "fidcogest_drive_oauth";
+var cookieOptions = () => ({ httpOnly: true, secure: process.env.NODE_ENV !== "test", sameSite: "lax", path: "/api/portal/storage/google/callback" });
+var scopes = "https://www.googleapis.com/auth/drive.file";
+var clientId = () => process.env.GOOGLE_OAUTH_CLIENT_ID || "";
+var clientSecret = () => process.env.GOOGLE_OAUTH_CLIENT_SECRET || "";
+var redirectUri = () => process.env.GOOGLE_OAUTH_REDIRECT_URI || "";
+var googleReady = () => !!(clientId() && clientSecret() && redirectUri());
+var validFolderId = (id) => /^[\w-]{10,180}$/.test(id);
+function defaultSettings() {
+  return { defaultStorage: { provider: "hostinger" }, companyOverrides: {}, google: {} };
+}
+function loadSettings() {
+  if (!fs4.existsSync(settingsFile)) return defaultSettings();
+  const parsed = JSON.parse(fs4.readFileSync(settingsFile, "utf8"));
+  return {
+    defaultStorage: parsed.defaultStorage || { provider: "hostinger" },
+    companyOverrides: parsed.companyOverrides || {},
+    google: parsed.google || {}
+  };
+}
+function saveSettings(settings) {
+  if (!isPrivateStorageConfigured()) throw new Error("PERSISTENT_STORAGE_DIR doit \xEAtre configur\xE9 avant de modifier le stockage.");
+  fs4.mkdirSync(DATA_DIRECTORY, { recursive: true, mode: 448 });
+  const tmp = settingsFile + "." + crypto4.randomBytes(8).toString("hex") + ".tmp";
+  fs4.writeFileSync(tmp, JSON.stringify(settings), { encoding: "utf8", mode: 384, flag: "wx" });
+  fs4.renameSync(tmp, settingsFile);
+  fs4.chmodSync(settingsFile, 384);
+}
+function publicSettings(settings) {
+  return {
+    defaultStorage: settings.defaultStorage,
+    companyOverrides: settings.companyOverrides,
+    googleConnected: !!settings.google.encryptedRefreshToken,
+    googleEmail: settings.google.email || null,
+    oauthConfigured: googleReady(),
+    hostingerConfigured: isPrivateStorageConfigured()
+  };
+}
+async function googleToken(settings) {
+  if (!googleReady() || !settings.google.encryptedRefreshToken) throw new Error("Google Drive non connect\xE9.");
+  const refreshToken = decryptData(settings.google.encryptedRefreshToken).toString("utf8");
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: clientId(),
+      client_secret: clientSecret(),
+      refresh_token: refreshToken,
+      grant_type: "refresh_token"
+    })
+  });
+  const json = await response.json();
+  if (!response.ok || !json.access_token) throw new Error("Connexion Drive expir\xE9e ou r\xE9voqu\xE9e.");
+  return json.access_token;
+}
+async function driveRequest(token, url, init = {}) {
+  const response = await fetch(url, {
+    ...init,
+    headers: { Authorization: "Bearer " + token, ...init.headers }
+  });
+  if (!response.ok) {
+    throw new Error("Google Drive a refus\xE9 l\u2019op\xE9ration (" + response.status + ").");
+  }
+  return response;
+}
+async function folderInfo(token, folderId) {
+  if (!validFolderId(folderId)) throw new Error("Identifiant de dossier Drive invalide.");
+  const params = "?fields=id,name,mimeType,trashed,capabilities(canAddChildren)";
+  const res = await driveRequest(token, "https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(folderId) + params);
+  const file = await res.json();
+  if (file.trashed || file.mimeType !== "application/vnd.google-apps.folder" || !file.capabilities?.canAddChildren) {
+    throw new Error("Dossier inaccessible ou sans autorisation d\u2019\xE9criture.");
+  }
+  return { id: file.id, name: file.name };
+}
+function selectedLocation(settings, companyId) {
+  return settings.companyOverrides[companyId] || settings.defaultStorage;
+}
+async function savePortalDocument(companyId, filename, buffer) {
+  if (!isPrivateStorageConfigured()) throw new Error("Stockage priv\xE9 non configur\xE9 : d\xE9p\xF4t d\xE9sactiv\xE9.");
+  const settings = loadSettings();
+  const dest = selectedLocation(settings, companyId);
+  if (dest.provider === "hostinger") {
+    if (!isPrivateStorageConfigured()) throw new Error("Stockage Hostinger non persistant : d\xE9p\xF4t d\xE9sactiv\xE9.");
+    return { ...storeEncryptedFile(companyId, filename, buffer), provider: "hostinger" };
+  }
+  if (!dest.folderId) throw new Error("Dossier de destination Google Drive non choisi.");
+  const token = await googleToken(settings);
+  await folderInfo(token, dest.folderId);
+  const docId = "doc-" + crypto4.randomUUID();
+  const sha256Checksum = crypto4.createHash("sha256").update(buffer).digest("hex");
+  const record = {
+    docId,
+    companyId,
+    originalFilename: filename,
+    sha256Checksum,
+    fileSizeBytes: buffer.length,
+    encryptedAt: (/* @__PURE__ */ new Date()).toISOString(),
+    payload: encryptData(buffer)
+  };
+  const binary = Buffer.from(JSON.stringify(record), "utf8");
+  const boundary = "fidco" + crypto4.randomBytes(12).toString("hex");
+  const meta = { name: docId + ".enc", mimeType: "application/octet-stream", parents: [dest.folderId], description: "FIDCOGEST encrypted document" };
+  const prefix = Buffer.from("--" + boundary + "\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" + JSON.stringify(meta) + "\r\n--" + boundary + "\r\nContent-Type: application/octet-stream\r\n\r\n");
+  const suffix = Buffer.from("\r\n--" + boundary + "--\r\n");
+  const body = Buffer.concat([prefix, binary, suffix]);
+  const res = await driveRequest(token, "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name", {
+    method: "POST",
+    headers: { "Content-Type": "multipart/related; boundary=" + boundary },
+    body
+  });
+  const uploaded = await res.json();
+  if (!uploaded.id) throw new Error("Aucun identifiant re\xE7u apr\xE8s l\u2019envoi Drive.");
+  return { docId, storagePath: "gdrive:" + uploaded.id, sha256Checksum, fileSizeBytes: buffer.length, provider: "google_drive" };
+}
+async function readPortalDocument(storagePath) {
+  if (!storagePath.startsWith("gdrive:")) return retrieveDecryptedFile(storagePath);
+  const fileId = storagePath.slice("gdrive:".length);
+  if (!validFolderId(fileId)) throw new Error("Identifiant de fichier invalide.");
+  const token = await googleToken(loadSettings());
+  const res = await driveRequest(token, "https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(fileId) + "?alt=media");
+  const raw = JSON.parse(Buffer.from(await res.arrayBuffer()).toString("utf8"));
+  const decrypted = decryptData(raw.payload);
+  const checksum = crypto4.createHash("sha256").update(decrypted).digest("hex");
+  if (raw.sha256Checksum !== checksum) throw new Error("Int\xE9grit\xE9 du document incorrecte.");
+  return { originalFilename: raw.originalFilename, buffer: decrypted, sha256Checksum: checksum };
+}
+function registerStorageAdminRoutes(app2, authenticate, getCompanyById) {
+  const router = app2;
+  const admin = (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    const auth = authenticate(req);
+    if (auth?.user.role !== "admin") {
+      res.status(403).json({ error: "Acc\xE8s r\xE9serv\xE9 \xE0 l\u2019administrateur du cabinet." });
+      return false;
+    }
+    return true;
+  };
+  router.get("/api/portal/admin/storage", (req, res) => {
+    if (!admin(req, res)) return;
+    try {
+      res.json(publicSettings(loadSettings()));
+    } catch {
+      res.status(500).json({ error: "Configuration de stockage indisponible." });
+    }
+  });
+  router.put("/api/portal/admin/storage", async (req, res) => {
+    if (!admin(req, res)) return;
+    const { companyId, provider, folderId } = req.body || {};
+    if (provider !== "hostinger" && provider !== "google_drive") return res.status(400).json({ error: "Fournisseur invalide." });
+    if (companyId !== void 0 && (typeof companyId !== "string" || !getCompanyById(companyId))) {
+      return res.status(400).json({ error: "Entreprise inconnue." });
+    }
+    try {
+      const settings = loadSettings();
+      const location = { provider };
+      if (provider === "google_drive") {
+        if (typeof folderId !== "string") return res.status(400).json({ error: "Dossier Google Drive requis." });
+        const token = await googleToken(settings);
+        await folderInfo(token, folderId);
+        location.folderId = folderId;
+      } else if (!isPrivateStorageConfigured()) {
+        return res.status(503).json({ error: "Stockage Hostinger priv\xE9 persistant non configur\xE9." });
+      }
+      if (companyId) settings.companyOverrides[companyId] = location;
+      else settings.defaultStorage = location;
+      saveSettings(settings);
+      res.json(publicSettings(settings));
+    } catch (e) {
+      res.status(503).json({ error: e.message || "Enregistrement impossible." });
+    }
+  });
+  router.delete("/api/portal/admin/storage/companies/:companyId", (req, res) => {
+    if (!admin(req, res)) return;
+    if (!getCompanyById(req.params.companyId)) return res.status(404).json({ error: "Entreprise inconnue." });
+    try {
+      const settings = loadSettings();
+      delete settings.companyOverrides[req.params.companyId];
+      saveSettings(settings);
+      res.json(publicSettings(settings));
+    } catch (e) {
+      res.status(503).json({ error: e.message });
+    }
+  });
+  router.get("/api/portal/admin/storage/google/authorize", (req, res) => {
+    if (!admin(req, res)) return;
+    if (!googleReady() || !isPrivateStorageConfigured()) return res.status(503).json({ error: "OAuth ou stockage persistant non configur\xE9." });
+    const state = crypto4.randomBytes(32).toString("hex");
+    for (const [key, pending] of oauthStates) if (pending.expiresAt < Date.now()) oauthStates.delete(key);
+    const verifier = crypto4.randomBytes(32).toString("base64url");
+    oauthStates.set(state, { expiresAt: Date.now() + 5 * 6e4, verifier });
+    res.cookie(oauthCookie, state, { ...cookieOptions(), maxAge: 5 * 6e4 });
+    const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+    url.search = new URLSearchParams({ client_id: clientId(), redirect_uri: redirectUri(), response_type: "code", scope: scopes, access_type: "offline", prompt: "consent", state, code_challenge: crypto4.createHash("sha256").update(verifier).digest("base64url"), code_challenge_method: "S256" }).toString();
+    res.json({ url: url.toString() });
+  });
+  router.get("/api/portal/storage/google/callback", async (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    const state = typeof req.query.state === "string" ? req.query.state : "";
+    const code = typeof req.query.code === "string" ? req.query.code : "";
+    const pending = oauthStates.get(state);
+    const browserState = (req.headers.cookie || "").split(";").map((s) => s.trim()).find((s) => s.startsWith(oauthCookie + "="))?.slice(oauthCookie.length + 1);
+    if (!pending || pending.expiresAt < Date.now() || browserState !== state || !code || !googleReady() || !isPrivateStorageConfigured()) {
+      return res.status(400).type("text/plain").send("Autorisation expir\xE9e ou invalide.");
+    }
+    oauthStates.delete(state);
+    res.clearCookie(oauthCookie, cookieOptions());
+    try {
+      const result = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ client_id: clientId(), client_secret: clientSecret(), redirect_uri: redirectUri(), grant_type: "authorization_code", code, code_verifier: pending.verifier })
+      });
+      const tokens = await result.json();
+      if (!result.ok || !tokens.refresh_token) throw new Error("Aucun jeton de renouvellement re\xE7u.");
+      const settings = loadSettings();
+      settings.google.encryptedRefreshToken = encryptData(tokens.refresh_token);
+      const about = await driveRequest(tokens.access_token, "https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)");
+      settings.google.email = (await about.json())?.user?.emailAddress || void 0;
+      saveSettings(settings);
+      return res.type("text/html").send('<!doctype html><html lang="fr"><meta charset="utf-8"><title>Drive connect\xE9</title><body><h2>Google Drive connect\xE9 \xE0 FIDCOGEST.</h2><p>Retournez \xE0 l\u2019administration FIDCOGEST et actualisez les param\xE8tres de stockage.</p></body></html>');
+    } catch {
+      return res.status(503).type("text/plain").send("Connexion Google impossible. V\xE9rifiez les autorisations OAuth.");
+    }
+  });
+  router.get("/api/portal/admin/storage/google/picker-session", async (req, res) => {
+    if (!admin(req, res)) return;
+    const apiKey2 = process.env.GOOGLE_PICKER_API_KEY || "";
+    const appId = process.env.GOOGLE_CLOUD_PROJECT_NUMBER || "";
+    if (!apiKey2 || !/^\d+$/.test(appId)) return res.status(503).json({ error: "Google Picker non configur\xE9." });
+    try {
+      const accessToken = await googleToken(loadSettings());
+      res.setHeader("Cache-Control", "no-store");
+      res.json({ accessToken, apiKey: apiKey2, appId });
+    } catch (e) {
+      res.status(503).json({ error: e.message || "Google Drive non connect\xE9." });
+    }
+  });
+  router.get("/api/portal/admin/storage/google/folders", async (req, res) => {
+    if (!admin(req, res)) return;
+    try {
+      const token = await googleToken(loadSettings());
+      const params = new URLSearchParams({ q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false", fields: "nextPageToken,files(id,name,parents)", page_size: "100" });
+      params.delete("page_size");
+      params.set("pageSize", "100");
+      const response = await driveRequest(token, "https://www.googleapis.com/drive/v3/files?" + params);
+      res.json(await response.json());
+    } catch (e) {
+      res.status(503).json({ error: e.message });
+    }
+  });
+  router.post("/api/portal/admin/storage/google/folders", async (req, res) => {
+    if (!admin(req, res)) return;
+    const name = typeof req.body?.name === "string" ? req.body.name.trim() : "";
+    if (!name || name.length > 100 || /[\\/]/.test(name)) return res.status(400).json({ error: "Nom de dossier invalide." });
+    try {
+      const token = await googleToken(loadSettings());
+      const result = await driveRequest(token, "https://www.googleapis.com/drive/v3/files?fields=id,name", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, mimeType: "application/vnd.google-apps.folder" })
+      });
+      res.status(201).json(await result.json());
+    } catch (e) {
+      res.status(503).json({ error: e.message });
+    }
+  });
 }
 
 // src/server/ocr.ts
@@ -1255,6 +1533,7 @@ function setupPortalApi(app2) {
     if (user.status === "en_attente_invitation") {
       return res.status(400).json({ error: "Votre compte doit \xEAtre activ\xE9 via le lien d\u2019invitation re\xE7u par e-mail." });
     }
+    if (!user.passwordHash || !user.passwordSalt) return res.status(401).json({ error: "Identifiants invalides." });
     if (user.passwordHash && user.passwordSalt) {
       const isValid = verifyPassword(password, user.passwordHash, user.passwordSalt);
       if (!isValid) {
@@ -1262,7 +1541,8 @@ function setupPortalApi(app2) {
         return res.status(401).json({ error: "Identifiants invalides." });
       }
     }
-    const challengeToken = crypto4.randomBytes(24).toString("hex");
+    if (!user.mfaEnabled || !user.mfaSecretEncrypted) return res.status(403).json({ error: "Double authentification non configur\xE9e." });
+    const challengeToken = crypto5.randomBytes(24).toString("hex");
     mfaChallenges.set(challengeToken, {
       userId: user.id,
       expiresAt: Date.now() + 10 * 60 * 1e3
@@ -1281,30 +1561,6 @@ function setupPortalApi(app2) {
       message: "Veuillez saisir votre code d\u2019authentification TOTP (Google Authenticator / SMS)."
     });
   });
-  router.post("/auth/current-totp", (req, res) => {
-    if (process.env.NODE_ENV === "production" && process.env.ENABLE_SECURITY_TEST_SUITE !== "true") {
-      return res.status(404).json({ error: "Endpoint indisponible en environnement de production." });
-    }
-    const { challengeToken } = req.body;
-    if (!challengeToken) {
-      return res.status(400).json({ error: "challengeToken requis." });
-    }
-    const challenge = mfaChallenges.get(challengeToken);
-    if (!challenge || Date.now() > challenge.expiresAt) {
-      return res.status(401).json({ error: "Challenge invalide ou expir\xE9." });
-    }
-    const user = db.getUserById(challenge.userId);
-    if (!user || !user.mfaSecretEncrypted) {
-      return res.status(404).json({ error: "MFA non configur\xE9 pour cet utilisateur." });
-    }
-    const secretBase32 = decryptData(user.mfaSecretEncrypted).toString("utf-8");
-    const totpCode = generateTotpCode(secretBase32);
-    const secondsRemaining = 30 - Math.floor(Date.now() / 1e3) % 30;
-    return res.json({
-      totpCode,
-      secondsRemaining
-    });
-  });
   router.post("/auth/verify-mfa", (req, res) => {
     const { challengeToken, totpCode, recoveryCode } = req.body;
     const ip = getClientIp2(req);
@@ -1318,8 +1574,8 @@ function setupPortalApi(app2) {
       return res.status(401).json({ error: "Le challenge de s\xE9curit\xE9 a expir\xE9. Veuillez vous reconnecter." });
     }
     const user = db.getUserById(challenge.userId);
-    if (!user) {
-      return res.status(404).json({ error: "Utilisateur introuvable." });
+    if (!user || user.status !== "actif") {
+      return res.status(401).json({ error: "Session MFA invalide." });
     }
     let isMfaValid = false;
     if (totpCode && user.mfaSecretEncrypted) {
@@ -1478,18 +1734,14 @@ function setupPortalApi(app2) {
       return res.status(403).json({ error: "Acc\xE8s non autoris\xE9 \xE0 cette entreprise." });
     }
     let fileBuffer;
-    if (base64Payload) {
-      const cleanBase64 = base64Payload.replace(/^data:[^;]+;base64,/, "");
-      fileBuffer = Buffer.from(cleanBase64, "base64");
-    } else {
-      fileBuffer = Buffer.from(`%PDF-1.4
-1 0 obj
-<< /Title (${filename}) /Producer (FIDCOGEST Vault) >>
-endobj
-trailer
-<< /Root 1 0 R >>
-%%EOF`);
+    if (typeof base64Payload !== "string" || !base64Payload) {
+      return res.status(400).json({ error: "Le contenu r\xE9el du fichier est obligatoire." });
     }
+    const cleanBase64 = base64Payload.replace(/^data:[^;]+;base64,/, "");
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(cleanBase64) || cleanBase64.length > 14e6) {
+      return res.status(400).json({ error: "Fichier encod\xE9 invalide ou trop volumineux." });
+    }
+    fileBuffer = Buffer.from(cleanBase64, "base64");
     const scanResult = inspectFileContent(fileBuffer, filename);
     if (!scanResult.isValid || scanResult.isMalwareDetected) {
       db.addAuditLog(
@@ -1508,7 +1760,12 @@ trailer
         threatName: scanResult.malwareThreatName
       });
     }
-    const storedVault = storeEncryptedFile(companyId, filename, fileBuffer);
+    let storedVault;
+    try {
+      storedVault = await savePortalDocument(companyId, filename, fileBuffer);
+    } catch (err) {
+      return res.status(503).json({ error: err.message || "Stockage documentaire indisponible." });
+    }
     const ocrExtraction = await analyzeInvoiceDocument(fileBuffer, scanResult.detectedMime, filename);
     const existingInvoices = db.getDocuments().filter((d) => d.companyId === companyId);
     const duplicateMatch = existingInvoices.find(
@@ -1538,6 +1795,7 @@ trailer
       createdAt: (/* @__PURE__ */ new Date()).toISOString().replace("T", " ").substring(0, 16),
       updatedAt: (/* @__PURE__ */ new Date()).toISOString().replace("T", " ").substring(0, 16),
       storagePath: storedVault.storagePath,
+      storageProvider: storedVault.provider,
       history: [
         {
           id: `hist-${Date.now()}`,
@@ -1562,7 +1820,7 @@ trailer
     );
     return res.status(201).json({ document: newDoc });
   });
-  router.get("/documents/:id/download", (req, res) => {
+  router.get("/documents/:id/download", async (req, res) => {
     const auth = authenticateSession(req);
     if (!auth) {
       return res.status(401).json({ error: "Authentification requise pour t\xE9l\xE9charger." });
@@ -1576,7 +1834,7 @@ trailer
       return res.status(403).json({ error: "Acc\xE8s non autoris\xE9 \xE0 cette pi\xE8ce confidentielle." });
     }
     try {
-      const decrypted = retrieveDecryptedFile(doc.storagePath);
+      const decrypted = await readPortalDocument(doc.storagePath);
       db.addAuditLog(
         auth.user.id,
         auth.user.fullName,
@@ -1790,6 +2048,7 @@ trailer
       }))
     });
   });
+  registerStorageAdminRoutes(app2, authenticateSession, (id) => db.getCompanyById(id));
   app2.use("/api/portal", router);
   console.log("[Fidcogest Portal V2] API s\xE9curis\xE9e initialis\xE9e avec sessions Bearer, TOTP RFC 6238 et coffre chiffr\xE9.");
 }
@@ -1797,7 +2056,7 @@ trailer
 // server.ts
 dotenv.config();
 var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path3.dirname(__filename2);
+var __dirname2 = path5.dirname(__filename2);
 var app = express2();
 app.use(express2.json({ limit: "10mb" }));
 var PORT = Number(process.env.PORT) || 3e3;
@@ -1889,7 +2148,7 @@ setInterval(() => {
     }
   }
 }, 10 * 60 * 1e3);
-var CABINET_CONTENT_FILE = path3.resolve(__dirname2, "data", "cabinet-content.json");
+var CABINET_CONTENT_FILE = path5.resolve(__dirname2, "data", "cabinet-content.json");
 var WORDPRESS_URL = (process.env.WORDPRESS_URL || "https://fidcogestv2.indusale.top").replace(/\/+$/, "");
 var WP_WEBHOOK_SECRET = process.env.WP_WEBHOOK_SECRET ? process.env.WP_WEBHOOK_SECRET.trim() : "";
 if (!WP_WEBHOOK_SECRET) {
@@ -1905,8 +2164,8 @@ var configCache = null;
 var CACHE_TTL_MS = 5 * 60 * 1e3;
 function getLocalCabinetContent() {
   try {
-    if (fs3.existsSync(CABINET_CONTENT_FILE)) {
-      const data = fs3.readFileSync(CABINET_CONTENT_FILE, "utf-8");
+    if (fs5.existsSync(CABINET_CONTENT_FILE)) {
+      const data = fs5.readFileSync(CABINET_CONTENT_FILE, "utf-8");
       return JSON.parse(data);
     }
   } catch (err) {
@@ -1940,9 +2199,9 @@ async function resolveCabinetContent(forceFresh = false) {
           source: "wordpress"
         };
         try {
-          const dir = path3.dirname(CABINET_CONTENT_FILE);
-          if (!fs3.existsSync(dir)) fs3.mkdirSync(dir, { recursive: true });
-          fs3.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(wpData, null, 2), "utf-8");
+          const dir = path5.dirname(CABINET_CONTENT_FILE);
+          if (!fs5.existsSync(dir)) fs5.mkdirSync(dir, { recursive: true });
+          fs5.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(wpData, null, 2), "utf-8");
         } catch (writeErr) {
           console.warn("[Fidcogest] \xC9chec \xE9criture cache local:", writeErr);
         }
@@ -2001,7 +2260,7 @@ app.post("/api/webhook/wp-flush", async (req, res) => {
   }
   const headerBuf = Buffer.from(secretHeader);
   const secretBuf = Buffer.from(WP_WEBHOOK_SECRET);
-  const isValidSecret = headerBuf.length === secretBuf.length && crypto5.timingSafeEqual(headerBuf, secretBuf);
+  const isValidSecret = headerBuf.length === secretBuf.length && crypto6.timingSafeEqual(headerBuf, secretBuf);
   if (!isValidSecret) {
     console.warn("[Fidcogest Webhook] Rejet : Secret de webhook invalide.");
     return res.status(403).json({ error: "Secret de webhook invalide." });
@@ -2063,7 +2322,7 @@ app.post("/api/admin/login", (req, res) => {
     return res.status(401).json({ error: "Mot de passe d'administration invalide." });
   }
   clearFailedAttempts(ip);
-  const token = crypto5.randomBytes(32).toString("hex");
+  const token = crypto6.randomBytes(32).toString("hex");
   const now = Date.now();
   const session = {
     token,
@@ -2144,11 +2403,11 @@ app.post("/api/cabinet-config", (req, res) => {
     const updatedContent = req.body;
     delete updatedContent._adminPassword;
     delete updatedContent._sync;
-    const dir = path3.dirname(CABINET_CONTENT_FILE);
-    if (!fs3.existsSync(dir)) {
-      fs3.mkdirSync(dir, { recursive: true });
+    const dir = path5.dirname(CABINET_CONTENT_FILE);
+    if (!fs5.existsSync(dir)) {
+      fs5.mkdirSync(dir, { recursive: true });
     }
-    fs3.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(updatedContent, null, 2), "utf-8");
+    fs5.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(updatedContent, null, 2), "utf-8");
     configCache = {
       data: updatedContent,
       lastFetched: Date.now(),
@@ -2240,7 +2499,7 @@ app.post("/api/analyze-document", async (req, res) => {
     const { textSnippet, filename } = req.body;
     if (filename && typeof filename === "string") {
       const allowedExtensions = [".pdf", ".png", ".jpg", ".jpeg"];
-      const ext = path3.extname(filename).toLowerCase();
+      const ext = path5.extname(filename).toLowerCase();
       if (!allowedExtensions.includes(ext)) {
         return res.status(400).json({
           error: `Type de fichier non autoris\xE9 (${ext}). Formats accept\xE9s : PDF, PNG, JPG, JPEG.`
@@ -2402,8 +2661,8 @@ async function setupDevMiddleware() {
       return next();
     }
     try {
-      const indexHtmlPath = path3.resolve(__dirname2, "index.html");
-      let rawTemplate = fs3.readFileSync(indexHtmlPath, "utf-8");
+      const indexHtmlPath = path5.resolve(__dirname2, "index.html");
+      let rawTemplate = fs5.readFileSync(indexHtmlPath, "utf-8");
       const template = await vite.transformIndexHtml(url, rawTemplate);
       res.status(200).set({ "Content-Type": "text/html" }).end(template);
     } catch (e) {
@@ -2412,17 +2671,17 @@ async function setupDevMiddleware() {
     }
   });
 }
-if (isProduction && fs3.existsSync(path3.join(__dirname2, "dist", "index.html"))) {
-  app.use(express2.static(path3.join(__dirname2, "dist")));
+if (isProduction && fs5.existsSync(path5.join(__dirname2, "dist", "index.html"))) {
+  app.use(express2.static(path5.join(__dirname2, "dist")));
   app.get("*", (req, res, next) => {
     if (req.originalUrl.startsWith("/api")) return next();
-    res.sendFile(path3.join(__dirname2, "dist", "index.html"));
+    res.sendFile(path5.join(__dirname2, "dist", "index.html"));
   });
 } else if (isProduction) {
-  const rootIndex = path3.join(__dirname2, "index.html");
+  const rootIndex = path5.join(__dirname2, "index.html");
   app.get("*", (req, res, next) => {
     if (req.originalUrl.startsWith("/api")) return next();
-    if (fs3.existsSync(rootIndex)) {
+    if (fs5.existsSync(rootIndex)) {
       res.sendFile(rootIndex);
     } else {
       res.status(500).send("FIDCOGEST \u2014 Application en cours d\u2019initialisation.");
