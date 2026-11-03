@@ -2,7 +2,7 @@
 
 **Ouverture clients : BLOQUÉE.** Le rapport précédent et son commit `6e8dcfbb6a921878eab6bfef554cf7d72cb2b150` sont conservés. Ce document complète les validations existantes ; il ne remplace pas les preuves de déploiement du rapport précédent.
 
-Les corrections de cette intervention sont livrées sur une branche distincte, sans activation de l'amorçage en production. Aucun accès authentifié Hostinger ou portail n'a été établi pendant cette intervention. Aucun dossier Drive réel, aucun compte administrateur de production et aucun PDF de production n'ont été créés. Aucun DNS, secret ou paramètre de production n'a été modifié. Les tests utilisent uniquement des répertoires temporaires isolés et des clés éphémères.
+Le correctif est fusionné sur main via la PR nº 4 (commit c907029fe26f5f6db210546907a4a15ee876e782), après réussite de GitHub Actions nº 41663411051 sur Node 22. Le déploiement Hostinger de ce correctif n'est pas confirmé et l'amorçage n'a pas été activé. Aucun accès authentifié Hostinger ou portail n'a été établi pendant cette intervention. Aucun dossier Drive réel, aucun compte administrateur de production et aucun PDF de production n'ont été créés. Aucun DNS, secret ou paramètre de production n'a été modifié. Les tests utilisent uniquement des répertoires temporaires isolés et des clés éphémères.
 
 ## Matrice finale de cette intervention
 
@@ -30,8 +30,8 @@ PASS signifie uniquement le contrôle et l'environnement explicitement nommés. 
 | Export JSON en tant que sauvegarde complète | FAIL | Il exclut les fichiers du coffre, `storage-settings.json`, les objets Drive et les secrets de configuration. Il ne permet pas à lui seul une reprise complète. |
 | Copie complète du répertoire privé et restauration | PASS — LOCAL | Dans une instance temporaire, sauvegarde puis restauration des fichiers chiffrés et paramètres OAuth fictifs ; relecture et SHA-256 vérifiés dans un nouveau processus. Le chemin privé est conservé. |
 | Sauvegardes Hostinger et restauration complète réelle | NON TESTÉ | Fréquence, rétention, copie indépendante, récupération de la clé et restauration isolée à vérifier sur l'hébergement réel et Drive. |
-| Non-mise en cache des réponses privées du portail | PASS — LOCAL | `Cache-Control: no-store` ajouté au routeur du portail, dont l'export de sauvegarde ; correctif non déployé. |
-| Compilation et régression | PASS — LOCAL | TypeScript, build client/serveur/CLI ; 10 résultats bootstrap/auth/restauration, 9 statiques, 7 stockage : tous réussis. Node local 24 ; CI ciblée Node 22. |
+| Non-mise en cache des réponses privées du portail | PASS — LOCAL | `Cache-Control: no-store` ajouté au routeur du portail, dont l'export de sauvegarde ; déploiement du correctif non confirmé. |
+| Compilation et régression | PASS — LOCAL | TypeScript, build client/serveur/CLI ; 10 résultats bootstrap/auth/restauration, 9 statiques, 7 stockage : tous réussis. Node local 24 ; CI Node 22 réussie (exécution 41663411051). |
 
 ## Contraintes de recette conservées
 
