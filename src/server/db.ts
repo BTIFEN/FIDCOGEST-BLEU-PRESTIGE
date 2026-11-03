@@ -18,6 +18,7 @@ import {
   SEED_SECURITY_LOGS
 } from '../data/portalSeedData';
 import { hashPassword, verifyPassword } from './security';
+import { assertPrivateStorageDirectory } from './privateStorage';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,11 +80,12 @@ class PersistentDatabase {
   }
 
   private ensureDirectories() {
+    if (process.env.PERSISTENT_STORAGE_DIR) assertPrivateStorageDirectory();
     if (!fs.existsSync(DATA_DIRECTORY)) {
-      fs.mkdirSync(DATA_DIRECTORY, { recursive: true });
+      fs.mkdirSync(DATA_DIRECTORY, { recursive: true, mode: 0o700 });
     }
     if (!fs.existsSync(VAULT_DIRECTORY)) {
-      fs.mkdirSync(VAULT_DIRECTORY, { recursive: true });
+      fs.mkdirSync(VAULT_DIRECTORY, { recursive: true, mode: 0o700 });
     }
   }
 
@@ -132,7 +134,7 @@ class PersistentDatabase {
     this.ensureDirectories();
     const tempFile = `${DB_FILE_PATH}.${crypto.randomBytes(6).toString('hex')}.tmp`;
     try {
-      fs.writeFileSync(tempFile, JSON.stringify(stateToSave, null, 2), 'utf-8');
+      fs.writeFileSync(tempFile, JSON.stringify(stateToSave, null, 2), { encoding: 'utf-8', mode: 0o600, flag: 'wx' });
       fs.renameSync(tempFile, DB_FILE_PATH);
     } catch (err) {
       if (fs.existsSync(tempFile)) {

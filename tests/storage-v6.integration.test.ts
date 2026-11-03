@@ -18,6 +18,8 @@ test('Hostinger provider stores encrypted bytes and reads exact content', async 
     assert.equal(saved.provider,'hostinger');
     assert.equal(saved.storagePath.startsWith(temp),true);
     const raw = fs.readFileSync(saved.storagePath,'utf8');
+    assert.equal(fs.statSync(saved.storagePath).mode & 0o777,0o600);
+    assert.equal(fs.statSync(path.dirname(saved.storagePath)).mode & 0o777,0o700);
     assert.equal(raw.includes('FIDCOGEST STORAGE TEST'),false);
     const retrieved = await readPortalDocument(saved.storagePath);
     assert.deepEqual(retrieved.buffer,input);
@@ -25,6 +27,10 @@ test('Hostinger provider stores encrypted bytes and reads exact content', async 
     const database = JSON.parse(fs.readFileSync(path.join(temp,'portal-database-v2.json'),'utf8'));
     assert.equal(database.users.length,0);
     assert.equal(database.documents.length,0);
+    const damaged = JSON.parse(raw);
+    damaged.payload.authTag = '00'.repeat(16);
+    fs.writeFileSync(saved.storagePath,JSON.stringify(damaged));
+    await assert.rejects(readPortalDocument(saved.storagePath));
   } finally {
     fs.rmSync(temp, {recursive:true,force:true});
     delete process.env.PERSISTENT_STORAGE_DIR;
