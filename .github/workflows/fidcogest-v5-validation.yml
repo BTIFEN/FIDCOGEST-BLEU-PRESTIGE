@@ -25,5 +25,7 @@ jobs:
         run: npm run build
       - name: Security static tests
         run: npm run test:security-static --if-present
+      - name: Storage V6 static checks
+        run: node --test tests/storage-v6-static.test.mjs
       - name: Bootstrap CLI build
         run: npm run build:bootstrap --if-present
