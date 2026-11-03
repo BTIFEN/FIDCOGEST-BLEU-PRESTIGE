@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+  <title>FIDCOGEST — Préparer votre accès administrateur</title>
+  <style>
+    :root{font-family:system-ui,sans-serif;color:#19334e;background:#f1f4f8;font-size:16px}*{box-sizing:border-box}body{margin:0}header{background:#153551;color:white;padding:24px max(24px,calc((100% - 760px)/2))}header strong{letter-spacing:.12em;font-size:20px}main{max-width:760px;margin:32px auto;padding:0 20px 48px}h1{font-size:28px;line-height:1.25}h2{font-size:21px;margin-top:0}p,li{line-height:1.6}section{background:white;padding:26px;border:1px solid #dce4ec;border-radius:14px;margin:18px 0}label{display:block;font-weight:600;margin:18px 0 7px}input:not([type=checkbox]){width:100%;padding:12px;border:1px solid #a7b5c4;border-radius:7px;font:inherit}button{border:0;border-radius:7px;background:#174e76;color:white;font:inherit;font-weight:650;padding:13px 18px;margin-top:20px;cursor:pointer}button:disabled{opacity:.55;cursor:wait}button.secondary{background:#e6edf3;color:#19334e;margin-left:8px}.notice{border-left:4px solid #b28736;padding-left:16px}.muted{font-size:14px;color:#546779}[role=alert]{background:#fff0ed;color:#932e24;padding:14px;border-radius:8px;white-space:pre-wrap}code{font-size:16px;overflow-wrap:anywhere}.secret{display:block;background:#eef3f7;padding:15px;border-radius:8px;letter-spacing:2px;user-select:all}.codes{white-space:pre-wrap;user-select:all}.check{display:flex;gap:10px;font-weight:400;align-items:flex-start}.check input{margin-top:5px}a{color:#174e76}a.download{display:inline-block;padding:14px 20px;background:#174e76;color:white;border-radius:7px;text-decoration:none;font-weight:600}[hidden]{display:none!important}footer{font-size:13px;color:#546779;margin-top:26px}@media(max-width:500px){section{padding:19px}h1{font-size:24px}}
+  </style>
+  <script type="module" src="/enrollment/app.mjs"></script>
+</head>
+<body>
+<header><strong>FIDCOGEST</strong><div>Configuration du premier administrateur</div></header>
+<main>
+  <h1>Préparez votre accès en toute confidentialité</h1>
+  <p>Aucune installation. Votre mot de passe et votre MFA sont préparés et chiffrés dans ce navigateur. Aucun formulaire n’est envoyé au serveur.</p>
+  <p class="notice">Cette page prépare un fichier chiffré. La création du compte nécessite ensuite son dépôt dans le répertoire privé de l’hébergement par une personne autorisée.</p>
+  <p id="error" role="alert" hidden></p>
+  <section id="step-request">
+    <h2>1. Sélectionnez la demande privée</h2>
+    <p>Utilisez uniquement le fichier <code>request.json</code> récupéré dans le gestionnaire Hostinger authentifié du site concerné. Le fichier est lu sur votre appareil ; il n’est pas téléversé.</p>
+    <label for="request">Fichier request.json</label><input id="request" type="file" accept=".json,application/json">
+    <p id="request-status" class="muted" role="status"></p>
+  </section>
+  <section id="step-credentials" hidden>
+    <h2>2. Choisissez vos identifiants</h2>
+    <form id="credentials" autocomplete="off">
+      <label for="email">Adresse de l’administrateur propriétaire</label><input id="email" type="email" required maxlength="254" autocomplete="username">
+      <label for="password">Mot de passe personnel</label><input id="password" type="password" required minlength="16" maxlength="1024" autocomplete="new-password" aria-describedby="password-help">
+      <p id="password-help" class="muted">Au moins 16 caractères, avec une majuscule, une minuscule et un chiffre.</p>
+      <label for="confirmation">Confirmez le mot de passe</label><input id="confirmation" type="password" required minlength="16" maxlength="1024" autocomplete="new-password">
+      <button type="submit">Configurer mon Authenticator</button>
+    </form>
+  </section>
+  <section id="step-mfa" hidden>
+    <h2>3. Configurez votre Authenticator</h2>
+    <p>Sur votre téléphone, ajoutez un compte TOTP nommé FIDCOGEST avec la clé ci-dessous. Paramètres : 6 chiffres, 30 secondes, SHA1.</p>
+    <p class="notice">Cette clé est privée. Ne la photographiez pas et ne l’envoyez pas dans le chat.</p>
+    <code id="mfa-secret" class="secret"></code>
+    <form id="mfa">
+      <label for="code">Code de votre Authenticator</label><input id="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autocomplete="off">
+      <p class="muted">Si le code change au moment de la saisie, attendez le suivant puis réessayez. Vérifiez que l’heure automatique est activée sur les deux appareils.</p>
+      <button type="submit">Vérifier mon MFA</button>
+    </form>
+  </section>
+  <section id="step-recovery" hidden>
+    <h2>4. Conservez vos codes de récupération</h2>
+    <p>Conservez ces dix codes dans votre coffre privé. Ils permettent de récupérer votre accès si vous perdez votre Authenticator.</p>
+    <code id="recovery-codes" class="secret codes"></code>
+    <form id="recovery">
+      <label class="check"><input id="saved" type="checkbox" required>J’ai conservé mes codes dans un endroit privé.</label>
+      <button type="submit">Créer mon fichier chiffré</button>
+    </form>
+  </section>
+  <section id="step-done" hidden>
+    <h2>5. Remettez uniquement le fichier chiffré</h2>
+    <p><a id="download" class="download" download="enrollment.enc.json">Télécharger enrollment.enc.json</a></p>
+    <p id="deadline" role="status"></p>
+    <ol><li>Téléversez uniquement ce fichier dans <code>fidcogest_private/admin-bootstrap</code> via le gestionnaire Hostinger authentifié.</li><li>Réglez ses droits sur <strong>0600</strong> : lecture et écriture pour le propriétaire uniquement.</li><li>Redémarrez ou redéployez l’application avant l’échéance indiquée.</li><li>Vérifiez le message générique <code>[Portal bootstrap] created</code>, puis connectez-vous avec votre mot de passe et votre Authenticator.</li></ol>
+    <p>Le fichier ne peut être lu qu’avec la clé privée du serveur. Ne le publiez pas. Après création et vérification du compte, retirez la variable d’amorçage temporaire.</p>
+    <button id="clear" type="button">Effacer cette session de préparation</button>
+  </section>
+  <footer>La création réelle du compte et la validation de Google Drive restent à vérifier. Aucun document client ne doit être utilisé pour les essais.</footer>
+</main>
+</body></html>

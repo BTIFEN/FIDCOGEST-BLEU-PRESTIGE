@@ -2745,6 +2745,16 @@ app.use(["/data/vault_storage", "/data/private_vault", "/vault_storage", "/priva
   return res.status(403).json({ error: "Acc\xE8s interdit au stockage priv\xE9 documentaire." });
 });
 var isProduction = process.env.NODE_ENV === "production";
+app.use((req, res, next) => {
+  if (req.path === "/preparer-administrateur.html" || req.path.startsWith("/enrollment/")) {
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Referrer-Policy", "no-referrer");
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    res.setHeader("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'");
+  }
+  next();
+});
 async function setupDevMiddleware() {
   const { createServer: createViteServer } = await import("vite");
   const vite = await createViteServer({

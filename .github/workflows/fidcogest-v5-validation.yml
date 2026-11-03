@@ -35,3 +35,5 @@ jobs:
         run: npm run build:bootstrap --if-present
       - name: Private one-time bootstrap and isolated authentication
         run: npm run test:bootstrap
+      - name: Browser-only owner enrollment interoperability
+        run: node --import tsx --test tests/browser-enrollment.test.ts
