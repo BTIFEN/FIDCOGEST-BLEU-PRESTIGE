@@ -1,5 +1,7 @@
 # FIDCOGEST V5 — Amorçage administrateur (développement)
 
+**Procédure retirée en V6. Ne pas exécuter les étapes ci-dessous : elles sont conservées uniquement pour historique.** L'ancien script est désactivé. Utiliser [V6_BOOTSTRAP_SANS_SSH.md](V6_BOOTSTRAP_SANS_SSH.md), sans mot de passe d'environnement et sans affichage MFA dans les journaux Hostinger.
+
 - Le portail démarre sans comptes clients, gestionnaires ou documents préchargés.
 - Dans Hostinger, configurer un chemin privé et durable via `PERSISTENT_STORAGE_DIR`. Vérifier son existence et sa persistance après redéploiement.
 - Configurer `PORTAL_ENCRYPTION_KEY` (32 octets aléatoires, encodés en 64 caractères hexadécimaux), en lieu sûr. Ne jamais modifier cette clé après avoir chiffré des documents sans procédure de rotation.
