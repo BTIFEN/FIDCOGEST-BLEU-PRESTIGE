@@ -236,6 +236,17 @@ export function registerStorageAdminRoutes(
       return res.status(503).type('text/plain').send('Connexion Google impossible. Vérifiez les autorisations OAuth.');
     }
   });
+  router.get('/api/portal/admin/storage/google/picker-session', async(req,res) => {
+    if (!admin(req,res)) return;
+    const apiKey = process.env.GOOGLE_PICKER_API_KEY || '';
+    const appId = process.env.GOOGLE_CLOUD_PROJECT_NUMBER || '';
+    if (!apiKey || !/^\\d+$/.test(appId)) return res.status(503).json({error:'Google Picker non configuré.'});
+    try {
+      const accessToken = await googleToken(loadSettings());
+      res.setHeader('Cache-Control','no-store');
+      res.json({accessToken,apiKey,appId});
+    } catch (e:any) {res.status(503).json({error:e.message || 'Google Drive non connecté.'});}
+  });
   router.get('/api/portal/admin/storage/google/folders', async(req,res) => {
     if (!admin(req,res)) return;
     try {
