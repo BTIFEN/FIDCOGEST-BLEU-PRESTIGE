@@ -45,7 +45,7 @@
         "966f8bfb60f3b4ae4983c345a958e8eb6535ac155fbf28a257f7eb74ddad17e8",
         "6e3869ec8737ae20727e62988a304dfb1f6971c5d5d33bc454d4b4b0f70b63d5"
       ],
-      "lastLoginAt": "2026-11-03 05:38"
+      "lastLoginAt": "2026-11-03 08:52"
     },
     {
       "id": "usr-client-2",
@@ -181,23 +181,23 @@
         "c98af2f64423f4274191ffb5e0b9efa1c4a18fe40277e90c67ac482c064ad450",
         "4335e20115e630bdb7967102bfa7055faf1e96906df6d0b5ac01f41d26c1a460"
       ],
-      "lastLoginAt": "2026-11-03 05:38"
+      "lastLoginAt": "2026-11-03 08:52"
     }
   ],
   "sessions": [
     {
-      "token": "2b4f83e26aae473623ab667f32644d4fa5521ff6fcc6e99d6a896c71adf6bae6",
+      "token": "7bb68fe0dc9bf5f63e48df4ad5054a206e04976d7dbd71a2929b545ea5835ae1",
       "userId": "usr-client-1",
-      "createdAt": 1793684284261,
-      "expiresAt": 1793691484493,
+      "createdAt": 1793695969035,
+      "expiresAt": 1793703169254,
       "ip": "127.0.0.1",
       "userAgent": "unknown"
     },
     {
-      "token": "4d5e57334951310e9637598c4fe5c76280033622a62c77d1c838e975cd99b2ca",
+      "token": "81017fbada1dbf3bab0f0ffdaca809ea1bb77bbc0e88bb5311a9c27af0556600",
       "userId": "usr-admin-1",
-      "createdAt": 1793684284576,
-      "expiresAt": 1793691484596,
+      "createdAt": 1793695969353,
+      "expiresAt": 1793703169370,
       "ip": "127.0.0.1",
       "userAgent": "unknown"
     }
@@ -283,6 +283,49 @@
     }
   ],
   "documents": [
+    {
+      "id": "doc-0ed057a9-7bee-474d-a124-b4c18efd58fa",
+      "companyId": "cie-1",
+      "uploadedByUserId": "usr-client-1",
+      "uploadedByUserName": "Marie Vandamme",
+      "category": "achats",
+      "filename": "Facture_Officielle_Test.pdf",
+      "originalFilename": "Facture_Officielle_Test.pdf",
+      "fileType": "pdf",
+      "fileSizeKb": 0,
+      "status": "recu",
+      "scanStatus": "analyse_conforme",
+      "sha256Checksum": "9e40b98257f66630dc9c9278c1a88e8a9aa25f17beb960f419d1e5e0126f799c",
+      "ocrData": {
+        "vendorName": "Fournisseur Matériel",
+        "invoiceNumber": "INV-2026-4634",
+        "date": "2026-11-03",
+        "amountHtEur": 280,
+        "vatRatePercent": 21,
+        "vatAmountEur": 58.8,
+        "totalTtcEur": 338.8,
+        "confidenceScore": 88,
+        "isDuplicateDetected": true,
+        "extractedVia": "deterministic-parser-fallback",
+        "isHumanValidated": false,
+        "humanValidationDisclaimer": "⚠️ Proposition d’extraction OCR — Validation humaine obligatoire avant imputation comptable définitive (ITAA).",
+        "duplicateReason": "Alerte anti-doublon : Facture similaire #INV-2026-2446 (338.8 €) déjà enregistrée le 2026-11-03 05:38.",
+        "duplicateOfDocId": "doc-f37fda82-94a1-4959-a9ab-c613217841bd"
+      },
+      "createdAt": "2026-11-03 08:52",
+      "updatedAt": "2026-11-03 08:52",
+      "storagePath": "/app/applet/data/vault_storage/cie-1/doc-0ed057a9-7bee-474d-a124-b4c18efd58fa.enc",
+      "history": [
+        {
+          "id": "hist-1793695969236",
+          "action": "Dépôt sécurisé (Antivirus conforme & Chiffré AES-256)",
+          "authorName": "Marie Vandamme",
+          "authorRole": "client",
+          "timestamp": "2026-11-03 08:52",
+          "details": "Checksum SHA-256 : 9e40b98257f66630..."
+        }
+      ]
+    },
     {
       "id": "doc-f37fda82-94a1-4959-a9ab-c613217841bd",
       "companyId": "cie-1",
@@ -938,6 +981,162 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "log-1793695969371-e7eddc",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-admin-1",
+      "userName": "Administrateur Cabinet Fidcogest",
+      "userRole": "admin",
+      "action": "Restauration système",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "",
+      "status": "echec",
+      "details": "Échec de vérification du Checksum SHA-256."
+    },
+    {
+      "id": "log-1793695969359-51c7e2",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-admin-1",
+      "userName": "Administrateur Cabinet Fidcogest",
+      "userRole": "admin",
+      "action": "Sauvegarde système",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "",
+      "status": "succes",
+      "details": "Instantané exporté. Checksum: 39907027c3105fa8"
+    },
+    {
+      "id": "log-1793695969355-d1de88",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-admin-1",
+      "userName": "Administrateur Cabinet Fidcogest",
+      "userRole": "admin",
+      "action": "Session établie",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "succes",
+      "details": "Authentification complète avec MFA validée."
+    },
+    {
+      "id": "log-1793695969346-9cf335",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-admin-1",
+      "userName": "Administrateur Cabinet Fidcogest",
+      "userRole": "admin",
+      "action": "Challenge MFA émis",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "succes",
+      "details": "Challenge TOTP 2FA initié."
+    },
+    {
+      "id": "log-1793695969251-dbfa63",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Fichier rejeté / Alerte Antivirus",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "alerte",
+      "details": "Rejet fichier eicar_scan_test.pdf: Menace détectée par le scanner antivirus (Signature EICAR). (EICAR-Standard-AV-Test-Signature (Test inoffensif conforme))"
+    },
+    {
+      "id": "log-1793695969247-f663b2",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Fichier rejeté / Alerte Antivirus",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "alerte",
+      "details": "Rejet fichier facture_piege.pdf: Exécutable binaire Windows (MZ) interdit. (Win32/PE-Executable-Payload-Blocked)"
+    },
+    {
+      "id": "log-1793695969242-956571",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Téléchargement binaire sécurisé",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "",
+      "status": "succes",
+      "details": "Document Facture_Officielle_Test.pdf déchiffré et transmis."
+    },
+    {
+      "id": "log-1793695969237-db0121",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Dépôt document validé",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "succes",
+      "details": "Fichier Facture_Officielle_Test.pdf stocké dans le coffre privé. ID: doc-0ed057a9-7bee-474d-a124-b4c18efd58fa"
+    },
+    {
+      "id": "log-1793695969043-de0389",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Téléversement refusé (403)",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "alerte",
+      "details": "Tentative téléversement sur cie-3"
+    },
+    {
+      "id": "log-1793695969038-f97b49",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Session établie",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "succes",
+      "details": "Authentification complète avec MFA validée."
+    },
+    {
+      "id": "log-1793695969027-9b854b",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Échec validation MFA",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "echec",
+      "details": "Code TOTP erroné."
+    },
+    {
+      "id": "log-1793695969021-4370b8",
+      "timestamp": "2026-11-03 08:52:49",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Challenge MFA émis",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "succes",
+      "details": "Challenge TOTP 2FA initié."
+    },
+    {
+      "id": "log-1793695968936-644792",
+      "timestamp": "2026-11-03 08:52:48",
+      "userId": "usr-client-1",
+      "userName": "Marie Vandamme",
+      "userRole": "client",
+      "action": "Échec mot de passe",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "unknown",
+      "status": "echec",
+      "details": "Mot de passe erroné."
+    },
     {
       "id": "log-1793684284597-808da2",
       "timestamp": "2026-11-03 05:38:04",

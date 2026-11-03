@@ -1,0 +1,6 @@
+{
+  "summary": "Plan de résolution définitive du démarrage du conteneur Cloud Run pour FIDCOGEST. Se concentre sur la robustesse du démarrage (PORT, build automatique au démarrage, fallback de serveur) tout en préservant le rendu React et la sécurité.",
+  "updatedAt": "2026-11-03T06:35:23.001297677Z",
+  "requestFeedback": true,
+  "userFacing": true
+}

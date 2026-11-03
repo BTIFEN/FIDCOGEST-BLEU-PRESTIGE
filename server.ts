@@ -796,6 +796,16 @@ if (isProduction && fs.existsSync(path.join(__dirname, 'dist', 'index.html'))) {
     if (req.originalUrl.startsWith('/api')) return next();
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
+} else if (isProduction) {
+  const rootIndex = path.join(__dirname, 'index.html');
+  app.get('*', (req, res, next) => {
+    if (req.originalUrl.startsWith('/api')) return next();
+    if (fs.existsSync(rootIndex)) {
+      res.sendFile(rootIndex);
+    } else {
+      res.status(500).send('FIDCOGEST — Application en cours d’initialisation.');
+    }
+  });
 } else {
   setupDevMiddleware().catch((err) => {
     console.error('[Fidcogest] Erreur initialisation Vite dev middleware:', err);

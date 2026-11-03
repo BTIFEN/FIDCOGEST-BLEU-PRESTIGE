@@ -1803,24 +1803,21 @@ app.use(express2.json({ limit: "10mb" }));
 var PORT = Number(process.env.PORT) || 3e3;
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("X-XSS-Protection", "1; mode=block");
+  const host = req.headers.host || "";
+  const isCloudRunOrDev = host.includes("run.app") || host.includes("localhost") || host.includes("127.0.0.1") || process.env.NODE_ENV !== "production";
+  if (!isCloudRunOrDev) {
+    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  }
   const origin = req.headers.origin;
-  const allowedOrigins = [
-    "https://fidcogestv2.indusale.top",
-    "https://www.fidcogest.be",
-    "https://fidcogest.be",
-    "http://localhost:3000",
-    "http://localhost:5173"
-  ];
-  if (origin && (allowedOrigins.includes(origin) || origin.endsWith(".indusale.top") || origin.endsWith(".fidcogest.be"))) {
+  if (origin) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Content-Type,Authorization,x-fidcogest-secret,x-admin-password"
+      "Content-Type,Authorization,x-fidcogest-secret,x-admin-password,x-portal-user-id"
     );
   }
   if (req.method === "OPTIONS") {
@@ -2388,10 +2385,10 @@ app.post("/api/simulate-tax", (req, res) => {
   }
 });
 setupPortalApi(app);
-app.use(["/data", "/vault_storage", "/private_vault", "/private"], (req, res) => {
+app.use(["/data/vault_storage", "/data/private_vault", "/vault_storage", "/private_vault", "/private"], (req, res) => {
   return res.status(403).json({ error: "Acc\xE8s interdit au stockage priv\xE9 documentaire." });
 });
-var isProduction = process.env.NODE_ENV === "production" || !process.env.VITE_DEV && fs3.existsSync(path3.join(__dirname2, "dist", "index.html"));
+var isProduction = process.env.NODE_ENV === "production";
 async function setupDevMiddleware() {
   const { createServer: createViteServer } = await import("vite");
   const vite = await createViteServer({
@@ -2401,6 +2398,9 @@ async function setupDevMiddleware() {
   app.use(vite.middlewares);
   app.get("*", async (req, res, next) => {
     const url = req.originalUrl;
+    if (url.startsWith("/api") || url.startsWith("/src") || url.startsWith("/@") || url.startsWith("/node_modules") || url.includes(".")) {
+      return next();
+    }
     try {
       const indexHtmlPath = path3.resolve(__dirname2, "index.html");
       let rawTemplate = fs3.readFileSync(indexHtmlPath, "utf-8");
@@ -2412,10 +2412,21 @@ async function setupDevMiddleware() {
     }
   });
 }
-if (isProduction) {
+if (isProduction && fs3.existsSync(path3.join(__dirname2, "dist", "index.html"))) {
   app.use(express2.static(path3.join(__dirname2, "dist")));
-  app.get("*", (_req, res) => {
+  app.get("*", (req, res, next) => {
+    if (req.originalUrl.startsWith("/api")) return next();
     res.sendFile(path3.join(__dirname2, "dist", "index.html"));
+  });
+} else if (isProduction) {
+  const rootIndex = path3.join(__dirname2, "index.html");
+  app.get("*", (req, res, next) => {
+    if (req.originalUrl.startsWith("/api")) return next();
+    if (fs3.existsSync(rootIndex)) {
+      res.sendFile(rootIndex);
+    } else {
+      res.status(500).send("FIDCOGEST \u2014 Application en cours d\u2019initialisation.");
+    }
   });
 } else {
   setupDevMiddleware().catch((err) => {
