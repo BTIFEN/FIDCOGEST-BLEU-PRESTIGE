@@ -19,6 +19,8 @@ La page ne fait aucune requête applicative et n'utilise ni stockage navigateur 
 
 L'URL sans extension est volontaire : Hostinger peut servir les fichiers HTML directement, sans passer par les en-têtes Node. La page statique inclut aussi une CSP de secours et redirige vers l'URL canonique avant toute saisie de secret. L'ouverture en iframe est refusée dans le script en complément des en-têtes de l'URL canonique. Vérifier réellement ces en-têtes après déploiement.
 
+Les modules sont distribués par des routes `.js` Node avec `application/javascript` explicite : l'hébergement servait les fichiers `.mjs` directement avec `text/plain`, incompatible avec les modules du navigateur. Les fichiers source restent `.mjs` pour les tests Web Crypto.
+
 Le chiffrement Web Crypto est compatible avec le protocole déjà déployé : PBKDF2 SHA-512 identique au serveur, TOTP SHA1 conforme au moteur existant, AES-256-GCM avec l'identifiant de demande comme AAD, clé AES enveloppée RSA-OAEP SHA-256. Source normative : https://www.w3.org/TR/webcrypto-1/ (AES-GCM et RSA-OAEP).
 
 Ne pas accepter une demande obtenue d'une source tierce : la possession d'une clé publique ne prouve pas son origine. Les tests utilisent uniquement des clés et identités temporaires isolées ; la création du compte réel, les droits de dépôt et la connexion propriétaire restent à valider séparément. Aucune donnée fictive n'est ajoutée à la base de production.

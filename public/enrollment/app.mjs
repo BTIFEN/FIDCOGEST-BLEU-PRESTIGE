@@ -1,4 +1,4 @@
-import { readRequest, passwordRecord, newMfaSecret, totp, recoveryCodes, makeEnvelope } from './crypto.mjs';
+import { readRequest, passwordRecord, newMfaSecret, totp, recoveryCodes, makeEnvelope } from './crypto.js';
 
 // Do not enable secret entry in an iframe or at the static-server bypass URL.
 if (window.top !== window.self) {

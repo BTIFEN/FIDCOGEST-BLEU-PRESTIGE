@@ -2153,6 +2153,13 @@ function setupPortalApi(app2) {
 // src/server/browserEnrollment.ts
 import path6 from "node:path";
 function registerBrowserEnrollment(app2, publicDirectory) {
+  for (const name of ["app", "crypto"]) {
+    app2.get("/enrollment/" + name + ".js", (_req, res) => {
+      res.setHeader("Cache-Control", "no-store");
+      res.setHeader("Referrer-Policy", "no-referrer");
+      res.type("application/javascript").sendFile(path6.join(publicDirectory, "enrollment", name + ".mjs"));
+    });
+  }
   app2.get("/preparer-administrateur", (_req, res) => {
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("Referrer-Policy", "no-referrer");
