@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  pull_request:
+    branches: [main]
 permissions:
   contents: read
 jobs:
@@ -28,6 +30,6 @@ jobs:
       - name: Storage V6 static checks
         run: node --test tests/storage-v6-static.test.mjs
       - name: Local storage round-trip
-        run: npx tsx --test tests/storage-v6.integration.test.ts
+        run: node --import tsx --test tests/storage-v6.integration.test.ts tests/storage-v6-routes.integration.test.ts
       - name: Bootstrap CLI build
         run: npm run build:bootstrap --if-present
