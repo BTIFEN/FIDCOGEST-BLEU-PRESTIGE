@@ -22,7 +22,7 @@ test('no fallback key for encryption', () => {
 });
 test('admin bootstrap is single-use', () => {
  const cli = read('scripts/bootstrap-admin.ts');
- assert.match(cli, /db\.getUsers\(\)\.length !== 0/);
- assert.match(cli, /generateBase32Secret/);
+ assert.match(cli, /process.exitCode = 1/);
+ assert.doesNotMatch(cli, /console.log|BOOTSTRAP_ADMIN_PASSWORD/);
  assert.doesNotMatch(cli, /Fidcogest2026!/);
 });

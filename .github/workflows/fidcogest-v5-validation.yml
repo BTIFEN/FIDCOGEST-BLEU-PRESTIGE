@@ -33,3 +33,5 @@ jobs:
         run: node --import tsx --test tests/storage-v6.integration.test.ts tests/storage-v6-routes.integration.test.ts
       - name: Bootstrap CLI build
         run: npm run build:bootstrap --if-present
+      - name: Private one-time bootstrap and isolated authentication
+        run: npm run test:bootstrap

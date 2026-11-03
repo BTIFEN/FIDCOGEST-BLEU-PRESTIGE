@@ -1,6 +1,7 @@
 import express from 'express';
 import crypto from 'crypto';
 import { db, StoredUser } from './db';
+import { runPrivateBootstrap } from './privateBootstrap';
 import {
   inspectFileContent,
   verifyPassword,
@@ -25,7 +26,14 @@ import {
 } from '../types/portal';
 
 export function setupPortalApi(app: express.Express) {
+  try {
+    const state = runPrivateBootstrap(db);
+    if (state !== 'disabled') console.info('[Portal bootstrap]', state);
+  } catch {
+    console.error('[Portal bootstrap] Refus sécurisé. Inspection privée requise.');
+  }
   const router = express.Router();
+  router.use((_req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next(); });
 
   // Helper pour vérifier le Bearer Token de session
   const authenticateSession = (req: express.Request): { user: StoredUser; token: string } | null => {

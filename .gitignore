@@ -18,3 +18,10 @@ pnpm-debug.log*
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Private enrollment material and reproducible owner CLI
+admin-bootstrap/
+enrollment.enc.json
+request.json
+enroll-admin.mjs
+bootstrap-admin.mjs

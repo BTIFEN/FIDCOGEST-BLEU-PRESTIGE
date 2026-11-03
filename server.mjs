@@ -2,14 +2,14 @@
 import express2 from "express";
 import { GoogleGenAI as GoogleGenAI2 } from "@google/genai";
 import dotenv from "dotenv";
-import path5 from "path";
-import fs5 from "fs";
-import crypto6 from "crypto";
+import path6 from "path";
+import fs6 from "fs";
+import crypto7 from "crypto";
 import { fileURLToPath as fileURLToPath2 } from "url";
 
 // src/server/portalApi.ts
 import express from "express";
-import crypto5 from "crypto";
+import crypto6 from "crypto";
 
 // src/server/db.ts
 import fs2 from "fs";
@@ -1062,22 +1062,109 @@ var PersistentDatabase = class {
 };
 var db = new PersistentDatabase();
 
+// src/server/privateBootstrap.ts
+import fs3 from "node:fs";
+import path3 from "node:path";
+import crypto3 from "node:crypto";
+function readPrivate(file) {
+  const stat = fs3.lstatSync(file);
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 32768 || stat.mode & 63) throw new Error("Private file required");
+  const fd = fs3.openSync(file, fs3.constants.O_RDONLY | fs3.constants.O_NOFOLLOW);
+  try {
+    return fs3.readFileSync(fd, "utf8");
+  } finally {
+    fs3.closeSync(fd);
+  }
+}
+function runPrivateBootstrap(database) {
+  if (process.env.FIDCOGEST_BOOTSTRAP_MODE !== "file-v1") return "disabled";
+  assertPrivateStorageDirectory();
+  const root = path3.join(process.env.PERSISTENT_STORAGE_DIR, "admin-bootstrap");
+  if (database.getUsers().length) return "closed";
+  fs3.mkdirSync(root, { recursive: true, mode: 448 });
+  const stat = fs3.lstatSync(root);
+  if (!stat.isDirectory() || stat.isSymbolicLink() || stat.mode & 63) throw new Error("Private directory required");
+  const used = path3.join(root, "consumed.json");
+  if (fs3.existsSync(used)) return "closed";
+  const lock = path3.join(root, "lock");
+  try {
+    fs3.mkdirSync(lock, { mode: 448 });
+  } catch {
+    return "locked";
+  }
+  try {
+    const requestFile = path3.join(root, "request.json");
+    const keyFile = path3.join(root, "key.enc.json");
+    const envelopeFile = path3.join(root, "enrollment.enc.json");
+    if (!fs3.existsSync(requestFile)) {
+      if (fs3.existsSync(keyFile) || fs3.existsSync(envelopeFile)) throw new Error("Incomplete bootstrap state");
+      const pair = crypto3.generateKeyPairSync("rsa", {
+        modulusLength: 3072,
+        publicKeyEncoding: { type: "spki", format: "pem" },
+        privateKeyEncoding: { type: "pkcs8", format: "pem" }
+      });
+      const request2 = {
+        version: 1,
+        id: crypto3.randomBytes(32).toString("hex"),
+        expiresAt: Date.now() + 24 * 60 * 60 * 1e3,
+        publicKey: pair.publicKey
+      };
+      fs3.writeFileSync(keyFile, JSON.stringify(encryptData(pair.privateKey)), { flag: "wx", mode: 384 });
+      fs3.writeFileSync(requestFile, JSON.stringify(request2), { flag: "wx", mode: 384 });
+      return "awaiting-owner";
+    }
+    const request = JSON.parse(readPrivate(requestFile));
+    if (request.version !== 1 || !/^[a-f0-9]{64}$/.test(request.id) || !Number.isFinite(request.expiresAt) || request.expiresAt <= Date.now()) return "expired";
+    if (!fs3.existsSync(envelopeFile)) return "awaiting-owner";
+    const envelope = JSON.parse(readPrivate(envelopeFile));
+    if (envelope.version !== 1 || envelope.id !== request.id) throw new Error("Wrong request");
+    const privateKey = decryptData(JSON.parse(readPrivate(keyFile)));
+    const key = crypto3.privateDecrypt({ key: privateKey, oaepHash: "sha256" }, Buffer.from(envelope.key, "base64"));
+    const decipher = crypto3.createDecipheriv("aes-256-gcm", key, Buffer.from(envelope.iv, "base64"));
+    decipher.setAAD(Buffer.from(request.id));
+    decipher.setAuthTag(Buffer.from(envelope.tag, "base64"));
+    const payload = JSON.parse(Buffer.concat([decipher.update(Buffer.from(envelope.ciphertext, "base64")), decipher.final()]).toString("utf8"));
+    const now = Date.now();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email) || payload.email.length > 254 || !/^[a-f0-9]{128}$/.test(payload.passwordHash) || !/^[a-f0-9]{32}$/.test(payload.passwordSalt) || !/^[A-Z2-7]{32}$/.test(payload.mfaSecret) || !Number.isFinite(payload.enrolledAt) || payload.enrolledAt > now + 3e4 || now - payload.enrolledAt > 15 * 60 * 1e3 || !/^\d{6}$/.test(payload.proof) || generateTotpCode(payload.mfaSecret, payload.enrolledAt) !== payload.proof || !Array.isArray(payload.recoveryCodesHashed) || payload.recoveryCodesHashed.length !== 10 || new Set(payload.recoveryCodesHashed).size !== 10 || !payload.recoveryCodesHashed.every((value) => typeof value === "string" && /^[a-f0-9]{64}$/.test(value))) throw new Error("Invalid enrollment");
+    if (database.getUsers().length) return "closed";
+    fs3.writeFileSync(used, JSON.stringify({ consumedAt: (/* @__PURE__ */ new Date()).toISOString() }), { flag: "wx", mode: 384 });
+    database.saveUser({
+      id: "admin-" + crypto3.randomUUID(),
+      email: payload.email.trim().toLowerCase(),
+      fullName: "Administrateur FIDCOGEST",
+      role: "admin",
+      assignedCompanyIds: [],
+      status: "actif",
+      mfaEnabled: true,
+      mfaSecretEncrypted: encryptData(payload.mfaSecret),
+      recoveryCodesHashed: payload.recoveryCodesHashed,
+      passwordHash: payload.passwordHash,
+      passwordSalt: payload.passwordSalt,
+      createdAt: (/* @__PURE__ */ new Date()).toISOString()
+    });
+    for (const file of [keyFile, envelopeFile, requestFile]) fs3.unlinkSync(file);
+    return "created";
+  } finally {
+    fs3.rmdirSync(lock);
+  }
+}
+
 // src/server/storageProviders.ts
-import fs4 from "node:fs";
-import path4 from "node:path";
-import crypto4 from "node:crypto";
+import fs5 from "node:fs";
+import path5 from "node:path";
+import crypto5 from "node:crypto";
 
 // src/server/vault.ts
-import fs3 from "fs";
-import path3 from "path";
-import crypto3 from "crypto";
+import fs4 from "fs";
+import path4 from "path";
+import crypto4 from "crypto";
 function storeEncryptedFile(companyId, originalFilename, fileBuffer) {
-  const companyDir = path3.join(VAULT_DIRECTORY, companyId);
-  if (!fs3.existsSync(companyDir)) {
-    fs3.mkdirSync(companyDir, { recursive: true, mode: 448 });
+  const companyDir = path4.join(VAULT_DIRECTORY, companyId);
+  if (!fs4.existsSync(companyDir)) {
+    fs4.mkdirSync(companyDir, { recursive: true, mode: 448 });
   }
-  const docId = `doc-${crypto3.randomUUID()}`;
-  const sha256Checksum = crypto3.createHash("sha256").update(fileBuffer).digest("hex");
+  const docId = `doc-${crypto4.randomUUID()}`;
+  const sha256Checksum = crypto4.createHash("sha256").update(fileBuffer).digest("hex");
   const encryptedPayload = encryptData(fileBuffer);
   const fileRecord = {
     docId,
@@ -1088,8 +1175,8 @@ function storeEncryptedFile(companyId, originalFilename, fileBuffer) {
     encryptedAt: (/* @__PURE__ */ new Date()).toISOString(),
     payload: encryptedPayload
   };
-  const finalDiskPath = path3.join(companyDir, `${docId}.enc`);
-  fs3.writeFileSync(finalDiskPath, JSON.stringify(fileRecord), { encoding: "utf-8", mode: 384, flag: "wx" });
+  const finalDiskPath = path4.join(companyDir, `${docId}.enc`);
+  fs4.writeFileSync(finalDiskPath, JSON.stringify(fileRecord), { encoding: "utf-8", mode: 384, flag: "wx" });
   return {
     docId,
     storagePath: finalDiskPath,
@@ -1098,16 +1185,16 @@ function storeEncryptedFile(companyId, originalFilename, fileBuffer) {
   };
 }
 function retrieveDecryptedFile(storagePath) {
-  if (!fs3.existsSync(storagePath)) {
+  if (!fs4.existsSync(storagePath)) {
     throw new Error(`Fichier introuvable dans le coffre priv\xE9 : ${storagePath}`);
   }
-  const raw = fs3.readFileSync(storagePath, "utf-8");
+  const raw = fs4.readFileSync(storagePath, "utf-8");
   const record = JSON.parse(raw);
   if (!record.payload || !record.payload.ciphertext) {
     throw new Error("Fichier chiffr\xE9 corrompu ou format incompatible.");
   }
   const decryptedBuffer = decryptData(record.payload);
-  const computedSha = crypto3.createHash("sha256").update(decryptedBuffer).digest("hex");
+  const computedSha = crypto4.createHash("sha256").update(decryptedBuffer).digest("hex");
   if (record.sha256Checksum && computedSha !== record.sha256Checksum) {
     throw new Error("Alerte int\xE9grit\xE9 : Le checksum SHA-256 calcul\xE9 ne correspond pas \xE0 l\u2019empreinte d\u2019origine.");
   }
@@ -1119,7 +1206,7 @@ function retrieveDecryptedFile(storagePath) {
 }
 
 // src/server/storageProviders.ts
-var settingsFile = path4.join(DATA_DIRECTORY, "storage-settings.json");
+var settingsFile = path5.join(DATA_DIRECTORY, "storage-settings.json");
 var oauthStates = /* @__PURE__ */ new Map();
 var oauthCookie = "fidcogest_drive_oauth";
 var cookieOptions = () => ({ httpOnly: true, secure: process.env.NODE_ENV !== "test", sameSite: "lax", path: "/api/portal/storage/google/callback" });
@@ -1133,8 +1220,8 @@ function defaultSettings() {
   return { defaultStorage: { provider: "hostinger" }, companyOverrides: {}, google: {} };
 }
 function loadSettings() {
-  if (!fs4.existsSync(settingsFile)) return defaultSettings();
-  const parsed = JSON.parse(fs4.readFileSync(settingsFile, "utf8"));
+  if (!fs5.existsSync(settingsFile)) return defaultSettings();
+  const parsed = JSON.parse(fs5.readFileSync(settingsFile, "utf8"));
   return {
     defaultStorage: parsed.defaultStorage || { provider: "hostinger" },
     companyOverrides: parsed.companyOverrides || {},
@@ -1143,11 +1230,11 @@ function loadSettings() {
 }
 function saveSettings(settings) {
   if (!isPrivateStorageConfigured()) throw new Error("PERSISTENT_STORAGE_DIR doit \xEAtre configur\xE9 avant de modifier le stockage.");
-  fs4.mkdirSync(DATA_DIRECTORY, { recursive: true, mode: 448 });
-  const tmp = settingsFile + "." + crypto4.randomBytes(8).toString("hex") + ".tmp";
-  fs4.writeFileSync(tmp, JSON.stringify(settings), { encoding: "utf8", mode: 384, flag: "wx" });
-  fs4.renameSync(tmp, settingsFile);
-  fs4.chmodSync(settingsFile, 384);
+  fs5.mkdirSync(DATA_DIRECTORY, { recursive: true, mode: 448 });
+  const tmp = settingsFile + "." + crypto5.randomBytes(8).toString("hex") + ".tmp";
+  fs5.writeFileSync(tmp, JSON.stringify(settings), { encoding: "utf8", mode: 384, flag: "wx" });
+  fs5.renameSync(tmp, settingsFile);
+  fs5.chmodSync(settingsFile, 384);
 }
 function publicSettings(settings) {
   return {
@@ -1210,8 +1297,8 @@ async function savePortalDocument(companyId, filename, buffer) {
   if (!dest.folderId) throw new Error("Dossier de destination Google Drive non choisi.");
   const token = await googleToken(settings);
   await folderInfo(token, dest.folderId);
-  const docId = "doc-" + crypto4.randomUUID();
-  const sha256Checksum = crypto4.createHash("sha256").update(buffer).digest("hex");
+  const docId = "doc-" + crypto5.randomUUID();
+  const sha256Checksum = crypto5.createHash("sha256").update(buffer).digest("hex");
   const record = {
     docId,
     companyId,
@@ -1222,7 +1309,7 @@ async function savePortalDocument(companyId, filename, buffer) {
     payload: encryptData(buffer)
   };
   const binary = Buffer.from(JSON.stringify(record), "utf8");
-  const boundary = "fidco" + crypto4.randomBytes(12).toString("hex");
+  const boundary = "fidco" + crypto5.randomBytes(12).toString("hex");
   const meta = { name: docId + ".enc", mimeType: "application/octet-stream", parents: [dest.folderId], description: "FIDCOGEST encrypted document" };
   const prefix = Buffer.from("--" + boundary + "\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" + JSON.stringify(meta) + "\r\n--" + boundary + "\r\nContent-Type: application/octet-stream\r\n\r\n");
   const suffix = Buffer.from("\r\n--" + boundary + "--\r\n");
@@ -1244,7 +1331,7 @@ async function readPortalDocument(storagePath) {
   const res = await driveRequest(token, "https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(fileId) + "?alt=media");
   const raw = JSON.parse(Buffer.from(await res.arrayBuffer()).toString("utf8"));
   const decrypted = decryptData(raw.payload);
-  const checksum = crypto4.createHash("sha256").update(decrypted).digest("hex");
+  const checksum = crypto5.createHash("sha256").update(decrypted).digest("hex");
   if (raw.sha256Checksum !== checksum) throw new Error("Int\xE9grit\xE9 du document incorrecte.");
   return { originalFilename: raw.originalFilename, buffer: decrypted, sha256Checksum: checksum };
 }
@@ -1308,13 +1395,13 @@ function registerStorageAdminRoutes(app2, authenticate, getCompanyById) {
   router.get("/api/portal/admin/storage/google/authorize", (req, res) => {
     if (!admin(req, res)) return;
     if (!googleReady() || !isPrivateStorageConfigured()) return res.status(503).json({ error: "OAuth ou stockage persistant non configur\xE9." });
-    const state = crypto4.randomBytes(32).toString("hex");
+    const state = crypto5.randomBytes(32).toString("hex");
     for (const [key, pending] of oauthStates) if (pending.expiresAt < Date.now()) oauthStates.delete(key);
-    const verifier = crypto4.randomBytes(32).toString("base64url");
+    const verifier = crypto5.randomBytes(32).toString("base64url");
     oauthStates.set(state, { expiresAt: Date.now() + 5 * 6e4, verifier });
     res.cookie(oauthCookie, state, { ...cookieOptions(), maxAge: 5 * 6e4 });
     const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-    url.search = new URLSearchParams({ client_id: clientId(), redirect_uri: redirectUri(), response_type: "code", scope: scopes, access_type: "offline", prompt: "consent", state, code_challenge: crypto4.createHash("sha256").update(verifier).digest("base64url"), code_challenge_method: "S256" }).toString();
+    url.search = new URLSearchParams({ client_id: clientId(), redirect_uri: redirectUri(), response_type: "code", scope: scopes, access_type: "offline", prompt: "consent", state, code_challenge: crypto5.createHash("sha256").update(verifier).digest("base64url"), code_challenge_method: "S256" }).toString();
     res.json({ url: url.toString() });
   });
   router.get("/api/portal/storage/google/callback", async (req, res) => {
@@ -1488,7 +1575,17 @@ R\xE9ponds EXCLUSIVEMENT par un objet JSON valide, sans texte d'accompagnement.`
 
 // src/server/portalApi.ts
 function setupPortalApi(app2) {
+  try {
+    const state = runPrivateBootstrap(db);
+    if (state !== "disabled") console.info("[Portal bootstrap]", state);
+  } catch {
+    console.error("[Portal bootstrap] Refus s\xE9curis\xE9. Inspection priv\xE9e requise.");
+  }
   const router = express.Router();
+  router.use((_req, res, next) => {
+    res.setHeader("Cache-Control", "no-store");
+    next();
+  });
   const authenticateSession = (req) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -1542,7 +1639,7 @@ function setupPortalApi(app2) {
       }
     }
     if (!user.mfaEnabled || !user.mfaSecretEncrypted) return res.status(403).json({ error: "Double authentification non configur\xE9e." });
-    const challengeToken = crypto5.randomBytes(24).toString("hex");
+    const challengeToken = crypto6.randomBytes(24).toString("hex");
     mfaChallenges.set(challengeToken, {
       userId: user.id,
       expiresAt: Date.now() + 10 * 60 * 1e3
@@ -2056,7 +2153,7 @@ function setupPortalApi(app2) {
 // server.ts
 dotenv.config();
 var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path5.dirname(__filename2);
+var __dirname2 = path6.dirname(__filename2);
 var app = express2();
 app.use(express2.json({ limit: "10mb" }));
 var PORT = Number(process.env.PORT) || 3e3;
@@ -2148,7 +2245,7 @@ setInterval(() => {
     }
   }
 }, 10 * 60 * 1e3);
-var CABINET_CONTENT_FILE = path5.resolve(__dirname2, "data", "cabinet-content.json");
+var CABINET_CONTENT_FILE = path6.resolve(__dirname2, "data", "cabinet-content.json");
 var WORDPRESS_URL = (process.env.WORDPRESS_URL || "https://fidcogestv2.indusale.top").replace(/\/+$/, "");
 var WP_WEBHOOK_SECRET = process.env.WP_WEBHOOK_SECRET ? process.env.WP_WEBHOOK_SECRET.trim() : "";
 if (!WP_WEBHOOK_SECRET) {
@@ -2164,8 +2261,8 @@ var configCache = null;
 var CACHE_TTL_MS = 5 * 60 * 1e3;
 function getLocalCabinetContent() {
   try {
-    if (fs5.existsSync(CABINET_CONTENT_FILE)) {
-      const data = fs5.readFileSync(CABINET_CONTENT_FILE, "utf-8");
+    if (fs6.existsSync(CABINET_CONTENT_FILE)) {
+      const data = fs6.readFileSync(CABINET_CONTENT_FILE, "utf-8");
       return JSON.parse(data);
     }
   } catch (err) {
@@ -2199,9 +2296,9 @@ async function resolveCabinetContent(forceFresh = false) {
           source: "wordpress"
         };
         try {
-          const dir = path5.dirname(CABINET_CONTENT_FILE);
-          if (!fs5.existsSync(dir)) fs5.mkdirSync(dir, { recursive: true });
-          fs5.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(wpData, null, 2), "utf-8");
+          const dir = path6.dirname(CABINET_CONTENT_FILE);
+          if (!fs6.existsSync(dir)) fs6.mkdirSync(dir, { recursive: true });
+          fs6.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(wpData, null, 2), "utf-8");
         } catch (writeErr) {
           console.warn("[Fidcogest] \xC9chec \xE9criture cache local:", writeErr);
         }
@@ -2260,7 +2357,7 @@ app.post("/api/webhook/wp-flush", async (req, res) => {
   }
   const headerBuf = Buffer.from(secretHeader);
   const secretBuf = Buffer.from(WP_WEBHOOK_SECRET);
-  const isValidSecret = headerBuf.length === secretBuf.length && crypto6.timingSafeEqual(headerBuf, secretBuf);
+  const isValidSecret = headerBuf.length === secretBuf.length && crypto7.timingSafeEqual(headerBuf, secretBuf);
   if (!isValidSecret) {
     console.warn("[Fidcogest Webhook] Rejet : Secret de webhook invalide.");
     return res.status(403).json({ error: "Secret de webhook invalide." });
@@ -2322,7 +2419,7 @@ app.post("/api/admin/login", (req, res) => {
     return res.status(401).json({ error: "Mot de passe d'administration invalide." });
   }
   clearFailedAttempts(ip);
-  const token = crypto6.randomBytes(32).toString("hex");
+  const token = crypto7.randomBytes(32).toString("hex");
   const now = Date.now();
   const session = {
     token,
@@ -2403,11 +2500,11 @@ app.post("/api/cabinet-config", (req, res) => {
     const updatedContent = req.body;
     delete updatedContent._adminPassword;
     delete updatedContent._sync;
-    const dir = path5.dirname(CABINET_CONTENT_FILE);
-    if (!fs5.existsSync(dir)) {
-      fs5.mkdirSync(dir, { recursive: true });
+    const dir = path6.dirname(CABINET_CONTENT_FILE);
+    if (!fs6.existsSync(dir)) {
+      fs6.mkdirSync(dir, { recursive: true });
     }
-    fs5.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(updatedContent, null, 2), "utf-8");
+    fs6.writeFileSync(CABINET_CONTENT_FILE, JSON.stringify(updatedContent, null, 2), "utf-8");
     configCache = {
       data: updatedContent,
       lastFetched: Date.now(),
@@ -2499,7 +2596,7 @@ app.post("/api/analyze-document", async (req, res) => {
     const { textSnippet, filename } = req.body;
     if (filename && typeof filename === "string") {
       const allowedExtensions = [".pdf", ".png", ".jpg", ".jpeg"];
-      const ext = path5.extname(filename).toLowerCase();
+      const ext = path6.extname(filename).toLowerCase();
       if (!allowedExtensions.includes(ext)) {
         return res.status(400).json({
           error: `Type de fichier non autoris\xE9 (${ext}). Formats accept\xE9s : PDF, PNG, JPG, JPEG.`
@@ -2661,8 +2758,8 @@ async function setupDevMiddleware() {
       return next();
     }
     try {
-      const indexHtmlPath = path5.resolve(__dirname2, "index.html");
-      let rawTemplate = fs5.readFileSync(indexHtmlPath, "utf-8");
+      const indexHtmlPath = path6.resolve(__dirname2, "index.html");
+      let rawTemplate = fs6.readFileSync(indexHtmlPath, "utf-8");
       const template = await vite.transformIndexHtml(url, rawTemplate);
       res.status(200).set({ "Content-Type": "text/html" }).end(template);
     } catch (e) {
@@ -2671,17 +2768,17 @@ async function setupDevMiddleware() {
     }
   });
 }
-if (isProduction && fs5.existsSync(path5.join(__dirname2, "dist", "index.html"))) {
-  app.use(express2.static(path5.join(__dirname2, "dist")));
+if (isProduction && fs6.existsSync(path6.join(__dirname2, "dist", "index.html"))) {
+  app.use(express2.static(path6.join(__dirname2, "dist")));
   app.get("*", (req, res, next) => {
     if (req.originalUrl.startsWith("/api")) return next();
-    res.sendFile(path5.join(__dirname2, "dist", "index.html"));
+    res.sendFile(path6.join(__dirname2, "dist", "index.html"));
   });
 } else if (isProduction) {
-  const rootIndex = path5.join(__dirname2, "index.html");
+  const rootIndex = path6.join(__dirname2, "index.html");
   app.get("*", (req, res, next) => {
     if (req.originalUrl.startsWith("/api")) return next();
-    if (fs5.existsSync(rootIndex)) {
+    if (fs6.existsSync(rootIndex)) {
       res.sendFile(rootIndex);
     } else {
       res.status(500).send("FIDCOGEST \u2014 Application en cours d\u2019initialisation.");
