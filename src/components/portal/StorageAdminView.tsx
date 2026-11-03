@@ -76,6 +76,56 @@ export const StorageAdminView: React.FC = () => {
       window.location.assign(data.url);
     } catch(e:any) {setError(e.message);setBusy(false);}
   };
+  const chooseExistingDriveFolder = async () => {
+    setBusy(true);setError('');
+    try {
+      const session = await call('/google/picker-session');
+      const scriptId = 'fidcogest-google-picker-loader';
+      if (!(window as any).gapi?.load) {
+        await new Promise<void>((resolve,reject)=>{
+          const old = document.getElementById(scriptId);
+          if (old) {old.remove();}
+          const script = document.createElement('script');
+          script.id = scriptId;
+          script.src = 'https://apis.google.com/js/api.js';
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('Impossible de charger Google Picker.'));
+          document.head.appendChild(script);
+        });
+      }
+      await new Promise<void>((resolve,reject)=>{
+        const gapi = (window as any).gapi;
+        if (!gapi?.load) return reject(new Error('Bibliothèque Google Picker indisponible.'));
+        gapi.load('picker', {callback:resolve,onerror:()=>reject(new Error('Picker indisponible.'))});
+      });
+      const google = (window as any).google;
+      const view = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+        .setIncludeFolders(true)
+        .setMimeTypes('application/vnd.google-apps.folder')
+        .setSelectFolderEnabled(true)
+        .setMode(google.picker.DocsViewMode.LIST);
+      const picker = new google.picker.PickerBuilder()
+        .setDeveloperKey(session.apiKey)
+        .setAppId(session.appId)
+        .setOAuthToken(session.accessToken)
+        .setOrigin(window.location.origin)
+        .setTitle('Choisir le dossier FIDCOGEST')
+        .addView(view)
+        .setCallback((data:any)=>{
+          if(data.action === google.picker.Action.PICKED) {
+            const doc = data.docs?.[0];
+            if(doc?.id) {
+              setFolderId(doc.id);
+              setFolders(prev=>prev.some(f=>f.id===doc.id)?prev:[...prev,{id:doc.id,name:doc.name||'Dossier choisi'}]);
+              setMessage('Dossier sélectionné. Cliquez sur Enregistrer pour confirmer.');
+            }
+          }
+        })
+        .build();
+      picker.setVisible(true);
+    } catch (e:any) {setError(e.message || 'Sélection Google impossible.');}
+    finally {setBusy(false);}
+  };
   const createFolder = async () => {
     setBusy(true);setError('');
     try {
@@ -127,7 +177,10 @@ export const StorageAdminView: React.FC = () => {
           {folderId && !folders.some(f=>f.id===folderId) && <option value={folderId}>Dossier précédemment sélectionné ({folderId})</option>}
           {folders.map(f=><option key={f.id} value={f.id}>{f.name}</option>)}
         </select>
-        <p className="text-xs text-[#4B5563]">Le sélecteur montre les dossiers accessibles à l'application via l'autorisation Google. Pour un dossier existant non visible, l'autorisation explicite via Google Picker nécessitera une extension ultérieure.</p>
+        <p className="text-xs text-[#4B5563]">Vous pouvez choisir un dossier existant dans Google Drive ou créer un nouveau dossier.</p>
+        <button type="button" disabled={busy || !config.googleConnected} onClick={chooseExistingDriveFolder} className="cabinet-btn-secondary px-4 py-3 w-full">
+          Parcourir mon Google Drive et choisir un dossier
+        </button>
         <div className="flex flex-col sm:flex-row gap-2">
           <input aria-label="Nom du nouveau dossier" value={folderName} onChange={e=>setFolderName(e.target.value)} className="cabinet-input flex-1" maxLength={100}/>
           <button type="button" className="cabinet-btn-secondary px-3 py-2" onClick={createFolder} disabled={busy || !config.googleConnected}>Créer un dossier</button>
