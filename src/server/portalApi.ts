@@ -13,7 +13,7 @@ import {
   generateRecoveryCodes,
   verifyAndConsumeRecoveryCode
 } from './security';
-import { storeEncryptedFile, retrieveDecryptedFile } from './vault';
+import { savePortalDocument, readPortalDocument, registerStorageAdminRoutes } from './storageProviders';
 import { analyzeInvoiceDocument } from './ocr';
 import {
   PortalDocument,
@@ -351,13 +351,14 @@ export function setupPortalApi(app: express.Express) {
 
     // Récupération du buffer binaire réel
     let fileBuffer: Buffer;
-    if (base64Payload) {
-      const cleanBase64 = base64Payload.replace(/^data:[^;]+;base64,/, '');
-      fileBuffer = Buffer.from(cleanBase64, 'base64');
-    } else {
-      // Synthèse binaire d'un document PDF légitime si payload non transmis directement
-      fileBuffer = Buffer.from(`%PDF-1.4\n1 0 obj\n<< /Title (${filename}) /Producer (FIDCOGEST Vault) >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF`);
+    if (typeof base64Payload !== 'string' || !base64Payload) {
+      return res.status(400).json({ error: 'Le contenu réel du fichier est obligatoire.' });
     }
+    const cleanBase64 = base64Payload.replace(/^data:[^;]+;base64,/, '');
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(cleanBase64) || cleanBase64.length > 14_000_000) {
+      return res.status(400).json({ error: 'Fichier encodé invalide ou trop volumineux.' });
+    }
+    fileBuffer = Buffer.from(cleanBase64, 'base64');
 
     // 1. Analyse antivirus et contrôle des Magic Bytes réels
     const scanResult = inspectFileContent(fileBuffer, filename);
@@ -380,7 +381,12 @@ export function setupPortalApi(app: express.Express) {
     }
 
     // 2. Chiffrement au repos et stockage privé
-    const storedVault = storeEncryptedFile(companyId, filename, fileBuffer);
+    let storedVault;
+    try {
+      storedVault = await savePortalDocument(companyId, filename, fileBuffer);
+    } catch (err:any) {
+      return res.status(503).json({error:err.message || 'Stockage documentaire indisponible.'});
+    }
 
     // 3. Analyse OCR serveur réelle (Gemini 2.5 Flash Vision)
     const ocrExtraction = await analyzeInvoiceDocument(fileBuffer, scanResult.detectedMime, filename);
@@ -421,6 +427,7 @@ export function setupPortalApi(app: express.Express) {
       createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
       updatedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
       storagePath: storedVault.storagePath,
+      storageProvider: storedVault.provider,
       history: [
         {
           id: `hist-${Date.now()}`,
@@ -449,7 +456,7 @@ export function setupPortalApi(app: express.Express) {
   });
 
   // Téléchargement sécurisé et déchiffrement à la volée (Zéro URL publique)
-  router.get('/documents/:id/download', (req, res) => {
+  router.get('/documents/:id/download', async (req, res) => {
     const auth = authenticateSession(req);
     if (!auth) {
       return res.status(401).json({ error: 'Authentification requise pour télécharger.' });
@@ -466,7 +473,7 @@ export function setupPortalApi(app: express.Express) {
     }
 
     try {
-      const decrypted = retrieveDecryptedFile(doc.storagePath);
+      const decrypted = await readPortalDocument(doc.storagePath);
 
       db.addAuditLog(
         auth.user.id,
@@ -735,6 +742,7 @@ export function setupPortalApi(app: express.Express) {
     });
   });
 
+  registerStorageAdminRoutes(app, authenticateSession, (id) => db.getCompanyById(id));
   app.use('/api/portal', router);
   console.log('[Fidcogest Portal V2] API sécurisée initialisée avec sessions Bearer, TOTP RFC 6238 et coffre chiffré.');
 }

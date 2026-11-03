@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StorageAdminView } from './StorageAdminView';
 import { usePortal } from '../../context/PortalContext';
 import { UserRole } from '../../types/portal';
 import {
@@ -27,7 +28,7 @@ export const AdminSecurityView: React.FC = () => {
     toggleUserStatus
   } = usePortal();
 
-  const [activeTab, setActiveTab] = useState<'users' | 'audit' | 'rgpd' | 'backups'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'audit' | 'rgpd' | 'backups' | 'storage'>('users');
 
   // New Invite Form State
   const [showInviteModal, setShowInviteModal] = useState<boolean>(false);
@@ -145,7 +146,13 @@ export const AdminSecurityView: React.FC = () => {
           <Database className="w-4 h-4 text-[#B79661]" />
           Sauvegardes Chiffrées &amp; Restauration
         </button>
+      <button type="button" onClick={() => setActiveTab('storage')}
+        className={`py-3 px-4 border-b-2 text-sm font-semibold ${activeTab === 'storage' ? 'border-[#142B45] text-[#142B45]' : 'border-transparent text-[#4B5563]'}`}>
+        Stockage documentaire
+      </button>
       </div>
+
+      {activeTab === 'storage' && <StorageAdminView />}
 
       {/* TAB 1: USERS & ROLES */}
       {activeTab === 'users' && (

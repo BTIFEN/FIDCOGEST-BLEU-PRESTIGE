@@ -50,7 +50,8 @@ export interface PortalDocument {
   createdAt: string;
   updatedAt: string;
   history: DocumentAuditEntry[];
-  storagePath: string; // Private path (e.g. /vault_storage/...)
+  storagePath: string; // Private path or gdrive:<fileId>
+  storageProvider?: 'hostinger' | 'google_drive';
   isArchived?: boolean;
 }
 
