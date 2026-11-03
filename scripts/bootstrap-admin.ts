@@ -1,6 +1,6 @@
 /** Initialisation explicite du premier administrateur FIDCOGEST. Aucun compte de démonstration. */
 import crypto from 'node:crypto';
-import { db } from '../src/server/db';
+import path from 'node:path';
 import { hashPassword, generateBase32Secret, encryptData, generateRecoveryCodes } from '../src/server/security';
 
 const email = (process.env.BOOTSTRAP_ADMIN_EMAIL || '').trim().toLowerCase();
@@ -10,16 +10,18 @@ if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
   console.error('BOOTSTRAP_ADMIN_EMAIL et BOOTSTRAP_ADMIN_PASSWORD robuste (16+ caractères, majuscule, minuscule, chiffre) requis.');
   process.exit(1);
 }
-if (db.getUsers().length !== 0) {
-  console.error('Initialisation refusée : au moins un utilisateur existe déjà.');
-  process.exit(1);
-}
-if (!process.env.PERSISTENT_STORAGE_DIR) {
-  console.error('PERSISTENT_STORAGE_DIR est obligatoire pour créer le premier compte.');
+if (!process.env.PERSISTENT_STORAGE_DIR || !path.isAbsolute(process.env.PERSISTENT_STORAGE_DIR) || /(?:^|\/)(?:hbuilds|public_html)(?:\/|$)/.test(process.env.PERSISTENT_STORAGE_DIR)) {
+  console.error('PERSISTENT_STORAGE_DIR doit être un chemin absolu privé et hors hbuilds/public_html.');
   process.exit(1);
 }
 if (!/^[a-fA-F0-9]{64}$/.test(process.env.PORTAL_ENCRYPTION_KEY || '')) {
   console.error('PORTAL_ENCRYPTION_KEY doit contenir exactement 64 caractères hexadécimaux.');
+  process.exit(1);
+}
+// Charger la base seulement après contrôle des paramètres : aucun fichier créé avant validation.
+const { db } = await import('../src/server/db');
+if (db.getUsers().length !== 0) {
+  console.error('Initialisation refusée : au moins un utilisateur existe déjà.');
   process.exit(1);
 }
 const mfaSecret = generateBase32Secret(20);
