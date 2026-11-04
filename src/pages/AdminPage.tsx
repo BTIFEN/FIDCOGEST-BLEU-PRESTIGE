@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCabinet } from '../context/CabinetContext';
 import { Lock, ShieldCheck, CheckCircle2, AlertTriangle, Save, RefreshCw, Eye, Edit3, Building, Users, Briefcase, FileText, Info, Globe, Image, Zap, ExternalLink } from 'lucide-react';
 import { CabinetConfig, CabinetImages } from '../types';
+import { OwnerSetupNotice } from '../components/OwnerSetupNotice';
 
 export const AdminPage: React.FC = () => {
   const { config, updateConfig, refreshConfig } = useCabinet();
@@ -12,7 +13,7 @@ export const AdminPage: React.FC = () => {
 
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
-  const [activeTab, setActiveTab] = useState<'audit' | 'wordpress' | 'images' | 'identity' | 'team' | 'services' | 'presentation'>('wordpress');
+  const [activeTab, setActiveTab] = useState<'handover' | 'audit' | 'wordpress' | 'images' | 'identity' | 'team' | 'services' | 'presentation'>('handover');
 
   // Local working copy of editable config
   const [draftConfig, setDraftConfig] = useState<CabinetConfig>(config);
@@ -113,7 +114,8 @@ export const AdminPage: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4 font-sans">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center gap-6 p-4 font-sans">
+        <div className="w-full max-w-3xl"><OwnerSetupNotice detailed /></div>
         <div className="w-full max-w-md cabinet-card p-8 space-y-6 shadow-2xl">
           <div className="text-center space-y-2">
             <div className="w-12 h-12 rounded-xl bg-[#142B45] text-[#B79661] flex items-center justify-center mx-auto shadow-md">
@@ -144,7 +146,7 @@ export const AdminPage: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Entrez le mot de passe configuré dans .env..."
+                placeholder="Votre mot de passe administrateur"
                 className="cabinet-input"
               />
               <span className="text-xs text-[#6B7280] block mt-1">
@@ -168,6 +170,7 @@ export const AdminPage: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-20 font-sans max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+      {activeTab !== 'handover' && <OwnerSetupNotice />}
       
       {/* Top Header */}
       <div className="cabinet-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border border-[#B79661]/40 bg-gradient-to-r from-white via-white to-[#F7F6F2]">
@@ -230,6 +233,7 @@ export const AdminPage: React.FC = () => {
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-[#E8E6DF] pb-2 text-xs">
         {[
+          { key: 'handover', label: 'Mise en service par le propriétaire', icon: ShieldCheck },
           { key: 'wordpress', label: '1. Connexion WordPress & Webhook', icon: Globe },
           { key: 'images', label: '2. Visuels & Médias (13)', icon: Image },
           { key: 'audit', label: '3. Audit & Divergences', icon: Info },
@@ -256,6 +260,8 @@ export const AdminPage: React.FC = () => {
           );
         })}
       </div>
+
+      {activeTab === 'handover' && <OwnerSetupNotice detailed />}
 
       {/* TAB 1: WordPress Sync & Webhook */}
       {activeTab === 'wordpress' && (

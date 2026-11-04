@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StorageAdminView } from './StorageAdminView';
+import { OwnerSetupNotice } from '../OwnerSetupNotice';
 import { usePortal } from '../../context/PortalContext';
 import { UserRole } from '../../types/portal';
 import {
@@ -69,6 +70,7 @@ export const AdminSecurityView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <OwnerSetupNotice detailed />
       {/* Header */}
       <div className="bg-white rounded-2xl border border-[#E8E6DF] p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1">
@@ -77,7 +79,7 @@ export const AdminSecurityView: React.FC = () => {
               Administration &amp; Sécurité du Cabinet
             </h2>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#142B45] text-white">
-              ITAA Security Certified
+              Configuration du cabinet
             </span>
           </div>
           <p className="text-xs sm:text-sm text-[#4B5563]">
