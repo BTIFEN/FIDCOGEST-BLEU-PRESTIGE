@@ -21,7 +21,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-      - name: TypeScript
+      - name: TypeScript lint — npm run lint (tsc --noEmit)
         run: npm run lint
       - name: Build frontend and server
         run: npm run build
@@ -33,6 +33,8 @@ jobs:
         run: node --import tsx --test tests/storage-v6.integration.test.ts tests/storage-v6-routes.integration.test.ts
       - name: Bootstrap CLI build
         run: npm run build:bootstrap --if-present
+      - name: Admin user controls and tenant isolation
+        run: npm run test:admin-users
       - name: Private one-time bootstrap and isolated authentication
         run: npm run test:bootstrap
       - name: Browser-only owner enrollment interoperability

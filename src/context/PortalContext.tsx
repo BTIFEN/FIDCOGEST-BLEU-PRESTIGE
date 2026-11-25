@@ -54,16 +54,19 @@ interface PortalContextType {
   }) => Promise<void>;
   resolveMissingRequest: (requestId: string, resolvedDocId?: string) => Promise<void>;
   sendMessage: (content: string, attachedDocId?: string) => Promise<void>;
-  assignCompanyManager: (companyId: string, managerId: string) => void;
+  assignCompanyManager: (companyId: string, managerId: string) => Promise<void>;
+  removeUserCompany: (userId: string, companyId: string) => Promise<void>;
   exportAccountingData: (format: 'csv' | 'json') => void;
-  inviteNewUser: (data: { email: string; fullName: string; role: UserRole; assignedCompanyIds: string[] }) => string;
-  toggleUserStatus: (userId: string) => void;
+  inviteNewUser: (data: { email: string; fullName: string; role: UserRole; assignedCompanyIds: string[] }) => Promise<string>;
+  toggleUserStatus: (userId: string) => Promise<void>;
   // Auth flow helpers
   sessionToken: string | null;
   isAuthenticated: boolean;
   loginWithPassword: (email: string, password: string) => Promise<{ requireMfa: boolean; challengeToken?: string; error?: string }>;
   verifyMfa: (challengeToken: string, totpCode?: string, recoveryCode?: string) => Promise<{ success: boolean; error?: string }>;
   setupMfa: () => Promise<{ secretBase32: string; otpauthUri: string; recoveryCodes: string[] } | null>;
+  acceptInvitation: (invitationToken: string, password: string) => Promise<{ enrollmentToken?: string; secretBase32?: string; otpauthUri?: string; recoveryCodes?: string[]; error?: string }>;
+  completeInvitationMfa: (enrollmentToken: string, totpCode: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
 
@@ -308,11 +311,23 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const assignCompanyManager = (companyId: string, managerId: string) => {
-    // Non implémenté en API directe, mise à jour visuelle
-    setCompanies((prev) =>
-      prev.map((c) => (c.id === companyId ? { ...c, assignedManagerId: managerId } : c))
-    );
+  const assignCompanyManager = async (companyId: string, managerId: string) => {
+    const res = await fetch(`/api/portal/admin/companies/${encodeURIComponent(companyId)}/manager`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ managerId })
+    });
+    if (!res.ok) throw new Error((await res.json()).error || 'Affectation impossible.');
+    if (sessionToken) await fetchServerData(sessionToken);
+  };
+
+  const removeUserCompany = async (userId: string, companyId: string) => {
+    const res = await fetch(`/api/portal/admin/users/${encodeURIComponent(userId)}/companies/${encodeURIComponent(companyId)}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error((await res.json()).error || 'Retrait d’affectation impossible.');
+    if (sessionToken) await fetchServerData(sessionToken);
   };
 
   // Export comptable
@@ -324,32 +339,29 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const inviteNewUser = (data: { email: string; fullName: string; role: UserRole; assignedCompanyIds: string[] }): string => {
-    const token = `FIDCO-INV-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-    const newUser: PortalUser = {
-      id: `usr-${Date.now()}`,
-      email: data.email,
-      fullName: data.fullName,
-      role: data.role,
-      assignedCompanyIds: data.assignedCompanyIds,
-      status: 'en_attente_invitation',
-      mfaEnabled: true,
-      inviteToken: token,
-      inviteExpiresAt: new Date(Date.now() + 72 * 3600 * 1000).toISOString().substring(0, 10),
-      createdAt: new Date().toISOString().substring(0, 10)
-    };
-    setUsers((prev) => [...prev, newUser]);
-    return `/portail?invite=${token}`;
+  const inviteNewUser = async (data: { email: string; fullName: string; role: UserRole; assignedCompanyIds: string[] }): Promise<string> => {
+    const res = await fetch('/api/portal/admin/users/invitations', {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ email: data.email, fullName: data.fullName, role: data.role, companyIds: data.assignedCompanyIds })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Invitation impossible.');
+    if (sessionToken) await fetchServerData(sessionToken);
+    return `/portail?invite=${encodeURIComponent(result.invitationToken)}`;
   };
 
-  const toggleUserStatus = (userId: string) => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === userId
-          ? { ...u, status: u.status === 'actif' ? 'suspendu' : 'actif' }
-          : u
-      )
-    );
+  const toggleUserStatus = async (userId: string): Promise<void> => {
+    const user = users.find((candidate) => candidate.id === userId);
+    if (!user) throw new Error('Utilisateur introuvable.');
+    const action = user.status === 'actif' ? 'suspend' : user.status === 'suspendu' ? 'reactivate' : null;
+    if (!action) throw new Error('Une invitation en attente ne peut pas être réactivée comme un compte suspendu.');
+    const res = await fetch(`/api/portal/admin/users/${encodeURIComponent(userId)}/${action}`, {
+      method: 'POST',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error((await res.json()).error || 'Modification du statut impossible.');
+    if (sessionToken) await fetchServerData(sessionToken);
   };
 
   // --- Authentification Réelle & MFA ---
@@ -401,6 +413,33 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return await res.json();
   };
 
+  const acceptInvitation = async (invitationToken: string, password: string) => {
+    const res = await fetch('/api/portal/auth/accept-invitation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ invitationToken, password })
+    });
+    const result = await res.json();
+    if (!res.ok) return { error: result.error || 'Activation impossible.' };
+    return result;
+  };
+
+  const completeInvitationMfa = async (enrollmentToken: string, totpCode: string) => {
+    const res = await fetch('/api/portal/auth/complete-invitation-mfa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enrollmentToken, totpCode })
+    });
+    const result = await res.json();
+    if (!res.ok) return { success: false, error: result.error || 'Validation MFA impossible.' };
+    setSessionToken(result.token);
+    sessionStorage.setItem('fidco_session_token', result.token);
+    setCurrentUser(result.user);
+    setIsAuthenticated(true);
+    await fetchServerData(result.token);
+    return { success: true };
+  };
+
   const logout = async () => {
     await fetch('/api/portal/auth/logout', {
       method: 'POST',
@@ -438,6 +477,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         resolveMissingRequest,
         sendMessage,
         assignCompanyManager,
+        removeUserCompany,
         exportAccountingData,
         inviteNewUser,
         toggleUserStatus,
@@ -446,6 +486,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loginWithPassword,
         verifyMfa,
         setupMfa,
+        acceptInvitation,
+        completeInvitationMfa,
         logout
       }}
     >

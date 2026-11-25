@@ -1,6 +1,6 @@
 import express from 'express';
 import crypto from 'crypto';
-import { db, StoredUser } from './db';
+import { db, StoredSession, StoredUser } from './db';
 import { runPrivateBootstrap } from './privateBootstrap';
 import {
   inspectFileContent,
@@ -36,7 +36,7 @@ export function setupPortalApi(app: express.Express) {
   router.use((_req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next(); });
 
   // Helper pour vérifier le Bearer Token de session
-  const authenticateSession = (req: express.Request): { user: StoredUser; token: string } | null => {
+  const authenticateSession = (req: express.Request): { user: StoredUser; token: string; session: StoredSession } | null => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return null;
@@ -50,7 +50,7 @@ export function setupPortalApi(app: express.Express) {
     const user = db.getUserById(session.userId);
     if (!user || user.status === 'suspendu') return null;
 
-    return { user, token };
+    return { user, token, session };
   };
 
   const getClientIp = (req: express.Request): string => {
@@ -67,12 +67,27 @@ export function setupPortalApi(app: express.Express) {
     return user.assignedCompanyIds.includes(companyId);
   };
 
+  // Les mutations d'administration exigent une MFA validée depuis moins de cinq minutes.
+  const requireRecentAdminMfa = (auth: ReturnType<typeof authenticateSession>, res: express.Response): auth is NonNullable<ReturnType<typeof authenticateSession>> => {
+    if (!auth || auth.user.role !== 'admin') {
+      res.status(403).json({ error: 'Action réservée à un administrateur.' });
+      return false;
+    }
+    const mfaAgeMs = auth.session.mfaVerifiedAt === undefined ? Number.POSITIVE_INFINITY : Date.now() - auth.session.mfaVerifiedAt;
+    if (mfaAgeMs < 0 || mfaAgeMs > 5 * 60 * 1000) {
+      res.status(403).json({ error: 'Une validation MFA récente est requise. Reconnectez-vous puis réessayez.' });
+      return false;
+    }
+    return true;
+  };
+
   // -------------------------------------------------------------------------
   // 1. AUTHENTIFICATION SÉCURISÉE & MFA RFC 6238 (ZÉRO CODE DÉMO)
   // -------------------------------------------------------------------------
 
   // Map temporaire des challenges MFA en cours (expiration 10 minutes)
   const mfaChallenges = new Map<string, { userId: string; expiresAt: number }>();
+  const invitationMfaChallenges = new Map<string, { userId: string; expiresAt: number }>();
 
   router.post('/auth/login', (req, res) => {
     const { email, password } = req.body;
@@ -180,7 +195,7 @@ export function setupPortalApi(app: express.Express) {
     mfaChallenges.delete(challengeToken);
 
     // Création de la session serveur réelle
-    const session = db.createSession(user.id, ip, userAgent);
+    const session = db.createSession(user.id, ip, userAgent, Date.now());
     user.lastLoginAt = new Date().toISOString().replace('T', ' ').substring(0, 16);
     db.saveUser(user);
 
@@ -668,6 +683,232 @@ export function setupPortalApi(app: express.Express) {
     }));
 
     return res.json({ users: sanitized });
+  });
+
+  // Invitation unique : le jeton brut n'est remis qu'une fois à l'administrateur autorisé.
+  // L'envoi par courriel dépend d'un fournisseur qui n'est pas configuré dans ce dépôt.
+  router.post('/admin/users/invitations', (req, res) => {
+    const auth = authenticateSession(req);
+    if (!requireRecentAdminMfa(auth, res)) return;
+
+    const { email, fullName, role, companyIds, phone } = req.body || {};
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const normalizedName = typeof fullName === 'string' ? fullName.trim() : '';
+    if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || !normalizedName) {
+      return res.status(400).json({ error: 'Nom complet et adresse électronique valides requis.' });
+    }
+    if (role !== 'client' && role !== 'manager') {
+      return res.status(400).json({ error: 'Le rôle invité doit être client ou manager.' });
+    }
+    if (!Array.isArray(companyIds) || companyIds.length < 1 || companyIds.length > 50 ||
+        companyIds.some((id: unknown) => typeof id !== 'string' || !id.trim())) {
+      return res.status(400).json({ error: 'Une liste valide d’entreprises est requise.' });
+    }
+    const uniqueCompanyIds = [...new Set((companyIds as string[]).map((id) => id.trim()))];
+    if (role === 'client' && uniqueCompanyIds.length === 0) {
+      return res.status(400).json({ error: 'Un client doit être associé à au moins une entreprise.' });
+    }
+    if (uniqueCompanyIds.some((id) => !db.getCompanyById(id))) {
+      return res.status(404).json({ error: 'Une entreprise demandée est introuvable.' });
+    }
+    if (db.getUserByEmail(normalizedEmail)) {
+      return res.status(409).json({ error: 'Un compte existe déjà pour cette adresse.' });
+    }
+
+    const invitationToken = crypto.randomBytes(32).toString('base64url');
+    const tokenHash = crypto.createHash('sha256').update(invitationToken).digest('hex');
+    const user: StoredUser = {
+      id: `usr-${crypto.randomUUID()}`,
+      email: normalizedEmail,
+      fullName: normalizedName,
+      ...(typeof phone === 'string' && phone.trim() ? { phone: phone.trim() } : {}),
+      role,
+      assignedCompanyIds: uniqueCompanyIds,
+      status: 'en_attente_invitation',
+      mfaEnabled: false,
+      inviteTokenHash: tokenHash,
+      inviteExpiresAt: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
+      createdAt: new Date().toISOString()
+    };
+    db.saveUser(user);
+    if (role === 'client') {
+      for (const companyId of uniqueCompanyIds) {
+        const company = db.getCompanyById(companyId)!;
+        if (!company.clientUserIds.includes(user.id)) company.clientUserIds.push(user.id);
+        db.saveCompany(company);
+      }
+    }
+    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Invitation utilisateur créée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Utilisateur ${user.id} invité (${role}).`);
+    return res.status(201).json({
+      user: { id: user.id, email: user.email, fullName: user.fullName, role: user.role, status: user.status, assignedCompanyIds: user.assignedCompanyIds, inviteExpiresAt: user.inviteExpiresAt },
+      invitationToken
+    });
+  });
+
+  router.post('/auth/accept-invitation', (req, res) => {
+    const { invitationToken, password } = req.body || {};
+    if (typeof invitationToken !== 'string' || invitationToken.length < 32 ||
+        typeof password !== 'string' || password.length < 12 || password.length > 200) {
+      return res.status(400).json({ error: 'Jeton valide et mot de passe de 12 à 200 caractères requis.' });
+    }
+    const tokenHash = crypto.createHash('sha256').update(invitationToken).digest('hex');
+    const user = db.getUsers().find((candidate) => {
+      if (candidate.status !== 'en_attente_invitation' || !candidate.inviteTokenHash) return false;
+      if (Date.parse(candidate.inviteExpiresAt || '') <= Date.now()) return false;
+      const stored = Buffer.from(candidate.inviteTokenHash, 'hex');
+      const provided = Buffer.from(tokenHash, 'hex');
+      return stored.length === provided.length && crypto.timingSafeEqual(stored, provided);
+    });
+    if (!user) return res.status(401).json({ error: 'Invitation invalide, expirée ou déjà utilisée.' });
+
+    const passwordFields = hashPassword(password);
+    const secretBase32 = generateBase32Secret(20);
+    const { plainCodes, hashedCodes } = generateRecoveryCodes(10);
+    user.passwordHash = passwordFields.hash;
+    user.passwordSalt = passwordFields.salt;
+    user.mfaSecretEncrypted = encryptData(secretBase32);
+    user.recoveryCodesHashed = hashedCodes;
+    user.mfaEnabled = false;
+    db.saveUser(user);
+
+    for (const [key, challenge] of invitationMfaChallenges.entries()) {
+      if (challenge.userId === user.id) invitationMfaChallenges.delete(key);
+    }
+    const enrollmentToken = crypto.randomBytes(32).toString('base64url');
+    invitationMfaChallenges.set(enrollmentToken, { userId: user.id, expiresAt: Date.now() + 10 * 60 * 1000 });
+    const otpauthUri = `otpauth://totp/FIDCOGEST:${encodeURIComponent(user.email)}?secret=${secretBase32}&issuer=FIDCOGEST&algorithm=SHA1&digits=6&period=30`;
+    db.addAuditLog(user.id, user.fullName, user.role, 'Activation invitation commencée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Enrôlement MFA démarré pour ${user.id}.`);
+    return res.json({
+      enrollmentToken,
+      secretBase32,
+      otpauthUri,
+      recoveryCodes: plainCodes,
+      user: { id: user.id, email: user.email, fullName: user.fullName, role: user.role }
+    });
+  });
+
+  router.post('/auth/complete-invitation-mfa', (req, res) => {
+    const { enrollmentToken, totpCode } = req.body || {};
+    if (typeof enrollmentToken !== 'string' || typeof totpCode !== 'string') {
+      return res.status(400).json({ error: 'Jeton d’enrôlement et code TOTP requis.' });
+    }
+    const challenge = invitationMfaChallenges.get(enrollmentToken);
+    if (!challenge || challenge.expiresAt <= Date.now()) {
+      invitationMfaChallenges.delete(enrollmentToken);
+      return res.status(401).json({ error: 'Enrôlement MFA expiré. Recommencez l’activation avec le jeton d’invitation.' });
+    }
+    const user = db.getUserById(challenge.userId);
+    if (!user || user.status !== 'en_attente_invitation' || !user.inviteTokenHash ||
+        Date.parse(user.inviteExpiresAt || '') <= Date.now() || !user.mfaSecretEncrypted) {
+      invitationMfaChallenges.delete(enrollmentToken);
+      return res.status(401).json({ error: 'Invitation invalide ou expirée.' });
+    }
+    const secretBase32 = decryptData(user.mfaSecretEncrypted).toString('utf-8');
+    if (!verifyTotpCode(secretBase32, totpCode)) {
+      db.addAuditLog(user.id, user.fullName, user.role, 'Échec enrôlement MFA invitation', getClientIp(req), req.headers['user-agent'] || '', 'echec', `Code TOTP invalide pour ${user.id}.`);
+      return res.status(401).json({ error: 'Code TOTP invalide ou expiré.' });
+    }
+
+    user.status = 'actif';
+    user.mfaEnabled = true;
+    user.inviteTokenHash = undefined;
+    user.inviteExpiresAt = undefined;
+    user.lastLoginAt = new Date().toISOString().replace('T', ' ').substring(0, 16);
+    db.saveUser(user);
+    invitationMfaChallenges.delete(enrollmentToken);
+    const session = db.createSession(user.id, getClientIp(req), req.headers['user-agent'] || 'unknown', Date.now());
+    db.addAuditLog(user.id, user.fullName, user.role, 'Invitation acceptée et MFA activée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Compte ${user.id} activé après validation TOTP.`);
+    return res.json({
+      success: true,
+      token: session.token,
+      expiresAt: session.expiresAt,
+      user: {
+        id: user.id, email: user.email, fullName: user.fullName, role: user.role,
+        assignedCompanyIds: user.assignedCompanyIds, mfaEnabled: user.mfaEnabled,
+        recoveryCodesRemaining: user.recoveryCodesHashed?.length || 0
+      }
+    });
+  });
+
+  router.post('/admin/users/:id/suspend', (req, res) => {
+    const auth = authenticateSession(req);
+    if (!requireRecentAdminMfa(auth, res)) return;
+    const user = db.getUserById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+    if (user.status === 'suspendu') return res.status(200).json({ status: 'suspendu' });
+    if (user.role === 'admin' && user.status === 'actif' && db.getUsers().filter((candidate) => candidate.role === 'admin' && candidate.status === 'actif').length <= 1) {
+      db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Suspension administrateur refusée', getClientIp(req), req.headers['user-agent'] || '', 'alerte', 'Le dernier administrateur actif ne peut pas être suspendu.');
+      return res.status(409).json({ error: 'Le dernier administrateur actif ne peut pas être suspendu.' });
+    }
+    user.status = 'suspendu';
+    user.inviteTokenHash = undefined;
+    user.inviteExpiresAt = undefined;
+    db.saveUser(user);
+    db.revokeUserSessions(user.id);
+    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Utilisateur suspendu', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Compte ${user.id} suspendu et sessions révoquées.`);
+    return res.json({ userId: user.id, status: user.status, sessionsRevoked: true });
+  });
+
+  router.post('/admin/users/:id/reactivate', (req, res) => {
+    const auth = authenticateSession(req);
+    if (!requireRecentAdminMfa(auth, res)) return;
+    const user = db.getUserById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+    if (user.status !== 'suspendu') return res.status(409).json({ error: 'Seul un compte suspendu peut être réactivé.' });
+    if (!user.passwordHash || !user.passwordSalt || !user.mfaEnabled || !user.mfaSecretEncrypted) {
+      return res.status(409).json({ error: 'Ce compte doit recevoir une nouvelle invitation et terminer l’enrôlement MFA.' });
+    }
+    user.status = 'actif';
+    db.saveUser(user);
+    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Utilisateur réactivé', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Compte ${user.id} réactivé.`);
+    return res.json({ userId: user.id, status: user.status });
+  });
+
+  router.delete('/admin/users/:id/companies/:companyId', (req, res) => {
+    const auth = authenticateSession(req);
+    if (!requireRecentAdminMfa(auth, res)) return;
+    const user = db.getUserById(req.params.id);
+    const company = db.getCompanyById(req.params.companyId);
+    if (!user || !company) return res.status(404).json({ error: 'Utilisateur ou entreprise introuvable.' });
+    const hadAssignment = user.assignedCompanyIds.includes(company.id);
+    if (!hadAssignment && !company.clientUserIds.includes(user.id) && company.assignedManagerId !== user.id) {
+      return res.status(404).json({ error: 'Cette affectation n’existe pas.' });
+    }
+    user.assignedCompanyIds = user.assignedCompanyIds.filter((id) => id !== company.id);
+    company.clientUserIds = company.clientUserIds.filter((id) => id !== user.id);
+    if (company.assignedManagerId === user.id) {
+      company.assignedManagerId = '';
+      company.assignedManagerName = '';
+    }
+    db.saveUser(user);
+    db.saveCompany(company);
+    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Affectation entreprise retirée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Entreprise ${company.id} retirée de l’utilisateur ${user.id}.`);
+    return res.json({ userId: user.id, companyId: company.id, assignedCompanyIds: user.assignedCompanyIds });
+  });
+
+  router.put('/admin/companies/:companyId/manager', (req, res) => {
+    const auth = authenticateSession(req);
+    if (!requireRecentAdminMfa(auth, res)) return;
+    const company = db.getCompanyById(req.params.companyId);
+    if (!company) return res.status(404).json({ error: 'Entreprise introuvable.' });
+    const managerId = typeof req.body?.managerId === 'string' ? req.body.managerId : '';
+    const manager = managerId ? db.getUserById(managerId) : undefined;
+    if (!manager || manager.role !== 'manager' || manager.status !== 'actif') {
+      return res.status(400).json({ error: 'Un gestionnaire actif valide est requis.' });
+    }
+
+    const previousManager = db.getUserById(company.assignedManagerId);
+    if (previousManager && previousManager.id !== manager.id) {
+      previousManager.assignedCompanyIds = previousManager.assignedCompanyIds.filter((id) => id !== company.id);
+      db.saveUser(previousManager);
+    }
+    if (!manager.assignedCompanyIds.includes(company.id)) manager.assignedCompanyIds.push(company.id);
+    company.assignedManagerId = manager.id;
+    company.assignedManagerName = manager.fullName;
+    db.saveUser(manager);
+    db.saveCompany(company);
+    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Gestionnaire affecté à une entreprise', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Gestionnaire ${manager.id} affecté à ${company.id}.`);
+    return res.json({ companyId: company.id, managerId: manager.id });
   });
 
   router.get('/admin/audit-logs', (req, res) => {

@@ -11,13 +11,15 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
   const {
     loginWithPassword,
     verifyMfa,
+    acceptInvitation,
+    completeInvitationMfa,
     isAuthenticated,
     currentUser,
     logout
   } = usePortal();
 
   // Mode: 'login' | 'mfa' | 'recovery' | 'invite'
-  const [authMode, setAuthMode] = useState<'login' | 'mfa' | 'recovery' | 'invite'>('login');
+  const [authMode, setAuthMode] = useState<'login' | 'mfa' | 'recovery' | 'invite' | 'invite-mfa'>('login');
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -25,14 +27,27 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
   const [totpCode, setTotpCode] = useState<string>('');
   const [recoveryCode, setRecoveryCode] = useState<string>('');
   const [inviteToken, setInviteToken] = useState<string>('');
+  const [invitePassword, setInvitePassword] = useState<string>('');
+  const [enrollmentToken, setEnrollmentToken] = useState<string | null>(null);
+  const [enrollmentSecret, setEnrollmentSecret] = useState<string>('');
+  const [enrollmentUri, setEnrollmentUri] = useState<string>('');
+  const [invitationRecoveryCodes, setInvitationRecoveryCodes] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   React.useEffect(() => {
     if (!isOpen) {
       setEmail(''); setPassword(''); setTotpCode('');
-      setRecoveryCode(''); setInviteToken(''); setChallengeToken(null);
+      setRecoveryCode(''); setInviteToken(''); setChallengeToken(null); setInvitePassword('');
+      setEnrollmentToken(null); setEnrollmentSecret(''); setEnrollmentUri(''); setInvitationRecoveryCodes([]);
       setErrorMsg(null); setAuthMode('login');
+    }
+  }, [isOpen]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      const token = new URLSearchParams(window.location.search).get('invite');
+      if (token) { setInviteToken(token); setAuthMode('invite'); }
     }
   }, [isOpen]);
 
@@ -59,6 +74,42 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Erreur lors de la tentative de connexion.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAcceptInvitation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    setIsLoading(true);
+    try {
+      const result = await acceptInvitation(inviteToken.trim(), invitePassword);
+      if (result.error) { setErrorMsg(result.error); return; }
+      setEnrollmentToken(result.enrollmentToken || null);
+      setEnrollmentSecret(result.secretBase32 || '');
+      setEnrollmentUri(result.otpauthUri || '');
+      setInvitationRecoveryCodes(result.recoveryCodes || []);
+      setTotpCode('');
+      setAuthMode('invite-mfa');
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Activation impossible.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCompleteInvitationMfa = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!enrollmentToken) return;
+    setErrorMsg(null);
+    setIsLoading(true);
+    try {
+      const result = await completeInvitationMfa(enrollmentToken, totpCode.trim());
+      if (result.success) onClose();
+      else setErrorMsg(result.error || 'Code MFA invalide.');
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Activation MFA impossible.');
     } finally {
       setIsLoading(false);
     }
@@ -120,8 +171,8 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
                   ? 'Double Authentification (TOTP RFC 6238)'
                   : authMode === 'recovery'
                   ? 'Code de Secours d’Urgence'
-                  : authMode === 'invite'
-                  ? 'Activation de Compte'
+                  : authMode === 'invite' || authMode === 'invite-mfa'
+                  ? authMode === 'invite' ? 'Activation de Compte' : 'Configuration MFA'
                   : 'Connexion Espace Sécurisé'}
               </h4>
               <p className="text-xs text-[#4B5563]">
@@ -303,42 +354,60 @@ export const AuthLoginModal: React.FC<AuthLoginModalProps> = ({ isOpen, onClose 
 
         {/* MODE 4: INVITE ACTIVATION */}
         {authMode === 'invite' && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setErrorMsg('Veuillez contacter votre gestionnaire Fidcogest pour recevoir un lien d’activation personnalisé.');
-            }}
-            className="space-y-4 text-xs"
-          >
+          <form onSubmit={handleAcceptInvitation} className="space-y-4 text-xs">
             <div className="space-y-1">
-              <label className="block font-semibold text-[#142B45]">
-                Jeton d'invitation (Reçu du cabinet) :
-              </label>
+              <label className="block font-semibold text-[#142B45]">Jeton d’invitation :</label>
               <input
                 type="text"
                 required
-                placeholder="FIDCO-INV-..."
                 value={inviteToken}
                 onChange={(e) => setInviteToken(e.target.value)}
                 className="cabinet-input w-full font-mono text-center text-xs"
               />
             </div>
-
+            <div className="space-y-1">
+              <label className="block font-semibold text-[#142B45]">Créer un mot de passe (12 caractères minimum) :</label>
+              <input
+                type="password"
+                required
+                minLength={12}
+                maxLength={200}
+                autoComplete="new-password"
+                value={invitePassword}
+                onChange={(e) => setInvitePassword(e.target.value)}
+                className="cabinet-input w-full"
+              />
+            </div>
             <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setAuthMode('login')}
-                className="cabinet-btn-secondary text-xs py-2 px-3 flex-1"
-              >
-                Retour
-              </button>
-              <button
-                type="submit"
-                className="cabinet-btn-primary text-xs py-2 px-4 flex-2 font-bold shadow-sm"
-              >
-                Activer mon compte →
+              <button type="button" onClick={() => setAuthMode('login')} className="cabinet-btn-secondary text-xs py-2 px-3 flex-1">Retour</button>
+              <button type="submit" disabled={isLoading} className="cabinet-btn-primary text-xs py-2 px-4 flex-2 font-bold shadow-sm">
+                {isLoading ? 'Vérification...' : 'Configurer le MFA →'}
               </button>
             </div>
+          </form>
+        )}
+
+        {authMode === 'invite-mfa' && (
+          <form onSubmit={handleCompleteInvitationMfa} className="space-y-4 text-xs">
+            <p className="text-[#4B5563]">Ajoutez cette clé à votre application d’authentification. Les codes de secours ne seront affichés qu’ici.</p>
+            <div className="rounded-lg bg-[#FAF9F6] border border-[#E8E6DF] p-3 space-y-2">
+              <div><strong>Clé TOTP :</strong> <code className="break-all">{enrollmentSecret}</code></div>
+              <div><strong>URI d’enrôlement :</strong> <code className="break-all">{enrollmentUri}</code></div>
+              <div><strong>Codes de secours :</strong> <code className="break-all">{invitationRecoveryCodes.join(' · ')}</code></div>
+            </div>
+            <label className="block font-semibold text-[#142B45]">Saisissez le code à 6 chiffres pour confirmer :</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              required
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+              className="cabinet-input w-full text-center font-mono text-xl tracking-widest font-bold"
+            />
+            <button type="submit" disabled={isLoading || totpCode.length !== 6} className="cabinet-btn-primary w-full justify-center">
+              {isLoading ? 'Validation...' : 'Confirmer et activer le compte'}
+            </button>
           </form>
         )}
 
