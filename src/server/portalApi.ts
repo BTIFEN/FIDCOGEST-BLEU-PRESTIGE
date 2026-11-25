@@ -87,6 +87,7 @@ export function setupPortalApi(app: express.Express) {
 
   // Map temporaire des challenges MFA en cours (expiration 10 minutes)
   const mfaChallenges = new Map<string, { userId: string; expiresAt: number }>();
+  const invitationMfaChallenges = new Map<string, { userId: string; expiresAt: number }>();
 
   router.post('/auth/login', (req, res) => {
     const { email, password } = req.body;
@@ -704,6 +705,9 @@ export function setupPortalApi(app: express.Express) {
       return res.status(400).json({ error: 'Une liste valide d’entreprises est requise.' });
     }
     const uniqueCompanyIds = [...new Set((companyIds as string[]).map((id) => id.trim()))];
+    if (role === 'client' && uniqueCompanyIds.length === 0) {
+      return res.status(400).json({ error: 'Un client doit être associé à au moins une entreprise.' });
+    }
     if (uniqueCompanyIds.some((id) => !db.getCompanyById(id))) {
       return res.status(404).json({ error: 'Une entreprise demandée est introuvable.' });
     }
@@ -727,10 +731,102 @@ export function setupPortalApi(app: express.Express) {
       createdAt: new Date().toISOString()
     };
     db.saveUser(user);
-    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Invitation utilisateur créée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Invitation créée pour ${normalizedEmail} (${role}).`);
+    if (role === 'client') {
+      for (const companyId of uniqueCompanyIds) {
+        const company = db.getCompanyById(companyId)!;
+        if (!company.clientUserIds.includes(user.id)) company.clientUserIds.push(user.id);
+        db.saveCompany(company);
+      }
+    }
+    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Invitation utilisateur créée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Utilisateur ${user.id} invité (${role}).`);
     return res.status(201).json({
       user: { id: user.id, email: user.email, fullName: user.fullName, role: user.role, status: user.status, assignedCompanyIds: user.assignedCompanyIds, inviteExpiresAt: user.inviteExpiresAt },
       invitationToken
+    });
+  });
+
+  router.post('/auth/accept-invitation', (req, res) => {
+    const { invitationToken, password } = req.body || {};
+    if (typeof invitationToken !== 'string' || invitationToken.length < 32 ||
+        typeof password !== 'string' || password.length < 12 || password.length > 200) {
+      return res.status(400).json({ error: 'Jeton valide et mot de passe de 12 à 200 caractères requis.' });
+    }
+    const tokenHash = crypto.createHash('sha256').update(invitationToken).digest('hex');
+    const user = db.getUsers().find((candidate) => {
+      if (candidate.status !== 'en_attente_invitation' || !candidate.inviteTokenHash) return false;
+      if (Date.parse(candidate.inviteExpiresAt || '') <= Date.now()) return false;
+      const stored = Buffer.from(candidate.inviteTokenHash, 'hex');
+      const provided = Buffer.from(tokenHash, 'hex');
+      return stored.length === provided.length && crypto.timingSafeEqual(stored, provided);
+    });
+    if (!user) return res.status(401).json({ error: 'Invitation invalide, expirée ou déjà utilisée.' });
+
+    const passwordFields = hashPassword(password);
+    const secretBase32 = generateBase32Secret(20);
+    const { plainCodes, hashedCodes } = generateRecoveryCodes(10);
+    user.passwordHash = passwordFields.hash;
+    user.passwordSalt = passwordFields.salt;
+    user.mfaSecretEncrypted = encryptData(secretBase32);
+    user.recoveryCodesHashed = hashedCodes;
+    user.mfaEnabled = false;
+    db.saveUser(user);
+
+    for (const [key, challenge] of invitationMfaChallenges.entries()) {
+      if (challenge.userId === user.id) invitationMfaChallenges.delete(key);
+    }
+    const enrollmentToken = crypto.randomBytes(32).toString('base64url');
+    invitationMfaChallenges.set(enrollmentToken, { userId: user.id, expiresAt: Date.now() + 10 * 60 * 1000 });
+    const otpauthUri = `otpauth://totp/FIDCOGEST:${encodeURIComponent(user.email)}?secret=${secretBase32}&issuer=FIDCOGEST&algorithm=SHA1&digits=6&period=30`;
+    db.addAuditLog(user.id, user.fullName, user.role, 'Activation invitation commencée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Enrôlement MFA démarré pour ${user.id}.`);
+    return res.json({
+      enrollmentToken,
+      secretBase32,
+      otpauthUri,
+      recoveryCodes: plainCodes,
+      user: { id: user.id, email: user.email, fullName: user.fullName, role: user.role }
+    });
+  });
+
+  router.post('/auth/complete-invitation-mfa', (req, res) => {
+    const { enrollmentToken, totpCode } = req.body || {};
+    if (typeof enrollmentToken !== 'string' || typeof totpCode !== 'string') {
+      return res.status(400).json({ error: 'Jeton d’enrôlement et code TOTP requis.' });
+    }
+    const challenge = invitationMfaChallenges.get(enrollmentToken);
+    if (!challenge || challenge.expiresAt <= Date.now()) {
+      invitationMfaChallenges.delete(enrollmentToken);
+      return res.status(401).json({ error: 'Enrôlement MFA expiré. Recommencez l’activation avec le jeton d’invitation.' });
+    }
+    const user = db.getUserById(challenge.userId);
+    if (!user || user.status !== 'en_attente_invitation' || !user.inviteTokenHash ||
+        Date.parse(user.inviteExpiresAt || '') <= Date.now() || !user.mfaSecretEncrypted) {
+      invitationMfaChallenges.delete(enrollmentToken);
+      return res.status(401).json({ error: 'Invitation invalide ou expirée.' });
+    }
+    const secretBase32 = decryptData(user.mfaSecretEncrypted).toString('utf-8');
+    if (!verifyTotpCode(secretBase32, totpCode)) {
+      db.addAuditLog(user.id, user.fullName, user.role, 'Échec enrôlement MFA invitation', getClientIp(req), req.headers['user-agent'] || '', 'echec', `Code TOTP invalide pour ${user.id}.`);
+      return res.status(401).json({ error: 'Code TOTP invalide ou expiré.' });
+    }
+
+    user.status = 'actif';
+    user.mfaEnabled = true;
+    user.inviteTokenHash = undefined;
+    user.inviteExpiresAt = undefined;
+    user.lastLoginAt = new Date().toISOString().replace('T', ' ').substring(0, 16);
+    db.saveUser(user);
+    invitationMfaChallenges.delete(enrollmentToken);
+    const session = db.createSession(user.id, getClientIp(req), req.headers['user-agent'] || 'unknown', Date.now());
+    db.addAuditLog(user.id, user.fullName, user.role, 'Invitation acceptée et MFA activée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Compte ${user.id} activé après validation TOTP.`);
+    return res.json({
+      success: true,
+      token: session.token,
+      expiresAt: session.expiresAt,
+      user: {
+        id: user.id, email: user.email, fullName: user.fullName, role: user.role,
+        assignedCompanyIds: user.assignedCompanyIds, mfaEnabled: user.mfaEnabled,
+        recoveryCodesRemaining: user.recoveryCodesHashed?.length || 0
+      }
     });
   });
 
@@ -751,6 +847,43 @@ export function setupPortalApi(app: express.Express) {
     db.revokeUserSessions(user.id);
     db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Utilisateur suspendu', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Compte ${user.id} suspendu et sessions révoquées.`);
     return res.json({ userId: user.id, status: user.status, sessionsRevoked: true });
+  });
+
+  router.post('/admin/users/:id/reactivate', (req, res) => {
+    const auth = authenticateSession(req);
+    if (!requireRecentAdminMfa(auth, res)) return;
+    const user = db.getUserById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+    if (user.status !== 'suspendu') return res.status(409).json({ error: 'Seul un compte suspendu peut être réactivé.' });
+    if (!user.passwordHash || !user.passwordSalt || !user.mfaEnabled || !user.mfaSecretEncrypted) {
+      return res.status(409).json({ error: 'Ce compte doit recevoir une nouvelle invitation et terminer l’enrôlement MFA.' });
+    }
+    user.status = 'actif';
+    db.saveUser(user);
+    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Utilisateur réactivé', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Compte ${user.id} réactivé.`);
+    return res.json({ userId: user.id, status: user.status });
+  });
+
+  router.delete('/admin/users/:id/companies/:companyId', (req, res) => {
+    const auth = authenticateSession(req);
+    if (!requireRecentAdminMfa(auth, res)) return;
+    const user = db.getUserById(req.params.id);
+    const company = db.getCompanyById(req.params.companyId);
+    if (!user || !company) return res.status(404).json({ error: 'Utilisateur ou entreprise introuvable.' });
+    const hadAssignment = user.assignedCompanyIds.includes(company.id);
+    if (!hadAssignment && !company.clientUserIds.includes(user.id) && company.assignedManagerId !== user.id) {
+      return res.status(404).json({ error: 'Cette affectation n’existe pas.' });
+    }
+    user.assignedCompanyIds = user.assignedCompanyIds.filter((id) => id !== company.id);
+    company.clientUserIds = company.clientUserIds.filter((id) => id !== user.id);
+    if (company.assignedManagerId === user.id) {
+      company.assignedManagerId = '';
+      company.assignedManagerName = '';
+    }
+    db.saveUser(user);
+    db.saveCompany(company);
+    db.addAuditLog(auth.user.id, auth.user.fullName, auth.user.role, 'Affectation entreprise retirée', getClientIp(req), req.headers['user-agent'] || '', 'succes', `Entreprise ${company.id} retirée de l’utilisateur ${user.id}.`);
+    return res.json({ userId: user.id, companyId: company.id, assignedCompanyIds: user.assignedCompanyIds });
   });
 
   router.put('/admin/companies/:companyId/manager', (req, res) => {
