@@ -21,7 +21,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-      - name: TypeScript
+      - name: TypeScript lint — npm run lint (tsc --noEmit)
         run: npm run lint
       - name: Build frontend and server
         run: npm run build
