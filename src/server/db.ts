@@ -189,7 +189,7 @@ class PersistentDatabase {
       user.status = 'suspendu';
       user.mfaSecretEncrypted = undefined;
       user.recoveryCodesHashed = [];
-      user.inviteToken = undefined;
+      user.inviteTokenHash = undefined;
       user.inviteExpiresAt = undefined;
       updated = true;
     }
