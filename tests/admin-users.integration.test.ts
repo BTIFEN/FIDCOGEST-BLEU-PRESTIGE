@@ -178,6 +178,7 @@ test('administrative user operations enforce MFA, tenant boundaries and session 
       const serializedLogs = JSON.stringify(logs);
       assert.ok(issuedInvitationToken.length > 0);
       assert.ok(!serializedLogs.includes(issuedInvitationToken));
+      assert.ok(!serializedLogs.includes('client-invite@example.invalid'));
     });
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
