@@ -73,7 +73,8 @@ export function setupPortalApi(app: express.Express) {
       res.status(403).json({ error: 'Action réservée à un administrateur.' });
       return false;
     }
-    if (!auth.session.mfaVerifiedAt || Date.now() - auth.session.mfaVerifiedAt > 5 * 60 * 1000) {
+    const mfaAgeMs = auth.session.mfaVerifiedAt === undefined ? Number.POSITIVE_INFINITY : Date.now() - auth.session.mfaVerifiedAt;
+    if (mfaAgeMs < 0 || mfaAgeMs > 5 * 60 * 1000) {
       res.status(403).json({ error: 'Une validation MFA récente est requise. Reconnectez-vous puis réessayez.' });
       return false;
     }
@@ -692,7 +693,7 @@ export function setupPortalApi(app: express.Express) {
     const { email, fullName, role, companyIds, phone } = req.body || {};
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
     const normalizedName = typeof fullName === 'string' ? fullName.trim() : '';
-    if (!normalizedEmail || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(normalizedEmail) || !normalizedName) {
+    if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || !normalizedName) {
       return res.status(400).json({ error: 'Nom complet et adresse électronique valides requis.' });
     }
     if (role !== 'client' && role !== 'manager') {
