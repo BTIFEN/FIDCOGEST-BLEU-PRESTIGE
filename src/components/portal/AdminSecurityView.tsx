@@ -26,7 +26,10 @@ export const AdminSecurityView: React.FC = () => {
     companies,
     securityLogs,
     inviteNewUser,
-    toggleUserStatus
+    toggleUserStatus,
+    assignCompanyManager,
+    removeUserCompany,
+    users
   } = usePortal();
 
   const [activeTab, setActiveTab] = useState<'users' | 'audit' | 'rgpd' | 'backups' | 'storage'>('users');
@@ -38,6 +41,8 @@ export const AdminSecurityView: React.FC = () => {
   const [inviteRole, setInviteRole] = useState<UserRole>('client');
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
   const [generatedInviteLink, setGeneratedInviteLink] = useState<string | null>(null);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+  const [userActionError, setUserActionError] = useState<string | null>(null);
 
   // Backup state
   const [backupStatus, setBackupStatus] = useState<string | null>(null);
@@ -47,17 +52,21 @@ export const AdminSecurityView: React.FC = () => {
     e.preventDefault();
     if (!inviteEmail || !inviteName) return;
 
-    const link = await inviteNewUser({
-      email: inviteEmail.trim(),
-      fullName: inviteName.trim(),
-      role: inviteRole,
-      assignedCompanyIds: selectedCompanies
-    });
-
-    setGeneratedInviteLink(`${window.location.origin}${link}`);
-    setInviteEmail('');
-    setInviteName('');
-    setSelectedCompanies([]);
+    setInviteError(null);
+    try {
+      const link = await inviteNewUser({
+        email: inviteEmail.trim(),
+        fullName: inviteName.trim(),
+        role: inviteRole,
+        assignedCompanyIds: selectedCompanies
+      });
+      setGeneratedInviteLink(`${window.location.origin}${link}`);
+      setInviteEmail('');
+      setInviteName('');
+      setSelectedCompanies([]);
+    } catch (err: any) {
+      setInviteError(err.message || 'Invitation impossible.');
+    }
   };
 
   const handleRunBackupTest = () => {
@@ -227,9 +236,9 @@ export const AdminSecurityView: React.FC = () => {
                     </td>
 
                     <td className="p-3.5 text-right">
-                      {u.role !== 'admin' && (
+                      {u.role !== 'admin' && u.status !== 'en_attente_invitation' && (
                         <button
-                          onClick={() => toggleUserStatus(u.id)}
+                          onClick={() => { setUserActionError(null); void toggleUserStatus(u.id).catch((err) => setUserActionError(err.message || 'Action impossible.')); }}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
                             u.status === 'actif'
                               ? 'border border-rose-300 bg-rose-50 text-rose-800 hover:bg-rose-100'
@@ -245,6 +254,29 @@ export const AdminSecurityView: React.FC = () => {
               </tbody>
             </table>
           </div>
+          {userActionError && <p role="alert" className="text-xs text-rose-700">{userActionError}</p>}
+          <section className="rounded-xl border border-[#E8E6DF] p-4 space-y-3">
+            <h3 className="font-bold text-sm text-[#142B45]">Affecter un gestionnaire à une entreprise</h3>
+            {companies.map((company) => (
+              <div key={company.id} className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs">
+                <span className="sm:w-1/2 text-[#4B5563]">{company.legalName}</span>
+                <select
+                  aria-label={`Gestionnaire pour ${company.legalName}`}
+                  value={company.assignedManagerId || ''}
+                  onChange={(event) => {
+                    setUserActionError(null);
+                    void assignCompanyManager(company.id, event.target.value).catch((err) => setUserActionError(err.message || 'Affectation impossible.'));
+                  }}
+                  className="cabinet-input flex-1"
+                >
+                  <option value="" disabled>Choisir un gestionnaire actif</option>
+                  {users.filter((user) => user.role === 'manager' && user.status === 'actif').map((manager) => (
+                    <option key={manager.id} value={manager.id}>{manager.fullName}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </section>
         </div>
       )}
 
@@ -438,6 +470,7 @@ export const AdminSecurityView: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={handleSendInvite} className="space-y-4 text-xs">
+                {inviteError && <div role="alert" className="p-3 rounded-lg bg-rose-50 text-rose-800">{inviteError}</div>}
                 <div>
                   <label className="block font-semibold text-[#142B45] mb-1">Nom complet :</label>
                   <input
@@ -471,7 +504,7 @@ export const AdminSecurityView: React.FC = () => {
                   >
                     <option value="client">Client (Dépôt &amp; Consultation de son dossier)</option>
                     <option value="manager">Gestionnaire de dossiers (Validation OCR &amp; Échanges)</option>
-                    <option value="supervisor">Superviseur / Associé ITAA (Supervision complète)</option>
+                    
                   </select>
                 </div>
 
