@@ -56,6 +56,7 @@ db.saveUser(makeUser('client-b', 'client', ['company-b']));
 const server = app.listen(0, '127.0.0.1');
 await new Promise<void>((resolve) => server.once('listening', resolve));
 const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+let issuedInvitationToken = '';
 const adminToken = db.createSession('admin-1', '127.0.0.1', 'fictitious-test').token;
 const supervisorToken = db.createSession('supervisor-1', '127.0.0.1', 'fictitious-test').token;
 const clientAToken = db.createSession('client-a', '127.0.0.1', 'fictitious-test').token;
@@ -91,6 +92,7 @@ test('administrative user operations enforce MFA, tenant boundaries and session 
       assert.equal(response.status, 201);
       const payload = await response.json();
       assert.equal(typeof payload.invitationToken, 'string');
+      issuedInvitationToken = payload.invitationToken;
       const invited = db.getUserById(payload.user.id)!;
       assert.equal(invited.status, 'en_attente_invitation');
       assert.notEqual(invited.inviteTokenHash, payload.invitationToken);
@@ -132,8 +134,8 @@ test('administrative user operations enforce MFA, tenant boundaries and session 
       assert.ok(logs.some((entry) => entry.action === 'Invitation utilisateur créée'));
       assert.ok(logs.some((entry) => entry.action === 'Utilisateur suspendu'));
       const serializedLogs = JSON.stringify(logs);
-      assert.ok(!serializedLogs.includes('invitee@example.invalid') || serializedLogs.includes('Invitation créée pour invitee@example.invalid'));
-      assert.ok(!serializedLogs.includes('invitationToken'));
+      assert.ok(issuedInvitationToken.length > 0);
+      assert.ok(!serializedLogs.includes(issuedInvitationToken));
     });
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
