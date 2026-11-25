@@ -14,9 +14,10 @@ Object.assign(process.env, {
   PORTAL_ENCRYPTION_KEY: crypto.randomBytes(32).toString('hex')
 });
 
-const [{ setupPortalApi }, { db }] = await Promise.all([
+const [{ setupPortalApi }, { db }, security] = await Promise.all([
   import('../src/server/portalApi'),
-  import('../src/server/db')
+  import('../src/server/db'),
+  import('../src/server/security')
 ]);
 
 const app = express();
@@ -52,6 +53,7 @@ db.saveUser(makeUser('supervisor-1', 'supervisor'));
 db.saveUser(makeUser('manager-1', 'manager'));
 db.saveUser(makeUser('client-a', 'client', ['company-a']));
 db.saveUser(makeUser('client-b', 'client', ['company-b']));
+db.saveUser({ ...makeUser('client-suspended', 'client', [], 'suspendu'), passwordHash: 'fictitious-hash', passwordSalt: 'fictitious-salt', mfaSecretEncrypted: { ciphertext: 'fictitious', iv: 'fictitious', authTag: 'fictitious' } });
 
 const server = app.listen(0, '127.0.0.1');
 await new Promise<void>((resolve) => server.once('listening', resolve));
@@ -98,6 +100,37 @@ test('administrative user operations enforce MFA, tenant boundaries and session 
       assert.notEqual(invited.inviteTokenHash, payload.invitationToken);
       assert.equal(invited.inviteTokenHash, crypto.createHash('sha256').update(payload.invitationToken).digest('hex'));
       assert.equal(Math.round((Date.parse(invited.inviteExpiresAt!) - Date.now()) / 3600000), 72);
+      const clientResponse = await call('/admin/users/invitations', adminToken, { method: 'POST', body: JSON.stringify({
+        email: 'client-invite@example.invalid', fullName: 'Client Fictif', role: 'client', companyIds: ['company-a']
+      }) });
+      assert.equal(clientResponse.status, 201);
+      const clientInvite = await clientResponse.json();
+      assert.ok(db.getCompanyById('company-a')?.clientUserIds.includes(clientInvite.user.id));
+
+      const accepted = await call('/auth/accept-invitation', '', { method: 'POST', body: JSON.stringify({
+        invitationToken: clientInvite.invitationToken, password: 'Fictitious-Password-2026'
+      }) });
+      assert.equal(accepted.status, 200);
+      const enrollment = await accepted.json();
+      assert.equal(db.getUserById(clientInvite.user.id)?.status, 'en_attente_invitation');
+      assert.equal(db.getUserById(clientInvite.user.id)?.mfaEnabled, false);
+      const completed = await call('/auth/complete-invitation-mfa', '', { method: 'POST', body: JSON.stringify({
+        enrollmentToken: enrollment.enrollmentToken,
+        totpCode: security.generateTotpCode(enrollment.secretBase32)
+      }) });
+      assert.equal(completed.status, 200);
+      assert.equal(db.getUserById(clientInvite.user.id)?.status, 'actif');
+      assert.equal(db.getUserById(clientInvite.user.id)?.mfaEnabled, true);
+      assert.equal(db.getUserById(clientInvite.user.id)?.inviteTokenHash, undefined);
+      assert.equal((await call('/auth/accept-invitation', '', { method: 'POST', body: JSON.stringify({
+        invitationToken: clientInvite.invitationToken, password: 'Fictitious-Password-2026'
+      }) })).status, 401);
+
+      const removed = await call(`/admin/users/${clientInvite.user.id}/companies/company-a`, adminToken, { method: 'DELETE' });
+      assert.equal(removed.status, 200);
+      assert.ok(!db.getUserById(clientInvite.user.id)?.assignedCompanyIds.includes('company-a'));
+      assert.ok(!db.getCompanyById('company-a')?.clientUserIds.includes(clientInvite.user.id));
+
       const duplicate = await call('/admin/users/invitations', adminToken, { method: 'POST', body: JSON.stringify({
         email: 'invitee@example.invalid', fullName: 'Autre Compte Fictif', role: 'client', companyIds: ['company-a']
       }) });
@@ -128,6 +161,10 @@ test('administrative user operations enforce MFA, tenant boundaries and session 
       assert.equal(db.getSession(clientAToken), undefined);
       assert.equal((await call('/auth/session', clientAToken)).status, 401);
       assert.equal(db.getUserById('client-a')?.status, 'suspendu');
+
+      const reactivated = await call('/admin/users/client-suspended/reactivate', adminToken, { method: 'POST' });
+      assert.equal(reactivated.status, 200);
+      assert.equal(db.getUserById('client-suspended')?.status, 'actif');
 
       const lastAdmin = await call('/admin/users/admin-1/suspend', adminToken, { method: 'POST' });
       assert.equal(lastAdmin.status, 409);
