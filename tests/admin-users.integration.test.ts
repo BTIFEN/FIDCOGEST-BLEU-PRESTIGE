@@ -118,6 +118,11 @@ test('administrative user operations enforce MFA, tenant boundaries and session 
     });
 
     await t.test('suspension revokes sessions immediately and last active admin is protected', async () => {
+      const secondAdminSession = db.createSession('admin-2', '127.0.0.1', 'fictitious-test').token;
+      const secondAdmin = await call('/admin/users/admin-2/suspend', adminToken, { method: 'POST' });
+      assert.equal(secondAdmin.status, 200);
+      assert.equal(db.getSession(secondAdminSession), undefined);
+
       const suspension = await call('/admin/users/client-a/suspend', adminToken, { method: 'POST' });
       assert.equal(suspension.status, 200);
       assert.equal(db.getSession(clientAToken), undefined);
