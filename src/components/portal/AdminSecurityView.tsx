@@ -28,8 +28,7 @@ export const AdminSecurityView: React.FC = () => {
     inviteNewUser,
     toggleUserStatus,
     assignCompanyManager,
-    removeUserCompany,
-    users
+    removeUserCompany
   } = usePortal();
 
   const [activeTab, setActiveTab] = useState<'users' | 'audit' | 'rgpd' | 'backups' | 'storage'>('users');
@@ -201,8 +200,17 @@ export const AdminSecurityView: React.FC = () => {
                         u.assignedCompanyIds.map((cid) => {
                           const c = companies.find((comp) => comp.id === cid);
                           return (
-                            <span key={cid} className="inline-block bg-[#FAF9F6] border border-[#E8E6DF] px-2 py-0.5 rounded mr-1 mb-1">
+                            <span key={cid} className="inline-flex items-center gap-1 bg-[#FAF9F6] border border-[#E8E6DF] px-2 py-0.5 rounded mr-1 mb-1">
                               {c?.legalName || cid}
+                              <button
+                                type="button"
+                                aria-label={`Retirer ${c?.legalName || cid} de ${u.fullName}`}
+                                onClick={() => {
+                                  setUserActionError(null);
+                                  void removeUserCompany(u.id, cid).catch((err) => setUserActionError(err.message || 'Retrait impossible.'));
+                                }}
+                                className="font-bold text-rose-700"
+                              >×</button>
                             </span>
                           );
                         })
