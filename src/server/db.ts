@@ -41,7 +41,7 @@ export interface StoredUser {
   recoveryCodesHashed?: string[];
   passwordHash?: string;
   passwordSalt?: string;
-  inviteToken?: string;
+  inviteTokenHash?: string;
   inviteExpiresAt?: string;
   lastLoginAt?: string;
   createdAt: string;
@@ -54,6 +54,8 @@ export interface StoredSession {
   expiresAt: number;
   ip: string;
   userAgent: string;
+  /** Timestamp of the MFA validation that created this session. */
+  mfaVerifiedAt?: number;
 }
 
 export interface DatabaseState {
@@ -223,9 +225,14 @@ class PersistentDatabase {
     this.save();
   }
 
+  public revokeUserSessions(userId: string): void {
+    this.state.sessions = this.state.sessions.filter((session) => session.userId !== userId);
+    this.save();
+  }
+
   // --- Sessions Sécurisées ---
 
-  public createSession(userId: string, ip: string, userAgent: string): StoredSession {
+  public createSession(userId: string, ip: string, userAgent: string, mfaVerifiedAt: number = Date.now()): StoredSession {
     // Session token 256-bit cryptographique
     const token = crypto.randomBytes(32).toString('hex');
     const now = Date.now();
@@ -237,7 +244,8 @@ class PersistentDatabase {
       createdAt: now,
       expiresAt,
       ip,
-      userAgent
+      userAgent,
+      mfaVerifiedAt
     };
 
     // Nettoyage des anciennes sessions expirées
@@ -277,6 +285,13 @@ class PersistentDatabase {
 
   public getCompanyById(id: string): CompanyDossier | undefined {
     return this.state.companies.find((c) => c.id === id);
+  }
+
+  public saveCompany(company: CompanyDossier): void {
+    const idx = this.state.companies.findIndex((candidate) => candidate.id === company.id);
+    if (idx < 0) throw new Error('Entreprise introuvable.');
+    this.state.companies[idx] = company;
+    this.save();
   }
 
   public getDocuments(): PortalDocument[] {
